@@ -1,8 +1,6 @@
-import { useState } from "react"
 import { builderContent, builderValueLabels } from "../../data/builderContent"
 
 export default function BuilderSummary({ selections }) {
-  const [expanded, setExpanded] = useState(false)
   const summaryFields = builderContent.summary.fields
 
   const resolvedItems = [
@@ -55,65 +53,37 @@ export default function BuilderSummary({ selections }) {
 
   if (!hasSelections) {
     return (
-      <div className="rounded-[22px] border border-white/10 bg-white/[0.03] px-4 py-3.5">
-        <p className="text-[13px] text-slate-400 text-right">
+      <div className="rounded-[22px] border border-white/10 bg-white/[0.03] px-4 py-3">
+        <p className="text-[12px] text-slate-400/80 text-right">
           {builderContent.summary.empty}
         </p>
       </div>
     )
   }
 
-  const previewItems = filledItems.slice(0, 3)
-  const remainingItems = filledItems.slice(3)
-  const hasMore = remainingItems.length > 0
-
   return (
-    <div className="rounded-[22px] border border-white/10 bg-white/[0.03] px-4 py-3.5">
-      <div className="space-y-2.5">
+    <div className="rounded-[22px] border border-white/10 bg-white/[0.03] px-4 py-3">
+      <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-[11px] text-slate-500">
-            {filledItems.length} من {resolvedItems.length}
+          <span className="text-[10px] tabular-nums text-slate-500">
+            {filledItems.length}/{resolvedItems.length}
           </span>
-          <h3 className="text-[13px] font-bold text-white">
+          <h3 className="text-[12px] font-bold text-white">
             {builderContent.summary.title}
           </h3>
         </div>
 
-        <div className="flex flex-wrap justify-end gap-1.5">
-          {previewItems.map((item) => (
+        <div className="flex flex-wrap justify-end gap-1">
+          {filledItems.map((item) => (
             <span
               key={item.key}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/8 bg-white/[0.04] px-2.5 py-1 text-[11px]"
+              className="inline-flex items-center gap-1 rounded-full border border-white/[0.06] bg-white/[0.03] px-2 py-0.5 text-[10px]"
             >
-              <span className="font-semibold text-white">{item.value}</span>
-              <span className="text-slate-500">{item.label}</span>
+              <span className="font-semibold text-white/90">{item.value}</span>
+              <span className="text-slate-500/70">{item.label}</span>
             </span>
           ))}
         </div>
-
-        {hasMore && expanded && (
-          <div className="flex flex-wrap justify-end gap-1.5">
-            {remainingItems.map((item) => (
-              <span
-                key={item.key}
-                className="inline-flex items-center gap-1.5 rounded-full border border-white/8 bg-white/[0.04] px-2.5 py-1 text-[11px]"
-              >
-                <span className="font-semibold text-white">{item.value}</span>
-                <span className="text-slate-500">{item.label}</span>
-              </span>
-            ))}
-          </div>
-        )}
-
-        {hasMore && (
-          <button
-            type="button"
-            onClick={() => setExpanded((prev) => !prev)}
-            className="w-full text-center text-[11px] font-medium text-slate-500 hover:text-slate-300 transition-colors"
-          >
-            {expanded ? "عرض أقل" : `+${remainingItems.length} المزيد`}
-          </button>
-        )}
       </div>
     </div>
   )

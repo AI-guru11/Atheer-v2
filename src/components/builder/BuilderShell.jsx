@@ -138,35 +138,38 @@ export default function BuilderShell() {
                   />
                 </div>
               ) : (
-                <div className="space-y-6 text-right">
-                  <span className="inline-flex rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-300">
-                    {completion.badge}
-                  </span>
+                <div className="text-right">
+                  <div className="mb-5">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/[0.08] px-3 py-1.5 text-[12px] font-semibold text-emerald-300">
+                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                      {completion.badge}
+                    </span>
 
-                  <h2 className="text-3xl font-bold leading-tight text-white sm:text-4xl">
-                    {completion.title}
-                  </h2>
+                    <h2 className="mt-3 text-xl font-bold leading-tight text-white sm:text-2xl">
+                      {completion.title}
+                    </h2>
 
-                  <p className="max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
-                    {completion.description}
-                  </p>
+                    <p className="mt-1.5 text-[13px] leading-relaxed text-slate-400">
+                      {completion.description}
+                    </p>
+                  </div>
 
                   <BuilderRecommendationPreview recommendation={recommendation} />
 
-                  <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+                  <div className="mt-6 flex flex-col-reverse gap-2.5 sm:flex-row sm:justify-end">
                     <button
                       type="button"
-                      className="rounded-full bg-[linear-gradient(90deg,#7c5cff,#22d3ee)] px-6 py-3 text-base font-bold text-white shadow-[0_12px_35px_rgba(34,211,238,0.18)]"
+                      onClick={handleReset}
+                      className="rounded-full border border-white/[0.08] bg-white/[0.02] px-5 py-2.5 text-[13px] font-semibold text-slate-400 transition-colors duration-200 hover:border-white/15 hover:text-slate-200"
                     >
-                      {completion.primaryCta}
+                      {labels.reset}
                     </button>
 
                     <button
                       type="button"
-                      onClick={handleReset}
-                      className="rounded-full border border-white/10 bg-white/[0.03] px-6 py-3 text-base font-semibold text-white"
+                      className="rounded-full bg-[linear-gradient(90deg,#7c5cff,#22d3ee)] px-6 py-3 text-[15px] font-bold text-white shadow-[0_10px_30px_rgba(34,211,238,0.15)] transition-all duration-200 hover:shadow-[0_14px_40px_rgba(34,211,238,0.22)] active:scale-[0.98]"
                     >
-                      {labels.reset}
+                      {completion.primaryCta}
                     </button>
                   </div>
                 </div>
@@ -176,20 +179,28 @@ export default function BuilderShell() {
             <div className="space-y-4">
               <BuilderSummary selections={selections} />
 
-              <div className="rounded-[28px] border border-white/10 bg-white/[0.03] p-5 sm:p-6">
-                <div className="space-y-3 text-right">
-                  <h3 className="text-lg font-bold text-white sm:text-xl">
-                    تقدمك الحالي
-                  </h3>
+              <div className={`rounded-[22px] border px-4 py-3.5 transition-colors duration-300 ${
+                showCompletionState
+                  ? "border-emerald-400/15 bg-emerald-400/[0.02]"
+                  : "border-white/10 bg-white/[0.03]"
+              }`}>
+                <div className="space-y-2 text-right">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] tabular-nums text-slate-500">
+                      {selectedCount}/{totalSteps}
+                    </span>
+                    <h3 className="text-[13px] font-bold text-white">
+                      {showCompletionState ? "اكتملت" : "التقدم"}
+                    </h3>
+                  </div>
 
-                  <p className="text-sm leading-relaxed text-slate-400 sm:text-base">
-                    أكملت {selectedCount} من أصل {totalSteps} خطوات في هذه
-                    المرحلة.
-                  </p>
-
-                  <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                  <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
                     <div
-                      className="h-full rounded-full bg-[linear-gradient(90deg,#7c5cff,#22d3ee)] transition-all duration-300"
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        showCompletionState
+                          ? "bg-emerald-400"
+                          : "bg-[linear-gradient(90deg,#7c5cff,#22d3ee)]"
+                      }`}
                       style={{
                         width: `${(selectedCount / totalSteps) * 100}%`,
                       }}
