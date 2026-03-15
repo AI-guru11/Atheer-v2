@@ -1,0 +1,31 @@
+:root {
+  --bg: #050816;
+  --bg-soft: #09101f;
+  --surface: rgba(12, 18, 38, 0.58);
+  --surface-strong: rgba(15, 24, 48, 0.82);
+  --surface-alt: rgba(18, 28, 58, 0.72);
+  --line: rgba(255, 255, 255, 0.1);
+
+  --text: #f5f7ff;
+  --muted: #a9b3d1;
+
+  --brand: #7c5cff;
+  --brand-2: #22d3ee;
+  --brand-3: #8b5cf6;
+  --brand-4: #38bdf8;
+
+  --success: #22c55e;
+  --danger: #ef4444;
+
+  --shadow-soft: 0 12px 40px rgba(0, 0, 0, 0.35);
+  --shadow-glow: 0 0 0 1px rgba(124, 92, 255, 0.18), 0 10px 40px rgba(34, 211, 238, 0.12),
+    0 18px 70px rgba(124, 92, 255, 0.14);
+
+  --blur: 18px;
+
+  --radius-sm: 0.9rem;
+  --radius-md: 1.2rem;
+  --radius-lg: 1.8rem;
+
+  --container-width: 1240px;
+}

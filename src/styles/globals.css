@@ -1,0 +1,233 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Design tokens ── */
+:root {
+  --bg: #050816;
+  --bg-soft: #09101f;
+  --surface: rgba(12, 18, 38, 0.58);
+  --surface-strong: rgba(15, 24, 48, 0.82);
+  --surface-alt: rgba(18, 28, 58, 0.72);
+  --line: rgba(255, 255, 255, 0.1);
+
+  --text: #f5f7ff;
+  --muted: #a9b3d1;
+
+  --brand: #7c5cff;
+  --brand-2: #22d3ee;
+  --brand-3: #8b5cf6;
+  --brand-4: #38bdf8;
+
+  --success: #22c55e;
+  --danger: #ef4444;
+
+  --shadow-soft: 0 12px 40px rgba(0, 0, 0, 0.35);
+  --shadow-glow: 0 0 0 1px rgba(124, 92, 255, 0.18), 0 10px 40px rgba(34, 211, 238, 0.12),
+    0 18px 70px rgba(124, 92, 255, 0.14);
+
+  --blur: 18px;
+
+  --radius-sm: 0.9rem;
+  --radius-md: 1.2rem;
+  --radius-lg: 1.8rem;
+
+  --container-width: 1240px;
+}
+
+/* ── Base resets ── */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    color: #f8fbff;
+    background:
+      radial-gradient(circle at 10% 10%, rgba(124, 92, 255, 0.18), transparent 24%),
+      radial-gradient(circle at 90% 12%, rgba(34, 211, 238, 0.14), transparent 22%),
+      radial-gradient(circle at 50% 32%, rgba(56, 189, 248, 0.08), transparent 26%),
+      linear-gradient(180deg, #030611 0%, #050816 42%, #030611 100%);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    color: #f8fbff;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  button, input, textarea, select {
+    font: inherit;
+    color: inherit;
+  }
+
+  img {
+    max-width: 100%;
+    display: block;
+  }
+
+  ::selection {
+    background: rgba(124, 92, 255, 0.35);
+    color: #fff;
+  }
+}
+
+/* ── Layout utilities ── */
+@layer components {
+  .container {
+    max-width: var(--container-width);
+  }
+
+  .section {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  @media (min-width: 640px) {
+    .section {
+      padding-top: 5rem;
+      padding-bottom: 5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .section {
+      padding-top: 6rem;
+      padding-bottom: 6rem;
+    }
+  }
+}
+
+/* ── Glass & neon effects ── */
+.glass-panel {
+  background: rgba(11, 18, 36, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.glass-panel-strong {
+  background: rgba(10, 16, 34, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    0 0 0 1px rgba(124, 92, 255, 0.10),
+    0 10px 32px rgba(0, 0, 0, 0.24),
+    0 14px 56px rgba(34, 211, 238, 0.05);
+}
+
+.neon-ring {
+  position: relative;
+}
+
+.neon-ring::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(124, 92, 255, 0.44),
+    rgba(34, 211, 238, 0.24),
+    rgba(139, 92, 246, 0.38)
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.glow-text {
+  background: linear-gradient(90deg, #ffffff 0%, #c4b5fd 42%, #67e8f9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.grid-noise {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: linear-gradient(180deg, rgba(255,255,255,0.75), transparent);
+  opacity: 0.16;
+}
+
+.hero-float {
+  animation: hero-float 7s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes hero-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* ── Text helpers ── */
+.section-copy {
+  color: #cbd5e1;
+}
+
+.card-copy {
+  color: #dbe4f0;
+}
+
+.kicker {
+  color: #67e8f9;
+}
+
+.subtle-line {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ── Mobile background simplification ── */
+@media (max-width: 640px) {
+  body {
+    background:
+      radial-gradient(circle at 8% 10%, rgba(124, 92, 255, 0.16), transparent 28%),
+      radial-gradient(circle at 92% 14%, rgba(34, 211, 238, 0.12), transparent 26%),
+      linear-gradient(180deg, #030611 0%, #050816 50%, #030611 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-float {
+    animation: none;
+  }
+}
