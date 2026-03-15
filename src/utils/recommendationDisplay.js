@@ -66,12 +66,12 @@ const toneLabels = {
 }
 
 const revealStyleDescriptions = {
-  warm_refined: "تجربة كشف هادئة بطابع دافئ وأنيق",
-  romantic_soft: "تجربة كشف ناعمة بلمسة رومانسية",
-  formal_premium: "تجربة كشف مرتبة بمظهر رسمي وراقٍ",
-  playful_modern: "تجربة كشف ممتعة بأسلوب حديث",
-  grateful_respectful: "تجربة كشف محترمة تعبّر عن التقدير",
-  celebratory: "تجربة كشف احتفالية مليئة بالحماس",
+  warm_refined: "هادئ ودافئ",
+  romantic_soft: "رومانسي وناعم",
+  formal_premium: "رسمي وراقٍ",
+  playful_modern: "ممتع وحديث",
+  grateful_respectful: "تقديري ومحترم",
+  celebratory: "احتفالي ومؤثر",
 }
 
 const executionModeDisplay = {
@@ -159,7 +159,7 @@ export function formatToneLabel(tone) {
 }
 
 export function getRevealStyleDescription(tone) {
-  return revealStyleDescriptions[tone] || "تجربة كشف مصمّمة خصيصًا لهذه المناسبة"
+  return revealStyleDescriptions[tone] || "مصمّم للمناسبة"
 }
 
 export function getExecutionModeDisplay(controlMode) {
