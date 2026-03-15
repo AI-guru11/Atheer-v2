@@ -138,35 +138,38 @@ export default function BuilderShell() {
                   />
                 </div>
               ) : (
-                <div className="space-y-6 text-right">
-                  <span className="inline-flex rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-2 text-sm font-semibold text-cyan-300">
-                    {completion.badge}
-                  </span>
+                <div className="space-y-5 text-right">
+                  <div className="space-y-4">
+                    <span className="inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-4 py-2 text-sm font-semibold text-emerald-300">
+                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                      {completion.badge}
+                    </span>
 
-                  <h2 className="text-3xl font-bold leading-tight text-white sm:text-4xl">
-                    {completion.title}
-                  </h2>
+                    <h2 className="text-2xl font-bold leading-tight text-white sm:text-3xl lg:text-4xl">
+                      {completion.title}
+                    </h2>
 
-                  <p className="max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
-                    {completion.description}
-                  </p>
+                    <p className="max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">
+                      {completion.description}
+                    </p>
+                  </div>
 
                   <BuilderRecommendationPreview recommendation={recommendation} />
 
-                  <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+                  <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:justify-end">
                     <button
                       type="button"
-                      className="rounded-full bg-[linear-gradient(90deg,#7c5cff,#22d3ee)] px-6 py-3 text-base font-bold text-white shadow-[0_12px_35px_rgba(34,211,238,0.18)]"
+                      onClick={handleReset}
+                      className="rounded-full border border-white/10 bg-white/[0.03] px-6 py-3 text-sm font-semibold text-slate-300 transition-colors duration-200 hover:border-white/20 hover:text-white"
                     >
-                      {completion.primaryCta}
+                      {labels.reset}
                     </button>
 
                     <button
                       type="button"
-                      onClick={handleReset}
-                      className="rounded-full border border-white/10 bg-white/[0.03] px-6 py-3 text-base font-semibold text-white"
+                      className="rounded-full bg-[linear-gradient(90deg,#7c5cff,#22d3ee)] px-7 py-3.5 text-base font-bold text-white shadow-[0_12px_35px_rgba(34,211,238,0.18)] transition-all duration-200 hover:shadow-[0_16px_45px_rgba(34,211,238,0.25)] active:scale-[0.98]"
                     >
-                      {labels.reset}
+                      {completion.primaryCta}
                     </button>
                   </div>
                 </div>
@@ -176,20 +179,30 @@ export default function BuilderShell() {
             <div className="space-y-4">
               <BuilderSummary selections={selections} />
 
-              <div className="rounded-[28px] border border-white/10 bg-white/[0.03] p-5 sm:p-6">
+              <div className={`rounded-[28px] border p-5 sm:p-6 transition-colors duration-300 ${
+                showCompletionState
+                  ? "border-emerald-400/15 bg-emerald-400/[0.03]"
+                  : "border-white/10 bg-white/[0.03]"
+              }`}>
                 <div className="space-y-3 text-right">
                   <h3 className="text-lg font-bold text-white sm:text-xl">
-                    تقدمك الحالي
+                    {showCompletionState ? "اكتملت المرحلة" : "تقدمك الحالي"}
                   </h3>
 
                   <p className="text-sm leading-relaxed text-slate-400 sm:text-base">
-                    أكملت {selectedCount} من أصل {totalSteps} خطوات في هذه
-                    المرحلة.
+                    {showCompletionState
+                      ? "أنهيت جميع الخطوات بنجاح. التوصية جاهزة."
+                      : `أكملت ${selectedCount} من أصل ${totalSteps} خطوات في هذه المرحلة.`
+                    }
                   </p>
 
                   <div className="h-2 overflow-hidden rounded-full bg-white/10">
                     <div
-                      className="h-full rounded-full bg-[linear-gradient(90deg,#7c5cff,#22d3ee)] transition-all duration-300"
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        showCompletionState
+                          ? "bg-emerald-400"
+                          : "bg-[linear-gradient(90deg,#7c5cff,#22d3ee)]"
+                      }`}
                       style={{
                         width: `${(selectedCount / totalSteps) * 100}%`,
                       }}
