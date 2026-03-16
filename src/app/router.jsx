@@ -11,6 +11,10 @@ import NotFoundPage from '../pages/NotFoundPage';
 import GiftLandingPage from '../gift/GiftLandingPage';
 import GiftUnlockPage from '../gift/GiftUnlockPage';
 import GiftRevealPage from '../gift/GiftRevealPage';
+import RecipientLandingPage from '../gift/RecipientLandingPage';
+import RecipientChoicePage from '../gift/RecipientChoicePage';
+import RecipientAddressPage from '../gift/RecipientAddressPage';
+import RecipientConfirmedPage from '../gift/RecipientConfirmedPage';
 
 import AdminDashboardPage from '../admin/AdminDashboardPage';
 
@@ -27,6 +31,10 @@ const router = createHashRouter([
       { path: 'gift', element: <GiftLandingPage /> },
       { path: 'gift/unlock', element: <GiftUnlockPage /> },
       { path: 'gift/reveal', element: <GiftRevealPage /> },
+      { path: 'gift/open', element: <RecipientLandingPage /> },
+      { path: 'gift/choose', element: <RecipientChoicePage /> },
+      { path: 'gift/address', element: <RecipientAddressPage /> },
+      { path: 'gift/confirmed', element: <RecipientConfirmedPage /> },
       { path: 'admin', element: <AdminDashboardPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
@@ -34,3 +42,4 @@ const router = createHashRouter([
 ]);
 
 export default router;
+
