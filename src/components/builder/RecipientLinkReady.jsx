@@ -1,0 +1,97 @@
+import { useState } from "react"
+
+export default function RecipientLinkReady({ giftLink, onReset }) {
+  const [copied, setCopied] = useState(false)
+
+  function handleCopy() {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(giftLink).catch(() => {})
+    }
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2200)
+  }
+
+  function handleShare() {
+    if (navigator.share) {
+      navigator
+        .share({
+          title: "هديتك جاهزة",
+          text: "اضغط على الرابط لتختار هديتك",
+          url: giftLink,
+        })
+        .catch(() => {})
+    } else {
+      handleCopy()
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-center py-4 text-center">
+      {/* Icon */}
+      <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-violet-400/25 bg-violet-400/[0.08]">
+        <svg
+          width="26"
+          height="26"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="text-violet-400"
+        >
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+        </svg>
+      </div>
+
+      <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-violet-400/20 bg-violet-400/[0.08] px-3 py-1.5 text-[12px] font-semibold text-violet-300">
+        <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-400" />
+        رابط الهدية جاهز
+      </span>
+
+      <h2 className="text-xl font-bold leading-tight text-white sm:text-2xl">
+        تم توليد رابط الهدية
+      </h2>
+      <p className="mt-2 max-w-xs text-[13px] leading-relaxed text-slate-400">
+        شارك هذا الرابط مع المستلم ليختار هديته بنفسه
+      </p>
+
+      {/* Link display */}
+      <div className="mt-5 w-full rounded-[18px] border border-violet-400/20 bg-violet-400/[0.05] px-4 py-3.5">
+        <p
+          className="break-all font-mono text-[13px] font-semibold leading-relaxed text-violet-300"
+          dir="ltr"
+        >
+          {giftLink}
+        </p>
+      </div>
+
+      {/* Action buttons */}
+      <div className="mt-4 flex w-full flex-col gap-2.5 sm:flex-row">
+        <button
+          type="button"
+          onClick={handleShare}
+          className="flex-1 rounded-full border border-white/10 bg-white/[0.04] px-5 py-2.5 text-[13px] font-semibold text-slate-300 transition-colors duration-200 hover:border-white/20 hover:text-white"
+        >
+          مشاركة الرابط
+        </button>
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="flex-1 rounded-full bg-[linear-gradient(90deg,#7c5cff,#22d3ee)] px-5 py-2.5 text-[13px] font-bold text-white shadow-[0_8px_24px_rgba(124,92,255,0.2)] transition-all duration-200 hover:shadow-[0_12px_32px_rgba(124,92,255,0.28)] active:scale-[0.98]"
+        >
+          {copied ? "تم النسخ ✓" : "نسخ الرابط"}
+        </button>
+      </div>
+
+      <button
+        type="button"
+        onClick={onReset}
+        className="mt-4 rounded-full border border-white/[0.06] px-5 py-2 text-[12px] font-semibold text-slate-500 transition-colors duration-200 hover:text-slate-300"
+      >
+        بناء هدية جديدة
+      </button>
+    </div>
+  )
+}

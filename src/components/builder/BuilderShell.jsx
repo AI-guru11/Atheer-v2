@@ -8,6 +8,9 @@ import BuilderRecommendationPreview from "./BuilderRecommendationPreview"
 import DirectDeliveryForm from "./DirectDeliveryForm"
 import DirectDeliveryReview from "./DirectDeliveryReview"
 import DirectDeliveryConfirmation from "./DirectDeliveryConfirmation"
+import RecipientContactForm from "./RecipientContactForm"
+import RecipientReview from "./RecipientReview"
+import RecipientLinkReady from "./RecipientLinkReady"
 import { runRecommendationEngine } from "../../lib/recommendation"
 
 const initialSelections = {
@@ -28,6 +31,9 @@ export default function BuilderShell() {
   const [engineResult, setEngineResult] = useState(null)
   const [directDeliveryStep, setDirectDeliveryStep] = useState(null)
   const [shippingData, setShippingData] = useState(null)
+  const [recipientChoiceStep, setRecipientChoiceStep] = useState(null)
+  const [recipientData, setRecipientData] = useState(null)
+  const [giftLink, setGiftLink] = useState(null)
 
   const totalSteps = steps.length
   const isComplete = steps.every((step) => Boolean(selections[step.field]))
@@ -83,13 +89,28 @@ export default function BuilderShell() {
     setCurrentStepIndex(0)
     setDirectDeliveryStep(null)
     setShippingData(null)
+    setRecipientChoiceStep(null)
+    setRecipientData(null)
+    setGiftLink(null)
   }
 
   function handlePrimaryCtaClick() {
     if (selections.deliveryMode === "directDelivery") {
       setDirectDeliveryStep("form")
+    } else if (selections.deliveryMode === "recipientChoice") {
+      setRecipientChoiceStep("contact")
     }
-    // recipientChoice: not yet implemented
+  }
+
+  function handleRecipientContactSubmit(data) {
+    setRecipientData(data)
+    setRecipientChoiceStep("review")
+  }
+
+  function handleGenerateLink() {
+    const code = Math.random().toString(36).slice(2, 9).toUpperCase()
+    setGiftLink(`https://atheeer.sa/gift/${code}`)
+    setRecipientChoiceStep("link")
   }
 
   function handleDeliveryFormSubmit(data) {
@@ -168,7 +189,7 @@ export default function BuilderShell() {
                 </div>
               ) : (
                 <div>
-                  {directDeliveryStep === null && (
+                  {directDeliveryStep === null && recipientChoiceStep === null && (
                     <div className="text-right">
                       <div className="mb-6">
                         <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/[0.08] px-3 py-1.5 text-[12px] font-semibold text-emerald-300">
@@ -222,6 +243,30 @@ export default function BuilderShell() {
 
                   {directDeliveryStep === "confirmed" && (
                     <DirectDeliveryConfirmation onReset={handleReset} />
+                  )}
+
+                  {recipientChoiceStep === "contact" && (
+                    <RecipientContactForm
+                      initialData={recipientData}
+                      onSubmit={handleRecipientContactSubmit}
+                      onBack={() => setRecipientChoiceStep(null)}
+                    />
+                  )}
+
+                  {recipientChoiceStep === "review" && (
+                    <RecipientReview
+                      recommendation={recommendation}
+                      recipientData={recipientData}
+                      onGenerateLink={handleGenerateLink}
+                      onBack={() => setRecipientChoiceStep("contact")}
+                    />
+                  )}
+
+                  {recipientChoiceStep === "link" && (
+                    <RecipientLinkReady
+                      giftLink={giftLink}
+                      onReset={handleReset}
+                    />
                   )}
                 </div>
               )}
