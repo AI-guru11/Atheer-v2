@@ -5,6 +5,9 @@ import BuilderChoiceGrid from "./BuilderChoiceGrid"
 import BuilderSummary from "./BuilderSummary"
 import BuilderActions from "./BuilderActions"
 import BuilderRecommendationPreview from "./BuilderRecommendationPreview"
+import DirectDeliveryForm from "./DirectDeliveryForm"
+import DirectDeliveryReview from "./DirectDeliveryReview"
+import DirectDeliveryConfirmation from "./DirectDeliveryConfirmation"
 import { runRecommendationEngine } from "../../lib/recommendation"
 
 const initialSelections = {
@@ -23,6 +26,8 @@ export default function BuilderShell() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const [selections, setSelections] = useState(initialSelections)
   const [engineResult, setEngineResult] = useState(null)
+  const [directDeliveryStep, setDirectDeliveryStep] = useState(null)
+  const [shippingData, setShippingData] = useState(null)
 
   const totalSteps = steps.length
   const isComplete = steps.every((step) => Boolean(selections[step.field]))
@@ -76,6 +81,24 @@ export default function BuilderShell() {
     setSelections(initialSelections)
     setEngineResult(null)
     setCurrentStepIndex(0)
+    setDirectDeliveryStep(null)
+    setShippingData(null)
+  }
+
+  function handlePrimaryCtaClick() {
+    if (selections.deliveryMode === "directDelivery") {
+      setDirectDeliveryStep("form")
+    }
+    // recipientChoice: not yet implemented
+  }
+
+  function handleDeliveryFormSubmit(data) {
+    setShippingData(data)
+    setDirectDeliveryStep("review")
+  }
+
+  function handleApproveOrder() {
+    setDirectDeliveryStep("confirmed")
   }
 
   const recommendation = engineResult?.recommendation || null
@@ -144,36 +167,62 @@ export default function BuilderShell() {
                   />
                 </div>
               ) : (
-                <div className="text-right">
-                  <div className="mb-6">
-                    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/[0.08] px-3 py-1.5 text-[12px] font-semibold text-emerald-300">
-                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                      {completion.badge}
-                    </span>
+                <div>
+                  {directDeliveryStep === null && (
+                    <div className="text-right">
+                      <div className="mb-6">
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/[0.08] px-3 py-1.5 text-[12px] font-semibold text-emerald-300">
+                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                          {completion.badge}
+                        </span>
 
-                    <h2 className="mt-3 text-xl font-bold leading-tight text-white sm:text-2xl">
-                      {completion.title}
-                    </h2>
-                  </div>
+                        <h2 className="mt-3 text-xl font-bold leading-tight text-white sm:text-2xl">
+                          {completion.title}
+                        </h2>
+                      </div>
 
-                  <BuilderRecommendationPreview recommendation={recommendation} />
+                      <BuilderRecommendationPreview recommendation={recommendation} />
 
-                  <div className="mt-6 flex flex-col-reverse gap-2.5 sm:flex-row sm:justify-end">
-                    <button
-                      type="button"
-                      onClick={handleReset}
-                      className="rounded-full border border-white/[0.08] bg-white/[0.02] px-5 py-2.5 text-[13px] font-semibold text-slate-400 transition-colors duration-200 hover:border-white/15 hover:text-slate-200"
-                    >
-                      {labels.reset}
-                    </button>
+                      <div className="mt-6 flex flex-col-reverse gap-2.5 sm:flex-row sm:justify-end">
+                        <button
+                          type="button"
+                          onClick={handleReset}
+                          className="rounded-full border border-white/[0.08] bg-white/[0.02] px-5 py-2.5 text-[13px] font-semibold text-slate-400 transition-colors duration-200 hover:border-white/15 hover:text-slate-200"
+                        >
+                          {labels.reset}
+                        </button>
 
-                    <button
-                      type="button"
-                      className="rounded-full bg-[linear-gradient(90deg,#7c5cff,#22d3ee)] px-6 py-3 text-[15px] font-bold text-white shadow-[0_10px_30px_rgba(34,211,238,0.15)] transition-all duration-200 hover:shadow-[0_14px_40px_rgba(34,211,238,0.22)] active:scale-[0.98]"
-                    >
-                      {primaryCtaLabel}
-                    </button>
-                  </div>
+                        <button
+                          type="button"
+                          onClick={handlePrimaryCtaClick}
+                          className="rounded-full bg-[linear-gradient(90deg,#7c5cff,#22d3ee)] px-6 py-3 text-[15px] font-bold text-white shadow-[0_10px_30px_rgba(34,211,238,0.15)] transition-all duration-200 hover:shadow-[0_14px_40px_rgba(34,211,238,0.22)] active:scale-[0.98]"
+                        >
+                          {primaryCtaLabel}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {directDeliveryStep === "form" && (
+                    <DirectDeliveryForm
+                      initialData={shippingData}
+                      onSubmit={handleDeliveryFormSubmit}
+                      onBack={() => setDirectDeliveryStep(null)}
+                    />
+                  )}
+
+                  {directDeliveryStep === "review" && (
+                    <DirectDeliveryReview
+                      recommendation={recommendation}
+                      shippingData={shippingData}
+                      onApprove={handleApproveOrder}
+                      onBack={() => setDirectDeliveryStep("form")}
+                    />
+                  )}
+
+                  {directDeliveryStep === "confirmed" && (
+                    <DirectDeliveryConfirmation onReset={handleReset} />
+                  )}
                 </div>
               )}
             </div>
