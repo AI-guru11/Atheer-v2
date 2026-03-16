@@ -100,6 +100,25 @@ export const builderContent = {
         { value: "delegated", label: "أفوض أثير بالكامل" },
       ],
     },
+    {
+      id: "deliveryMode",
+      number: 7,
+      title: "كيف تريد إرسال الهدية؟",
+      description: "اختر الطريقة التي ستصل بها الهدية إلى المستلم.",
+      field: "deliveryMode",
+      options: [
+        {
+          value: "directDelivery",
+          label: "أعرف عنوان المستلم",
+          description: "أكمل العنوان الآن لنبدأ تجهيز الهدية مباشرة",
+        },
+        {
+          value: "recipientChoice",
+          label: "أرسل له رابطًا ليختار",
+          description: "نرسل له صفحة خاصة يختار منها الهدية ويدخل عنوانه بنفسه",
+        },
+      ],
+    },
   ],
 
   labels: {
@@ -120,6 +139,7 @@ export const builderContent = {
       interest: "الاهتمام",
       revealStyle: "أسلوب التجربة",
       controlMode: "طريقة الاختيار",
+      deliveryMode: "طريقة الإرسال",
     },
   },
 
@@ -129,6 +149,10 @@ export const builderContent = {
     description:
       "راجع التوصية وتواصل معنا لتنفيذ الهدية.",
     primaryCta: "احجز هديتك مع أثير",
+    ctaByDelivery: {
+      directDelivery: "أكمل بيانات التوصيل",
+      recipientChoice: "أرسل رابط الهدية للمستلم",
+    },
   },
 }
 
@@ -177,5 +201,9 @@ export const builderValueLabels = {
     self: "أختار كل شيء بنفسي",
     copilot: "أثير يقترح وأنا أراجع",
     delegated: "أفوض أثير بالكامل",
+  },
+  deliveryMode: {
+    directDelivery: "إرسال مباشر",
+    recipientChoice: "رابط للمستلم",
   },
 }

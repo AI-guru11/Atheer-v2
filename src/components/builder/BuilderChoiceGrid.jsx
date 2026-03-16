@@ -18,6 +18,7 @@ export default function BuilderChoiceGrid({
         <BuilderChoiceCard
           key={option.value}
           label={option.label}
+          description={option.description}
           isSelected={selectedValue === option.value}
           onClick={() => onSelect(option.value)}
         />

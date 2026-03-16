@@ -14,6 +14,7 @@ const initialSelections = {
   interest: "",
   revealStyle: "",
   controlMode: "",
+  deliveryMode: "",
 }
 
 export default function BuilderShell() {
@@ -79,6 +80,10 @@ export default function BuilderShell() {
 
   const recommendation = engineResult?.recommendation || null
 
+  const primaryCtaLabel = selections.deliveryMode
+    ? (completion.ctaByDelivery?.[selections.deliveryMode] ?? completion.primaryCta)
+    : completion.primaryCta
+
   return (
     <section className="section-shell">
       <div className="container-tight">
@@ -123,7 +128,8 @@ export default function BuilderShell() {
                     onSelect={handleSelect}
                     compact={
                       currentStep.field === "budget" ||
-                      currentStep.field === "controlMode"
+                      currentStep.field === "controlMode" ||
+                      currentStep.field === "deliveryMode"
                     }
                   />
 
@@ -165,7 +171,7 @@ export default function BuilderShell() {
                       type="button"
                       className="rounded-full bg-[linear-gradient(90deg,#7c5cff,#22d3ee)] px-6 py-3 text-[15px] font-bold text-white shadow-[0_10px_30px_rgba(34,211,238,0.15)] transition-all duration-200 hover:shadow-[0_14px_40px_rgba(34,211,238,0.22)] active:scale-[0.98]"
                     >
-                      {completion.primaryCta}
+                      {primaryCtaLabel}
                     </button>
                   </div>
                 </div>
