@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import Section from '../components/layout/Section'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
@@ -6,6 +6,10 @@ import { mockRecipientSession } from '../data/recipientMockData'
 
 export default function RecipientLandingPage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const code = searchParams.get('code')
+
+  // Resolve session from code — all codes use mock session for now
   const { senderName, occasion, message } = mockRecipientSession
 
   return (
