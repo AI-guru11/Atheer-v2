@@ -46,6 +46,13 @@ export default function BuilderSummary({ selections }) {
         ? builderValueLabels.controlMode[selections.controlMode]
         : null,
     },
+    {
+      key: "deliveryMode",
+      label: summaryFields.deliveryMode,
+      value: selections.deliveryMode
+        ? builderValueLabels.deliveryMode[selections.deliveryMode]
+        : null,
+    },
   ]
 
   const filledItems = resolvedItems.filter((item) => item.value)
