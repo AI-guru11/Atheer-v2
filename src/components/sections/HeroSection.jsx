@@ -49,7 +49,7 @@ export default function HeroSection() {
             <div className="pointer-events-none absolute left-1/2 top-1/2 h-[70%] w-[70%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(124,92,255,0.14)_0%,rgba(34,211,238,0.08)_50%,transparent_70%)] blur-2xl" />
 
             <img
-              src="/hero-asset.webp"
+              src={`${import.meta.env.BASE_URL}hero-asset.webp`}
               alt="هدية رقمية ثلاثية الأبعاد بتصميم زجاجي عصري"
               loading="eager"
               fetchPriority="high"
