@@ -77,10 +77,9 @@ export default function BuilderSummary({ selections }) {
           {filledItems.map((item) => (
             <span
               key={item.key}
-              className="inline-flex items-center gap-1 rounded-full border border-white/[0.06] bg-white/[0.03] px-2 py-0.5 text-[10px]"
+              className="inline-flex items-center rounded-full border border-white/[0.07] bg-white/[0.04] px-2.5 py-0.5 text-[11px] font-semibold text-white/85"
             >
-              <span className="font-semibold text-white/90">{item.value}</span>
-              <span className="text-slate-500/70">{item.label}</span>
+              {item.value}
             </span>
           ))}
         </div>
