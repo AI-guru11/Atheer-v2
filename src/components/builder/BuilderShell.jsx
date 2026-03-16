@@ -139,7 +139,7 @@ export default function BuilderShell() {
                 </div>
               ) : (
                 <div className="text-right">
-                  <div className="mb-5">
+                  <div className="mb-6">
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/[0.08] px-3 py-1.5 text-[12px] font-semibold text-emerald-300">
                       <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
                       {completion.badge}
@@ -148,10 +148,6 @@ export default function BuilderShell() {
                     <h2 className="mt-3 text-xl font-bold leading-tight text-white sm:text-2xl">
                       {completion.title}
                     </h2>
-
-                    <p className="mt-1.5 text-[13px] leading-relaxed text-slate-400">
-                      {completion.description}
-                    </p>
                   </div>
 
                   <BuilderRecommendationPreview recommendation={recommendation} />
