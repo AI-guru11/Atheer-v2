@@ -109,7 +109,7 @@ export default function BuilderShell() {
 
   function handleGenerateLink() {
     const code = Math.random().toString(36).slice(2, 9).toUpperCase()
-    setGiftLink(`https://atheeer.sa/gift/${code}`)
+    setGiftLink(`https://ai-guru11.github.io/Atheer-v2/#/gift/open?code=${code}`)
     setRecipientChoiceStep("link")
   }
 
