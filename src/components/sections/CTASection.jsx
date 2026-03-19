@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom"
 import Section from "../layout/Section"
 import Button from "../ui/Button"
-import Card from "../ui/Card"
 import { siteContent } from "../../data/siteContent"
 
 export default function CTASection() {
@@ -9,8 +8,19 @@ export default function CTASection() {
 
   return (
     <Section className="text-white">
-      <Card className="glass-panel-strong p-8 sm:p-12">
-        <div className="mx-auto max-w-2xl space-y-6 text-center">
+      {/* Atmospheric surface — charcoal base with deliberate purple-top glow */}
+      <div className="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-[#161618] p-8 sm:p-12">
+        {/* Ambient purple glow at top-center — atmosphere, not decoration */}
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 h-full"
+          aria-hidden="true"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 55% at 50% 0%, rgba(124, 92, 255, 0.13) 0%, transparent 68%)",
+          }}
+        />
+
+        <div className="relative mx-auto max-w-2xl space-y-6 text-center">
           <h2 className="text-3xl font-bold leading-tight sm:text-4xl">
             {cta.title}
           </h2>
@@ -31,7 +41,7 @@ export default function CTASection() {
             </Link>
           </div>
         </div>
-      </Card>
+      </div>
     </Section>
   )
 }

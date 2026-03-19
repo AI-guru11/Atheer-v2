@@ -1,5 +1,4 @@
 import Section from "../layout/Section"
-import Card from "../ui/Card"
 import { siteContent } from "../../data/siteContent"
 
 export default function ServicesSection() {
@@ -9,7 +8,7 @@ export default function ServicesSection() {
     <Section className="text-white">
       <div className="space-y-10">
         <div className="space-y-3 text-right">
-          <span className="text-xs font-semibold tracking-[0.14em] text-[#67e8f9]/60">
+          <span className="text-xs font-semibold tracking-[0.14em] text-[#a78bfa]/70">
             {services.eyebrow}
           </span>
 
@@ -18,11 +17,14 @@ export default function ServicesSection() {
           </h2>
         </div>
 
-        <div className="grid gap-4">
+        <div className="grid gap-3">
           {services.items.map((item) => (
-            <Card key={item.title} className="section-card p-7 sm:p-8">
+            <div
+              key={item.title}
+              className="section-card charcoal-card rounded-2xl p-7 sm:p-8"
+            >
               <div className="space-y-4">
-                <span className="text-xs font-semibold tracking-[0.12em] text-[#67e8f9]/70">
+                <span className="text-xs font-semibold tracking-[0.12em] text-[#a78bfa]/60">
                   {item.subtitle}
                 </span>
 
@@ -34,7 +36,7 @@ export default function ServicesSection() {
                   {item.description}
                 </p>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
       </div>

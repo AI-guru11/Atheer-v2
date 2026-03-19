@@ -1,5 +1,4 @@
 import Section from "../layout/Section"
-import Card from "../ui/Card"
 import { siteContent } from "../../data/siteContent"
 
 export default function FeaturedSection() {
@@ -9,7 +8,7 @@ export default function FeaturedSection() {
     <Section className="text-white">
       <div className="space-y-10">
         <div className="space-y-3 text-right">
-          <span className="text-xs font-semibold tracking-[0.14em] text-[#67e8f9]/60">
+          <span className="text-xs font-semibold tracking-[0.14em] text-[#a78bfa]/70">
             {featured.eyebrow}
           </span>
 
@@ -18,12 +17,15 @@ export default function FeaturedSection() {
           </h2>
         </div>
 
-        <div className="grid gap-4">
+        <div className="grid gap-3">
           {featured.items.map((item) => (
-            <Card key={item.title} className="section-card p-7 sm:p-8">
+            <div
+              key={item.title}
+              className="section-card charcoal-card rounded-2xl p-7 sm:p-8"
+            >
               <div className="space-y-5">
                 <div className="flex justify-end">
-                  <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-semibold text-[#c4b5fd]">
+                  <span className="rounded-full border border-white/[0.07] bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-[#a78bfa]">
                     {item.tag}
                   </span>
                 </div>
@@ -36,7 +38,7 @@ export default function FeaturedSection() {
                   {item.description}
                 </p>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
       </div>
