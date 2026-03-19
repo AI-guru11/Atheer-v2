@@ -9,10 +9,15 @@ export default function HeroSection() {
   const { hero, brand } = siteContent
 
   return (
-    <Section className="relative overflow-hidden pt-12 sm:pt-20">
-      <div className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute left-[-12%] top-8 h-44 w-44 rounded-full bg-[#7c5cff]/10 blur-3xl sm:h-72 sm:w-72" />
-        <div className="absolute right-[-10%] top-20 h-40 w-40 rounded-full bg-[#22d3ee]/10 blur-3xl sm:h-64 sm:w-64" />
+    <Section className="hero-ambient-shell relative overflow-hidden pt-12 sm:pt-20">
+      <div className="hero-ambient" aria-hidden="true">
+        <span className="hero-orb hero-orb-1" />
+        <span className="hero-orb hero-orb-2" />
+        <span className="hero-orb hero-orb-3" />
+        <span className="hero-orb hero-orb-4" />
+        <span className="hero-orb hero-orb-5" />
+        <span className="hero-grid-fade" />
+        <span className="hero-vignette" />
       </div>
 
       <div className="grid items-start gap-5 sm:gap-8 lg:grid-cols-[1.02fr_0.98fr] lg:gap-14">
@@ -44,21 +49,34 @@ export default function HeroSection() {
         </div>
 
         <div className="space-y-5 sm:space-y-6">
-          <div className="relative mx-auto w-full max-w-[320px] sm:max-w-[400px] lg:max-w-[500px]">
-            {/* Single ambient glow behind the asset */}
-            <div className="pointer-events-none absolute left-1/2 top-1/2 h-[70%] w-[70%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(124,92,255,0.14)_0%,rgba(34,211,238,0.08)_50%,transparent_70%)] blur-2xl" />
+          <div className="hero-showcase relative mx-auto w-full max-w-[320px] sm:max-w-[420px] lg:max-w-[520px]">
+            <div className="hero-showcase-glow" aria-hidden="true" />
 
-            <img
-              src={`${import.meta.env.BASE_URL}hero-asset.webp`}
-              alt="هدية رقمية ثلاثية الأبعاد بتصميم زجاجي عصري"
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-              className="hero-float relative z-10 mx-auto w-[92%] sm:w-[86%] drop-shadow-[0_20px_50px_rgba(124,92,255,0.12)] drop-shadow-[0_8px_24px_rgba(0,0,0,0.3)]"
-            />
+            <div className="gift-sculpture" aria-hidden="true">
+              <div className="gift-sculpture__halo" />
+              <div className="gift-sculpture__spark gift-sculpture__spark--left" />
+              <div className="gift-sculpture__spark gift-sculpture__spark--right" />
+
+              <div className="gift-sculpture__card gift-sculpture__card--back" />
+              <div className="gift-sculpture__card gift-sculpture__card--mid" />
+
+              <div className="gift-sculpture__box">
+                <div className="gift-sculpture__lid" />
+                <div className="gift-sculpture__face gift-sculpture__face--front">
+                  <span className="gift-sculpture__shine" />
+                  <span className="gift-sculpture__ribbon gift-sculpture__ribbon--vertical" />
+                  <span className="gift-sculpture__ribbon gift-sculpture__ribbon--horizontal" />
+                  <span className="gift-sculpture__core" />
+                </div>
+                <div className="gift-sculpture__face gift-sculpture__face--side" />
+                <div className="gift-sculpture__tag">Atheer</div>
+              </div>
+
+              <div className="gift-sculpture__base" />
+            </div>
           </div>
 
-          <Card className="glass-panel p-5 sm:p-7 text-white">
+          <Card className="glass-panel p-5 text-white sm:p-7">
             <div className="space-y-5">
               <span className="text-xs font-semibold tracking-[0.14em] text-[#c4b5fd]">
                 {hero.previewCard.eyebrow}

@@ -190,13 +190,309 @@
   transform-origin: center;
 }
 
-@keyframes hero-float {
-  0%, 100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
+/* ── Hero ambient background ── */
+.hero-ambient-shell {
+  isolation: isolate;
+}
+
+.hero-ambient {
+  position: absolute;
+  inset: -6% -10% -10%;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.hero-orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(42px);
+  opacity: 0.95;
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+.hero-orb-1 {
+  width: 28rem;
+  height: 28rem;
+  top: 0;
+  left: -6rem;
+  background:
+    radial-gradient(circle at 35% 35%, rgba(255,255,255,0.18), transparent 18%),
+    radial-gradient(circle at 50% 50%, rgba(124, 92, 255, 0.28), transparent 60%);
+  animation-name: hero-orb-float-a;
+  animation-duration: 18s;
+}
+
+.hero-orb-2 {
+  width: 24rem;
+  height: 24rem;
+  top: 3rem;
+  right: -5rem;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(34, 211, 238, 0.22), transparent 62%);
+  animation-name: hero-orb-float-b;
+  animation-duration: 20s;
+}
+
+.hero-orb-3 {
+  width: 20rem;
+  height: 20rem;
+  bottom: 0;
+  right: 16%;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.18), transparent 62%);
+  animation-name: hero-orb-float-c;
+  animation-duration: 16s;
+}
+
+.hero-orb-4 {
+  width: 18rem;
+  height: 18rem;
+  bottom: 3rem;
+  left: 30%;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.14), transparent 62%);
+  animation-name: hero-orb-float-d;
+  animation-duration: 14s;
+}
+
+.hero-orb-5 {
+  width: 12rem;
+  height: 12rem;
+  top: 18%;
+  left: 48%;
+  filter: blur(30px);
+  background:
+    radial-gradient(circle at 40% 40%, rgba(255,255,255,0.12), transparent 55%);
+  animation-name: hero-orb-pulse;
+  animation-duration: 10s;
+}
+
+.hero-grid-fade {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(circle at 52% 34%, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 36%, transparent 76%);
+  opacity: 0.34;
+}
+
+.hero-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 32%, transparent 0%, rgba(2, 6, 18, 0.12) 48%, rgba(2, 6, 18, 0.48) 100%);
+}
+
+/* ── Hero showcase ── */
+.hero-showcase {
+  perspective: 1200px;
+}
+
+.hero-showcase-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 72%;
+  height: 72%;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgba(124, 92, 255, 0.2) 0%, rgba(34, 211, 238, 0.12) 42%, transparent 70%);
+  filter: blur(34px);
+  pointer-events: none;
+}
+
+/* ── Gift sculpture ── */
+.gift-sculpture {
+  position: relative;
+  margin-inline: auto;
+  width: min(100%, 28rem);
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  animation: hero-float 7s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+.gift-sculpture__halo,
+.gift-sculpture__spark,
+.gift-sculpture__card,
+.gift-sculpture__base,
+.gift-sculpture__box,
+.gift-sculpture__tag,
+.gift-sculpture__face,
+.gift-sculpture__lid,
+.gift-sculpture__core,
+.gift-sculpture__shine,
+.gift-sculpture__ribbon {
+  position: absolute;
+}
+
+.gift-sculpture__halo {
+  inset: 18% 18% 16%;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(124, 92, 255, 0.24), rgba(34, 211, 238, 0.12) 42%, transparent 72%);
+  filter: blur(28px);
+}
+
+.gift-sculpture__spark {
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 999px;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.62), rgba(255,255,255,0.08) 42%, transparent 60%);
+  filter: blur(1px);
+  opacity: 0.75;
+  animation: hero-orb-pulse 8s ease-in-out infinite alternate;
+}
+
+.gift-sculpture__spark--left {
+  top: 16%;
+  left: 12%;
+}
+
+.gift-sculpture__spark--right {
+  top: 20%;
+  right: 10%;
+  animation-delay: 1.4s;
+}
+
+.gift-sculpture__card {
+  width: 52%;
+  height: 56%;
+  border-radius: 2rem;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.03));
+  backdrop-filter: blur(18px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    0 18px 44px rgba(5, 8, 22, 0.24);
+}
+
+.gift-sculpture__card--back {
+  transform: translate3d(-3.2rem, 0.5rem, -3rem) rotate(-16deg);
+  opacity: 0.42;
+}
+
+.gift-sculpture__card--mid {
+  transform: translate3d(3.1rem, -0.8rem, -1.8rem) rotate(13deg);
+  opacity: 0.55;
+}
+
+.gift-sculpture__box {
+  width: 54%;
+  height: 54%;
+  transform: rotate(-10deg) rotateX(12deg);
+  transform-style: preserve-3d;
+}
+
+.gift-sculpture__lid {
+  inset: -6% 6% auto;
+  height: 18%;
+  border-radius: 1.35rem;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.36), rgba(255,255,255,0.1)),
+    linear-gradient(135deg, rgba(124,92,255,0.42), rgba(34,211,238,0.2));
+  border: 1px solid rgba(255,255,255,0.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.24),
+    0 16px 36px rgba(9, 12, 32, 0.22);
+  transform: translateZ(1.5rem);
+}
+
+.gift-sculpture__face {
+  border: 1px solid rgba(255,255,255,0.18);
+  backdrop-filter: blur(20px);
+  background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.05));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.16),
+    0 22px 52px rgba(7, 10, 26, 0.28);
+}
+
+.gift-sculpture__face--front {
+  inset: 8% 8% 8% 8%;
+  border-radius: 1.8rem;
+  transform: translateZ(0.95rem);
+  overflow: hidden;
+}
+
+.gift-sculpture__face--side {
+  top: 9%;
+  bottom: 9%;
+  right: -8%;
+  width: 20%;
+  border-radius: 1rem;
+  transform: rotateY(88deg) translateZ(1.15rem);
+  opacity: 0.68;
+}
+
+.gift-sculpture__shine {
+  inset: 0;
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.12) 28%, rgba(255,255,255,0.3) 46%, transparent 68%);
+  transform: translateX(-34%);
+}
+
+.gift-sculpture__ribbon {
+  background: linear-gradient(180deg, rgba(255,255,255,0.58), rgba(255,255,255,0.12));
+  box-shadow: 0 0 18px rgba(255,255,255,0.08);
+}
+
+.gift-sculpture__ribbon--vertical {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 14%;
+  transform: translateX(-50%);
+}
+
+.gift-sculpture__ribbon--horizontal {
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 14%;
+  transform: translateY(-50%);
+}
+
+.gift-sculpture__core {
+  left: 50%;
+  top: 50%;
+  width: 38%;
+  height: 38%;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(124, 92, 255, 0.44), rgba(34, 211, 238, 0.18) 48%, transparent 70%);
+  filter: blur(12px);
+}
+
+.gift-sculpture__tag {
+  left: 50%;
+  bottom: -10%;
+  transform: translateX(-50%) rotate(6deg);
+  padding: 0.42rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(9, 15, 30, 0.74);
+  color: rgba(255,255,255,0.86);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.25);
+}
+
+.gift-sculpture__base {
+  bottom: 10%;
+  left: 50%;
+  width: 66%;
+  height: 12%;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(124, 92, 255, 0.3), rgba(34, 211, 238, 0.1) 48%, transparent 72%);
+  filter: blur(18px);
 }
 
 /* ── Text helpers ── */
@@ -216,7 +512,66 @@
   border-color: rgba(255, 255, 255, 0.08);
 }
 
-/* ── Mobile background simplification ── */
+/* ── Keyframes ── */
+@keyframes hero-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes hero-orb-float-a {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(2.5rem, 1.25rem, 0) scale(1.08); }
+}
+
+@keyframes hero-orb-float-b {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(-2rem, 2rem, 0) scale(1.1); }
+}
+
+@keyframes hero-orb-float-c {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(-1rem, -1.4rem, 0) scale(1.06); }
+}
+
+@keyframes hero-orb-float-d {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(1rem, -1rem, 0) scale(1.1); }
+}
+
+@keyframes hero-orb-pulse {
+  from {
+    transform: scale(1);
+    opacity: 0.44;
+  }
+  to {
+    transform: scale(1.14);
+    opacity: 0.82;
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .hero-ambient {
+    inset: -4% -12% -8%;
+  }
+
+  .gift-sculpture {
+    width: min(100%, 24rem);
+  }
+
+  .gift-sculpture__card--back {
+    transform: translate3d(-2.2rem, 0.6rem, -3rem) rotate(-14deg);
+  }
+
+  .gift-sculpture__card--mid {
+    transform: translate3d(2.1rem, -0.6rem, -2rem) rotate(11deg);
+  }
+}
+
 @media (max-width: 640px) {
   body {
     background:
@@ -224,10 +579,43 @@
       radial-gradient(circle at 92% 14%, rgba(34, 211, 238, 0.12), transparent 26%),
       linear-gradient(180deg, #030611 0%, #050816 50%, #030611 100%);
   }
+
+  .hero-orb {
+    filter: blur(34px);
+  }
+
+  .hero-orb-1 {
+    width: 20rem;
+    height: 20rem;
+    left: -5rem;
+  }
+
+  .hero-orb-2 {
+    width: 18rem;
+    height: 18rem;
+  }
+
+  .hero-orb-3,
+  .hero-orb-4 {
+    width: 14rem;
+    height: 14rem;
+  }
+
+  .gift-sculpture {
+    width: min(100%, 20rem);
+  }
+
+  .gift-sculpture__tag {
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-float {
-    animation: none;
+  .hero-float,
+  .hero-orb,
+  .gift-sculpture,
+  .gift-sculpture__spark {
+    animation: none !important;
   }
 }
