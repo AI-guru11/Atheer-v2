@@ -8,56 +8,57 @@ export default function HeroSection() {
   const { hero, brand } = siteContent
 
   return (
-    <Section className="hero-ambient-shell relative overflow-hidden pt-16 text-center sm:pt-24">
-      {/* Ambient edge layer — atmosphere only */}
-      <div className="hero-ambient" aria-hidden="true">
-        <span className="hero-edge-tl" />
-        <span className="hero-edge-tr" />
-        <span className="hero-edge-bl" />
+    <Section className="hero-ambient-shell relative overflow-hidden pt-12 sm:pt-20">
+      <div className="hero-ambient-backdrop" aria-hidden="true">
         <span className="hero-grid-fade" />
         <span className="hero-vignette" />
+        <span className="hero-mesh-sheen" />
+        <span className="hero-blob hero-blob--left" />
+        <span className="hero-blob hero-blob--right" />
+        <span className="hero-blob hero-blob--center" />
       </div>
 
-      <div className="mx-auto max-w-3xl space-y-8">
-        <div className="flex justify-center">
-          <Badge>{brand.badge}</Badge>
+      <div className="mx-auto max-w-4xl text-center text-white">
+        <div className="space-y-6">
+          <Badge className="mx-auto">{brand.badge}</Badge>
+
+          <div className="space-y-4">
+            <h1 className="mx-auto max-w-3xl text-4xl font-bold leading-[1.1] text-white sm:text-5xl lg:text-[4.5rem]">
+              <span className="block">{hero.titleTop}</span>
+              <span className="glow-text block">{hero.titleHighlight}</span>
+            </h1>
+
+            <p className="mx-auto max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg lg:text-[1.15rem]">
+              {hero.description}
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link to={hero.primaryCta.to}>
+              <Button className="min-w-[12rem] w-full sm:w-auto">{hero.primaryCta.label}</Button>
+            </Link>
+
+            <Link to={hero.secondaryCta.to}>
+              <Button variant="secondary" className="min-w-[12rem] w-full sm:w-auto">
+                {hero.secondaryCta.label}
+              </Button>
+            </Link>
+          </div>
         </div>
+      </div>
 
-        <div className="space-y-5">
-          <h1 className="text-4xl font-bold leading-[1.14] sm:text-5xl lg:text-[3.6rem]">
-            <span className="block text-white">{hero.titleTop}</span>
-            <span className="glow-text block">{hero.titleHighlight}</span>
-          </h1>
-
-          <p className="mx-auto max-w-xl text-base leading-relaxed text-[#7c8099] sm:text-lg">
-            {hero.description}
-          </p>
-        </div>
-
-        <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Link to={hero.primaryCta.to}>
-            <Button className="w-full sm:w-auto">{hero.primaryCta.label}</Button>
-          </Link>
-
-          <Link to={hero.secondaryCta.to}>
-            <Button variant="secondary" className="w-full sm:w-auto">
-              {hero.secondaryCta.label}
-            </Button>
-          </Link>
-        </div>
-
-        {/* Stats — three quick signals below CTAs */}
-        <div className="grid grid-cols-3 gap-3 pt-2">
-          {hero.stats.map((item) => (
-            <div
-              key={item.label}
-              className="rounded-xl border border-white/[0.05] bg-white/[0.025] px-4 py-3"
-            >
-              <p className="text-sm font-semibold text-[#a78bfa]">{item.value}</p>
-              <p className="mt-0.5 text-xs leading-relaxed text-[#7c8099]">{item.label}</p>
+      <div className="mt-10 grid gap-4 sm:grid-cols-3 lg:mt-14">
+        {hero.stats.map((item) => (
+          <div
+            key={item.label}
+            className="ambient-stat-card glass-panel rounded-[24px] px-5 py-5 text-white"
+          >
+            <div className="relative z-10 space-y-2 text-right">
+              <p className="text-lg font-semibold text-[#d8cbff]">{item.value}</p>
+              <p className="text-sm leading-relaxed text-slate-400">{item.label}</p>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </Section>
   )
