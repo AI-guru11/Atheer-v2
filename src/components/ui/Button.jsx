@@ -7,7 +7,7 @@ export default function Button({
 }) {
   const variants = {
     primary:
-      "bg-[linear-gradient(135deg,#7c5cff_0%,#22d3ee_100%)] text-white shadow-[0_6px_24px_rgba(34,211,238,0.18)] hover:shadow-[0_6px_24px_rgba(34,211,238,0.26)]",
+      "bg-[linear-gradient(135deg,#7c5cff_0%,#8b5cf6_100%)] text-white shadow-[0_6px_24px_rgba(124,92,255,0.22)] hover:shadow-[0_6px_24px_rgba(124,92,255,0.34)]",
     secondary:
       "glass-panel text-white hover:bg-white/10",
     ghost:
