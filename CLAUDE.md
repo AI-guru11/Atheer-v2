@@ -10,18 +10,18 @@ Currency is SAR (Saudi Riyal). All product pricing, budget bands, and display va
 
 ## Commands
 
-- **Dev server**: `npm run dev` (Vite on port 5173)
+- **Dev server**: `npm run dev` (Vite on port 5173, bound to 0.0.0.0)
 - **Production build**: `npm run build`
 - **Preview build**: `npm run preview` (port 4173, bound to 0.0.0.0)
 - No test or lint tooling is currently configured.
 
 ## Architecture
 
-**Stack**: React 19, React Router 7, Vite 8, Tailwind CSS, plain JavaScript (no TypeScript).
+**Stack**: React 19, React Router 7, Vite 8, Tailwind CSS 3, plain JavaScript (no TypeScript).
 
 **Entry point**: `index.html` sets `lang="ar" dir="rtl"` and `theme-color: #0b1020`. `src/main.jsx` mounts `<RouterProvider>`.
 
-**Routing** (`src/app/router.jsx`): Uses `createBrowserRouter` with nested routes under `App` layout.
+**Routing** (`src/app/router.jsx`): Uses `createHashRouter` (HashRouter for GitHub Pages compatibility) with nested routes under `App` layout.
 
 | Route | Component | Status |
 |---|---|---|
@@ -33,6 +33,10 @@ Currency is SAR (Saudi Riyal). All product pricing, budget bands, and display va
 | `/gift` | `GiftLandingPage` | Placeholder |
 | `/gift/unlock` | `GiftUnlockPage` | Placeholder |
 | `/gift/reveal` | `GiftRevealPage` | Placeholder |
+| `/gift/open` | `RecipientLandingPage` | Active |
+| `/gift/choose` | `RecipientChoicePage` | Active |
+| `/gift/address` | `RecipientAddressPage` | Active |
+| `/gift/confirmed` | `RecipientConfirmedPage` | Active |
 | `/admin` | `AdminDashboardPage` | Placeholder |
 | `/*` | `NotFoundPage` | Active |
 
@@ -48,9 +52,9 @@ Currency is SAR (Saudi Riyal). All product pricing, budget bands, and display va
 - `src/components/layout/` — Header, Footer, Container, Section (structural wrappers)
 - `src/components/ui/` — Button (3 variants), Card, Badge, Input (reusable primitives)
 - `src/components/sections/` — Landing page sections (Hero, Services, Difference, WizardTeaser, Featured, SocialProof, FeatureStrip, CTA)
-- `src/components/builder/` — Gift builder wizard components (BuilderShell, BuilderProgress, BuilderChoiceGrid, BuilderChoiceCard, BuilderSummary, BuilderActions, BuilderRecommendationPreview)
+- `src/components/builder/` — Gift builder wizard components (BuilderShell, BuilderProgress, BuilderChoiceGrid, BuilderChoiceCard, BuilderSummary, BuilderActions, BuilderRecommendationPreview, plus delivery mode forms)
 - `src/pages/` — Route-level page components
-- `src/gift/` — Gift reveal experience flow (Landing → Unlock → Reveal)
+- `src/gift/` — Gift reveal experience flow (Landing → Unlock → Reveal) + Recipient Experience MVP (RecipientLandingPage, RecipientChoicePage, RecipientAddressPage, RecipientConfirmedPage)
 - `src/admin/` — Admin dashboard
 
 **State management**: Component-level `useState` only (no Redux/Context/Zustand). No API integration yet.
@@ -62,36 +66,63 @@ The builder (`/builder`) is a 7-step wizard orchestrated by `BuilderShell.jsx`:
 | Step | Key | Options |
 |---|---|---|
 | 1 | `recipient` | mother, father, friend, partner, child, manager |
-| 2 | `occasion` | birthday, thanks, anniversary, surprise, promotion, corporate |
+| 2 | `occasion` | birthday, thanks, anniversary, special-surprise, promotion, corporate |
 | 3 | `budget` | `<250`, `250-500`, `500-1000`, `1000+` (SAR) |
 | 4 | `interest` | coffee, books, perfume, electronics, sports, self-care, gaming, open |
-| 5 | `revealStyle` | simple_elegant, emotional_personal, luxury_premium, fun_playful, minimal_modern, adventure_experience |
-| 6 | `controlMode` | manual, assisted, delegated |
-| 7 | `deliveryMode` | TBD (recently added step) |
+| 5 | `revealStyle` | simple, emotional, playful, luxury, surprise, professional |
+| 6 | `controlMode` | self, copilot (assisted), delegated |
+| 7 | `deliveryMode` | directDelivery or recipientChoice |
+
+After completing the 7 steps, the builder branches into one of two delivery flows:
+
+### Delivery Mode: Direct Delivery (`directDelivery`)
+Sender provides the recipient's address directly:
+1. `DirectDeliveryForm.jsx` — Collect recipient address fields
+2. `DirectDeliveryReview.jsx` — Review all selections before confirming
+3. `DirectDeliveryConfirmation.jsx` — Final confirmation screen
+
+### Delivery Mode: Recipient Choice (`recipientChoice`)
+Sender provides recipient contact info; recipient gets a link to choose their own gift:
+1. `RecipientContactForm.jsx` — Collect recipient's contact info (name, phone/email)
+2. `RecipientReview.jsx` — Review recipient details
+3. `RecipientLinkReady.jsx` — Generate & display shareable link (points to live GitHub Pages URL)
+
+**Recipient Experience** (`/gift/open` → `/gift/choose` → `/gift/address` → `/gift/confirmed`):
+1. `RecipientLandingPage.jsx` — Shows sender info, occasion, personal message from mock data
+2. `RecipientChoicePage.jsx` — Displays 4 mock gift options for recipient to pick
+3. `RecipientAddressPage.jsx` — Recipient enters their delivery address
+4. `RecipientConfirmedPage.jsx` — Success screen with confirmation
+
+Mock data for recipient experience is in `src/data/recipientMockData.js`.
 
 **Recommendation engine** (`src/lib/recommendation/`):
 
 1. `index.js` — `runRecommendationEngine(selections)` entry point
 2. `normalizeGiftIntentProfile.js` — Converts selections into a structured profile (recipients, occasions, budget range, interests, emotional tone, surprise factor, relationship depth, formality, importance)
-3. `filterCandidates.js` — 3-tier filtering: strict (all criteria) → relaxed (flexible budget) → near-budget (±25% margin)
-4. `scoreCandidates.js` — Scores filtered products against profile
+3. `filterCandidates.js` — 3-tier filtering: strict (all criteria) → balanced (flexible criteria) → intelligent (near-budget ±25% margin, ≥1 of 3 soft dimensions)
+4. `scoreCandidates.js` — Scores filtered products against profile with 10 weighted factors
 5. `buildRecommendationResult.js` — Constructs final result: top pick, alternatives (up to 2), reveal recommendation, execution mode, confidence score, summary angle
 
+**Score weights** (`src/data/recommendationSchema.js`):
+- recipientFit (0.18), budgetCloseness (0.16), occasionFit (0.15), interestFit (0.15), revealFit (0.07), premiumRelevance (0.06), toneFit (0.08), merchantConfidence (0.05), controlModeFit (0.05), giftability (0.05)
+
 **Product catalog** (`src/data/productCatalog.sample.js`): 50+ sample products. Each product has:
-- `id`, `title` (EN + AR), `brand`, `category`, `priceRange`, `currency: "SAR"`
+- `id`, `title` (EN + AR), `brand`, `category`, `priceMin`/`priceMax`, `currency: "SAR"`
 - Fit arrays: `recipientFit`, `occasionFit`, `interestFit`, `toneFit`, `controlModeFit`, `revealFit`
 - Scoring: `premiumScore`, `uniquenessScore`, `practicalityScore`, `giftabilityScore`, `wowFactor`, `merchantConfidence`
-- Metadata: `availabilityStatus`, `sourceUrl`, `shippingNote`
+- Metadata: `availabilityStatus`, `sourceUrl`, `shippingNote`, `displayTitleAr`, `displaySubtitleAr`, `shortDescription`
 
-**Builder display utilities** (`src/utils/recommendationDisplay.js`): Bilingual label maps for recipient, occasion, tone, execution mode, delivery mode.
+**Builder display utilities** (`src/utils/recommendationDisplay.js`): 20+ bilingual formatter functions for recipient labels, occasion labels, price ranges, confidence scores, execution mode display, merchant names, and fit summaries.
 
 ## Design System
 
 **Color palette** (defined in `src/styles/tokens.css`):
-- Background: `--bg` (#040711 / #050816), `--bg-soft`, surface variants
-- Brand: `--brand` (4 purple/violet variants), accent cyan
-- Text: `--text`, `--muted`
-- Effects: `--shadow-soft`, `--shadow-glow` (dual purple+cyan glow), `--blur`
+- Background: `--bg` (#050816), `--bg-soft` (#09101f), surface variants
+- Brand: `--brand` (#7c5cff / purple), `--brand-2` (#22d3ee / cyan), `--brand-3` (#8b5cf6 / violet), `--brand-4` (#38bdf8 / sky)
+- Text: `--text` (#f5f7ff), `--muted` (#a9b3d1)
+- Status: `--success` (#22c55e), `--danger` (#ef4444)
+- Effects: `--shadow-soft`, `--shadow-glow` (dual purple+cyan glow), `--blur` (18px)
+- Radius: `--radius-sm` (0.9rem), `--radius-md` (1.2rem), `--radius-lg` (1.8rem)
 
 **Custom utility classes** (`src/styles/globals.css`):
 - `.glass-panel` — Frosted glass (rgba bg + border + `backdrop-filter: blur(16px)` + shadow)
@@ -100,11 +131,26 @@ The builder (`/builder`) is a 7-step wizard orchestrated by `BuilderShell.jsx`:
 - `.glow-text` — Gradient text (purple → violet → cyan)
 - `.grid-noise` — Subtle grid overlay with opacity mask
 - `.hero-float` — Floating animation (±8px Y, 7s loop, respects `prefers-reduced-motion`)
+- `.section` — Responsive section padding (4/5/6rem at sm/md/lg)
+- `.container` — Max-width 1240px centered wrapper
 
 **Button variants** (`src/components/ui/Button.jsx`):
 - `primary` — Purple gradient background
 - `secondary` — Glass panel style
 - `ghost` — Transparent with border
+
+## Deployment
+
+The project is deployed to **GitHub Pages** at `https://AI-guru11.github.io/Atheer-v2/`.
+
+**Key deployment settings**:
+- `vite.config.js`: `base: '/Atheer-v2/'` for correct asset paths on GitHub Pages
+- `src/app/router.jsx`: Uses `createHashRouter` (not `createBrowserRouter`) so routing works without server-side config — all URLs are hash-based (`/#/path`)
+- Shareable gift links generated in `RecipientLinkReady.jsx` point to the live GitHub Pages URL
+
+**CI/CD** (`.github/workflows/`):
+- `node-ci.yml` — Validates the build on every push/PR
+- `deploy-pages.yml` — Deploys to GitHub Pages on push to main
 
 ## Conventions
 
@@ -116,20 +162,35 @@ The builder (`/builder`) is a 7-step wizard orchestrated by `BuilderShell.jsx`:
 - Node.js >=20.19.0 or >=22.12.0 required
 - Content goes in `src/data/siteContent.js`, never hardcoded in components
 - Do not add global state libraries — component-level state is the pattern
+- All routing uses hash-based URLs due to HashRouter (important for GitHub Pages)
 
 ## Key File Reference
 
 | File | Purpose |
 |---|---|
-| `src/app/router.jsx` | Route definitions |
+| `src/app/router.jsx` | Route definitions (HashRouter) |
 | `src/app/App.jsx` | Root layout (Header + Outlet + Footer) |
 | `src/data/siteContent.js` | All UI copy (bilingual) |
-| `src/data/builderContent.js` | Builder step/option definitions |
-| `src/data/recommendationSchema.js` | Type definitions, budget ranges |
-| `src/data/productCatalog.sample.js` | Sample product database |
+| `src/data/builderContent.js` | Builder step/option definitions + deliveryMode step |
+| `src/data/recommendationSchema.js` | Type definitions, budget ranges, score weights |
+| `src/data/productCatalog.sample.js` | Sample product database (50+ products) |
+| `src/data/recipientMockData.js` | Mock session & gift options for recipient experience |
 | `src/lib/recommendation/index.js` | Recommendation engine entry |
-| `src/components/builder/BuilderShell.jsx` | Builder orchestrator & state |
+| `src/components/builder/BuilderShell.jsx` | Builder orchestrator & state (7 steps + delivery modes) |
+| `src/components/builder/DirectDeliveryForm.jsx` | Address form for direct delivery |
+| `src/components/builder/DirectDeliveryReview.jsx` | Review screen for direct delivery |
+| `src/components/builder/DirectDeliveryConfirmation.jsx` | Confirmation for direct delivery |
+| `src/components/builder/RecipientContactForm.jsx` | Contact form for recipient-choice flow |
+| `src/components/builder/RecipientReview.jsx` | Review screen for recipient-choice flow |
+| `src/components/builder/RecipientLinkReady.jsx` | Shareable link generation |
+| `src/gift/RecipientLandingPage.jsx` | Recipient entry — shows sender message |
+| `src/gift/RecipientChoicePage.jsx` | Recipient gift selection |
+| `src/gift/RecipientAddressPage.jsx` | Recipient address entry |
+| `src/gift/RecipientConfirmedPage.jsx` | Recipient confirmation screen |
 | `src/styles/tokens.css` | Design tokens (CSS vars) |
 | `src/styles/globals.css` | Custom utility classes |
 | `src/utils/helpers.js` | `cx()` helper |
-| `src/utils/recommendationDisplay.js` | Bilingual display formatters |
+| `src/utils/recommendationDisplay.js` | Bilingual display formatters (20+ functions) |
+| `vite.config.js` | Vite config (base path `/Atheer-v2/` for GitHub Pages) |
+| `.github/workflows/node-ci.yml` | Node.js CI build workflow |
+| `.github/workflows/deploy-pages.yml` | GitHub Pages deploy workflow |
