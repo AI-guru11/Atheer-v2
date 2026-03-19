@@ -7,32 +7,32 @@ export default function FeaturedSection() {
 
   return (
     <Section className="text-white">
-      <div className="space-y-8">
-        <div className="space-y-4 text-right">
-          <span className="text-xs font-semibold tracking-[0.14em] text-cyan-300/70">
+      <div className="space-y-10">
+        <div className="space-y-3 text-right">
+          <span className="text-xs font-semibold tracking-[0.14em] text-[#67e8f9]/60">
             {featured.eyebrow}
           </span>
 
-          <h2 className="text-3xl font-bold leading-tight text-white sm:text-4xl">
+          <h2 className="text-3xl font-bold leading-tight sm:text-4xl">
             {featured.title}
           </h2>
         </div>
 
-        <div className="grid gap-5">
+        <div className="grid gap-4">
           {featured.items.map((item) => (
-            <Card key={item.title} className="p-7 sm:p-8 text-white">
+            <Card key={item.title} className="section-card p-7 sm:p-8">
               <div className="space-y-5">
                 <div className="flex justify-end">
-                  <span className="rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-cyan-300">
+                  <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-xs font-semibold text-[#c4b5fd]">
                     {item.tag}
                   </span>
                 </div>
 
-                <h3 className="text-2xl font-bold leading-snug text-white sm:text-3xl">
+                <h3 className="text-2xl font-bold leading-snug sm:text-3xl">
                   {item.title}
                 </h3>
 
-                <p className="max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
+                <p className="max-w-2xl text-base leading-relaxed text-[#7c8099] sm:text-lg">
                   {item.description}
                 </p>
               </div>
