@@ -9,13 +9,13 @@ export default function CTASection() {
 
   return (
     <Section className="text-white">
-      <Card className="neon-ring glass-panel-strong p-8 sm:p-10">
+      <Card className="glass-panel-strong p-8 sm:p-12">
         <div className="mx-auto max-w-2xl space-y-6 text-center">
-          <h2 className="text-3xl font-bold leading-tight text-white sm:text-4xl">
+          <h2 className="text-3xl font-bold leading-tight sm:text-4xl">
             {cta.title}
           </h2>
 
-          <p className="text-base leading-relaxed text-slate-300 sm:text-lg">
+          <p className="text-base leading-relaxed text-[#7c8099] sm:text-lg">
             {cta.description}
           </p>
 

@@ -1,13 +1,13 @@
 :root {
-  --bg: #050816;
-  --bg-soft: #09101f;
-  --surface: rgba(12, 18, 38, 0.58);
-  --surface-strong: rgba(15, 24, 48, 0.82);
-  --surface-alt: rgba(18, 28, 58, 0.72);
-  --line: rgba(255, 255, 255, 0.1);
+  --bg: #0d0d10;
+  --bg-soft: #111116;
+  --surface: rgba(18, 18, 25, 0.60);
+  --surface-strong: rgba(14, 14, 20, 0.86);
+  --surface-alt: rgba(20, 20, 28, 0.72);
+  --line: rgba(255, 255, 255, 0.07);
 
-  --text: #f5f7ff;
-  --muted: #a9b3d1;
+  --text: #f0f2f8;
+  --muted: #7c8099;
 
   --brand: #7c5cff;
   --brand-2: #22d3ee;
@@ -17,9 +17,11 @@
   --success: #22c55e;
   --danger: #ef4444;
 
-  --shadow-soft: 0 12px 40px rgba(0, 0, 0, 0.35);
-  --shadow-glow: 0 0 0 1px rgba(124, 92, 255, 0.18), 0 10px 40px rgba(34, 211, 238, 0.12),
-    0 18px 70px rgba(124, 92, 255, 0.14);
+  --shadow-soft: 0 12px 40px rgba(0, 0, 0, 0.42);
+  --shadow-glow:
+    0 0 0 1px rgba(110, 86, 230, 0.10),
+    0 10px 40px rgba(0, 0, 0, 0.32),
+    0 18px 70px rgba(110, 86, 230, 0.08);
 
   --blur: 18px;
 
