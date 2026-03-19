@@ -51,9 +51,9 @@ export default function HeroSection() {
             {hero.stats.map((item) => (
               <div
                 key={item.label}
-                className="surface-panel rounded-2xl px-4 py-3"
+                className="rounded-xl bg-white/[0.025] border border-white/[0.05] px-4 py-3"
               >
-                <p className="text-sm font-semibold text-[#c4b5fd]">{item.value}</p>
+                <p className="text-sm font-semibold text-[#a78bfa]">{item.value}</p>
                 <p className="mt-0.5 text-xs leading-relaxed text-[#7c8099]">{item.label}</p>
               </div>
             ))}
@@ -75,7 +75,7 @@ export default function HeroSection() {
               {hero.previewCard.points.map((point, index) => (
                 <li
                   key={point}
-                  className="flex items-start gap-4 rounded-xl border border-white/[0.05] bg-white/[0.02] px-4 py-3"
+                  className="flex items-start gap-4 rounded-xl border border-white/[0.04] bg-white/[0.015] px-4 py-3"
                 >
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#7c5cff,#22d3ee)] text-[11px] font-bold text-white">
                     {index + 1}
