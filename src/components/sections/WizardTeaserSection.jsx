@@ -23,17 +23,17 @@ export default function WizardTeaserSection() {
           </p>
         </div>
 
-        {/* Feature demo card — charcoal surface, no neon ring */}
-        <div className="charcoal-card rounded-3xl p-7 sm:p-8">
+        {/* Feature demo card — accent edge marks it as the primary interactive surface */}
+        <div className="card-accent-top charcoal-card rounded-3xl p-7 sm:p-8">
           <div className="space-y-6">
             {/* Step indicator */}
             <div className="flex items-center justify-between gap-4">
-              <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-sm font-semibold text-[#a78bfa]">
+              <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-sm font-semibold text-[#67e8f9]/80">
                 {wizardTeaser.stepLabel}
               </span>
 
               <div className="h-1.5 w-24 overflow-hidden rounded-full bg-white/[0.08]">
-                <div className="h-full w-1/3 rounded-full bg-[linear-gradient(90deg,#7c5cff,#8b5cf6)]" />
+                <div className="h-full w-1/3 rounded-full bg-[linear-gradient(90deg,#7c5cff,#22d3ee)]" />
               </div>
             </div>
 
@@ -74,7 +74,7 @@ export default function WizardTeaserSection() {
                       key={output}
                       className="flex items-start gap-3 text-[#7c8099]"
                     >
-                      <span className="mt-[7px] h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#8b5cf6]" />
+                      <span className="mt-[7px] h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#22d3ee]/60" />
                       <span className="text-sm leading-relaxed sm:text-base">
                         {output}
                       </span>

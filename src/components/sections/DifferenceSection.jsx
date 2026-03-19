@@ -28,7 +28,7 @@ export default function DifferenceSection() {
               className="section-card charcoal-card rounded-2xl p-7 sm:p-8"
             >
               <div className="space-y-3">
-                <div className="h-1 w-12 rounded-full bg-[linear-gradient(90deg,#7c5cff,#8b5cf6)]" />
+                <div className="h-1 w-12 rounded-full bg-[linear-gradient(90deg,#7c5cff_50%,#22d3ee_100%)]" />
                 <h3 className="text-2xl font-bold leading-snug sm:text-3xl">
                   {point.title}
                 </h3>
