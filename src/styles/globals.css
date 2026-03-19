@@ -158,6 +158,54 @@
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+/* ── Micro neon edge accents — sparse, selective premium treatment ── */
+
+/* Top-right corner accent (RTL reading-start): WizardTeaser demo card */
+.card-accent-top {
+  position: relative;
+}
+
+.card-accent-top::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 96px;
+  height: 1px;
+  background: linear-gradient(
+    to left,
+    rgba(124, 92, 255, 0.60) 0%,
+    rgba(34, 211, 238, 0.18) 55%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Top-center accent: CTA card (centered surface, centered accent) */
+.card-accent-top-center {
+  position: relative;
+}
+
+.card-accent-top-center::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(124, 92, 255, 0.52) 35%,
+    rgba(34, 211, 238, 0.16) 65%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
 /* Hero right-column card with a soft accent edge */
 .ambient-card {
   background: rgba(20, 20, 22, 0.76);

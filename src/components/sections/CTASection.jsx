@@ -8,15 +8,15 @@ export default function CTASection() {
 
   return (
     <Section className="text-white">
-      {/* Atmospheric surface — charcoal base with deliberate purple-top glow */}
-      <div className="relative overflow-hidden rounded-3xl border border-white/[0.07] bg-[#161618] p-8 sm:p-12">
-        {/* Ambient purple glow at top-center — atmosphere, not decoration */}
+      {/* CTA surface — accent edge + top-center glow signal a premium conversion moment */}
+      <div className="card-accent-top-center relative overflow-hidden rounded-3xl border border-white/[0.07] bg-[#161618] p-8 sm:p-12">
+        {/* Ambient glow — purple body, faint cyan breath at midpoint */}
         <div
           className="pointer-events-none absolute inset-x-0 top-0 h-full"
           aria-hidden="true"
           style={{
             background:
-              "radial-gradient(ellipse 80% 55% at 50% 0%, rgba(124, 92, 255, 0.13) 0%, transparent 68%)",
+              "radial-gradient(ellipse 80% 55% at 50% 0%, rgba(124, 92, 255, 0.16) 0%, rgba(34, 211, 238, 0.05) 52%, transparent 68%)",
           }}
         />
 
