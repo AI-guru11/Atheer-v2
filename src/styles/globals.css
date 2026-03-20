@@ -571,6 +571,7 @@
   background-size: 64px 64px;
   mask-image: radial-gradient(ellipse at 50% 0%, rgba(0,0,0,0.50) 0%, transparent 70%);
   opacity: 0.18;
+  pointer-events: none;
 }
 
 .hero-vignette {
@@ -582,6 +583,7 @@
     rgba(17, 17, 19, 0.24) 52%,
     rgba(17, 17, 19, 0.78) 100%
   );
+  pointer-events: none;
 }
 
 /* ── Text helpers ── */

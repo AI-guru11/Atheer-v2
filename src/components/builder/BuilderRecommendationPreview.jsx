@@ -9,7 +9,7 @@ import {
 export default function BuilderRecommendationPreview({ recommendation }) {
   if (!recommendation || !recommendation.topPick) {
     return (
-      <div className="rounded-[24px] border border-white/10 bg-white/[0.03] p-5">
+      <div className="charcoal-card rounded-[24px] p-5">
         <div className="space-y-2 text-right">
           <h3 className="text-lg font-bold text-white">
             لا توجد توصية بعد
