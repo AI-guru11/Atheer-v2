@@ -147,7 +147,7 @@ export default function BuilderShell() {
           </div>
 
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
-            <div className="rounded-[32px] border border-white/10 bg-white/[0.03] p-5 sm:p-7 lg:p-8">
+            <div className="charcoal-card rounded-[32px] p-5 sm:p-7 lg:p-8">
               {!showCompletionState ? (
                 <div className="space-y-7">
                   <BuilderProgress

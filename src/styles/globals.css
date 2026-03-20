@@ -35,6 +35,19 @@
   --radius-lg: 1.8rem;
 
   --container-width: 1240px;
+
+  /* ── Semantic surface tokens ── */
+  --surface-base:     rgba(42, 42, 50, 0.82);
+  --surface-elevated: rgba(28, 28, 32, 0.88);
+  --surface-strong:   rgba(18, 18, 20, 0.93);
+  --surface-inset:    rgba(255, 255, 255, 0.03);
+  --surface-hover:    rgba(255, 255, 255, 0.055);
+
+  /* ── Semantic border tokens ── */
+  --border-subtle:  rgba(255, 255, 255, 0.07);
+  --border-default: rgba(255, 255, 255, 0.12);
+  --border-strong:  rgba(255, 255, 255, 0.18);
+  --border-focus:   rgba(124, 92, 255, 0.45);
 }
 
 /* ── Base resets ── */
@@ -435,6 +448,75 @@
     rgba(255, 255, 255, 0.06) 70%,
     transparent
   );
+}
+
+/* ── Builder / internal page layout ── */
+.section-shell {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+@media (min-width: 640px) {
+  .section-shell { padding-top: 5rem; padding-bottom: 5rem; }
+}
+
+@media (min-width: 1024px) {
+  .section-shell { padding-top: 6rem; padding-bottom: 6rem; }
+}
+
+.container-tight {
+  max-width: 720px;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container-tight { padding-inline: 1.5rem; }
+}
+
+/* ── Shared input base ── */
+.input {
+  width: 100%;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-inset);
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.input::placeholder {
+  color: var(--muted);
+  opacity: 0.6;
+}
+
+.input:focus {
+  border-color: var(--border-focus);
+  background: var(--surface-hover);
+}
+
+/* ── Placeholder page utilities ── */
+.section-heading {
+  margin-bottom: 1.5rem;
+  text-align: right;
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: var(--brand-3);
+  opacity: 0.7;
+  margin-bottom: 0.5rem;
+}
+
+.placeholder-card {
+  padding: 2.5rem 2rem;
+  text-align: right;
+  color: var(--muted);
+  line-height: 1.7;
 }
 
 /* ── Hero ambient background ── */

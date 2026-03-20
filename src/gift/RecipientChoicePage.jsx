@@ -28,7 +28,7 @@ export default function RecipientChoicePage() {
           {mockGiftOptions.map((gift) => (
             <div
               key={gift.id}
-              className="relative overflow-hidden rounded-[24px] border border-white/[0.08] bg-white/[0.03] p-5 transition-colors duration-200 hover:border-white/[0.13] hover:bg-white/[0.05]"
+              className="charcoal-card relative overflow-hidden rounded-[24px] p-5 transition-colors duration-200 hover:border-white/[0.13] hover:bg-white/[0.05]"
             >
               <div className="space-y-3 text-right">
 

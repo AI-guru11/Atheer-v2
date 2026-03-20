@@ -31,7 +31,7 @@ export default function RecipientLandingPage() {
           </div>
 
           {/* Sender card */}
-          <div className="rounded-[24px] border border-white/[0.08] bg-white/[0.03] p-5 space-y-3">
+          <div className="charcoal-card rounded-[24px] p-5 space-y-3">
             <div className="flex items-center justify-between gap-3">
               <span className="rounded-full border border-violet-400/20 bg-violet-400/[0.08] px-2.5 py-1 text-[11px] font-semibold text-violet-300">
                 {occasion}
