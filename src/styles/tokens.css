@@ -30,4 +30,34 @@
   --radius-lg: 1.8rem;
 
   --container-width: 1240px;
+
+  /* ── Semantic surface tokens ── */
+  --surface-base:     rgba(42, 42, 50, 0.82);
+  --surface-elevated: rgba(28, 28, 32, 0.88);
+  --surface-strong:   rgba(18, 18, 20, 0.93);
+  --surface-inset:    rgba(255, 255, 255, 0.03);
+  --surface-hover:    rgba(255, 255, 255, 0.055);
+
+  /* ── Semantic border tokens ── */
+  --border-subtle:  rgba(255, 255, 255, 0.07);
+  --border-default: rgba(255, 255, 255, 0.12);
+  --border-strong:  rgba(255, 255, 255, 0.18);
+  --border-focus:   rgba(124, 92, 255, 0.45);
 }
+
+/*
+ * Light theme — activate by adding data-theme="light" to <html>.
+ * NOT implemented. Reference values only.
+ *
+ * [data-theme="light"] {
+ *   --bg: #f0f0f2;
+ *   --bg-soft: #e6e6ea;
+ *   --text: #1a1a2e;
+ *   --muted: #6b7280;
+ *   --surface-base: rgba(255, 255, 255, 0.82);
+ *   --surface-elevated: rgba(255, 255, 255, 0.94);
+ *   --surface-inset: rgba(0, 0, 0, 0.03);
+ *   --border-subtle: rgba(0, 0, 0, 0.07);
+ *   --border-default: rgba(0, 0, 0, 0.12);
+ * }
+ */

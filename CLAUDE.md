@@ -116,23 +116,33 @@ Mock data for recipient experience is in `src/data/recipientMockData.js`.
 
 ## Design System
 
-**Color palette** (defined in `src/styles/tokens.css`):
-- Background: `--bg` (#050816), `--bg-soft` (#09101f), surface variants
+**Color palette** (defined in `src/styles/tokens.css` and `src/styles/globals.css` `:root`):
+- Background: `--bg` (#141414), `--bg-soft` (#191919), surface variants
 - Brand: `--brand` (#7c5cff / purple), `--brand-2` (#22d3ee / cyan), `--brand-3` (#8b5cf6 / violet), `--brand-4` (#38bdf8 / sky)
-- Text: `--text` (#f5f7ff), `--muted` (#a9b3d1)
+- Text: `--text` (#f0f2f8), `--muted` (#7c8099)
 - Status: `--success` (#22c55e), `--danger` (#ef4444)
 - Effects: `--shadow-soft`, `--shadow-glow` (dual purple+cyan glow), `--blur` (18px)
 - Radius: `--radius-sm` (0.9rem), `--radius-md` (1.2rem), `--radius-lg` (1.8rem)
 
+**Surface hierarchy** (three-tier dark glass system):
+- `.charcoal-card` — Base glass card: dark gradient surface + `blur(22px)` + inset highlights + dual-layer shadow
+- `.glass-panel` — Elevated glass: `rgba(28,28,32,0.88)` + `blur(26px)` — used for hero stats, elevated panels
+- `.glass-panel-strong` — Premium glass: `rgba(18,18,20,0.93)` + `blur(20px)` + glow ring — used for CTA
+
 **Custom utility classes** (`src/styles/globals.css`):
-- `.glass-panel` — Frosted glass (rgba bg + border + `backdrop-filter: blur(16px)` + shadow)
-- `.glass-panel-strong` — Stronger glass (82% opacity, `blur(20px)`, glow shadow)
+- `.charcoal-card` — Dark smoked glass card surface (gradient + blur + inset highlight + shadow)
+- `.glass-panel` — Elevated frosted panel
+- `.glass-panel-strong` — Premium CTA/modal surface with glow ring
+- `.surface-panel` — Subtle data/stat cell surface
+- `.ambient-card` — Glass card with purple left-edge accent
 - `.neon-ring` — Gradient border ring via `mask-composite` trick
-- `.glow-text` — Gradient text (purple → violet → cyan)
+- `.glow-text` — Gradient text (white → violet → purple)
 - `.grid-noise` — Subtle grid overlay with opacity mask
 - `.hero-float` — Floating animation (±8px Y, 7s loop, respects `prefers-reduced-motion`)
 - `.section` — Responsive section padding (4/5/6rem at sm/md/lg)
 - `.container` — Max-width 1240px centered wrapper
+- `.section-card` — Card with subtle top-center gradient accent line
+- `.card-accent-top` — Card with top-right neon gradient accent
 
 **Button variants** (`src/components/ui/Button.jsx`):
 - `primary` — Purple gradient background
@@ -194,3 +204,32 @@ The project is deployed to **GitHub Pages** at `https://AI-guru11.github.io/Athe
 | `vite.config.js` | Vite config (base path `/Atheer-v2/` for GitHub Pages) |
 | `.github/workflows/node-ci.yml` | Node.js CI build workflow |
 | `.github/workflows/deploy-pages.yml` | GitHub Pages deploy workflow |
+
+## Approved Visual Direction
+
+The homepage visual design is the approved baseline for the entire application. All internal pages should align with this language.
+
+**Design language**:
+- Premium dark interface with charcoal / deep-dark background (`--bg: #141414`)
+- Restrained ambient glow (purple/cyan animated orbs, subtle fixed-position atmosphere)
+- Neon contour accents used sparingly (top-edge gradient lines, not full glow)
+- Dark smoked glass surfaces (`.charcoal-card` — gradient + blur + inset highlight + shadow)
+- Strong readability — high text-to-surface contrast at all times
+- Mobile-first polish — all effects scale down gracefully
+
+**Current phase**: Internal Page Visual Alignment with Theme-Safe Architecture.
+
+**Theme rules**:
+- Light theme is NOT implemented now
+- Only semantic token preparation for future light mode is allowed
+- Dark theme is the sole active theme
+
+## Execution Discipline
+
+- Inspect first, edit second — always read a file before modifying it
+- Minimal diff — change only what is needed, preserve unrelated code
+- No broad refactors, no logic changes, no routing changes, no content rewrites
+- Prefer boring correctness over ambitious styling expansion
+- If two solutions exist, choose the one with fewer changed lines and lower regression risk
+- Do not add global state libraries — component-level state is the pattern
+- Do not redesign already-approved homepage sections
