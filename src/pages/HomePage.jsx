@@ -9,25 +9,29 @@ import CTASection from "../components/sections/CTASection"
 
 export default function HomePage() {
   return (
-    <main className="home-ambient-flow">
-      <div className="home-ambient-backdrop" aria-hidden="true">
-        <span className="home-ambient-orb home-ambient-orb--hero-left" />
-        <span className="home-ambient-orb home-ambient-orb--hero-right" />
-        <span className="home-ambient-orb home-ambient-orb--mid" />
-        <span className="home-ambient-orb home-ambient-orb--cta" />
-        <span className="home-ambient-aurora home-ambient-aurora--top" />
-        <span className="home-ambient-aurora home-ambient-aurora--low" />
-        <span className="home-ambient-mesh" />
+    <div className="homepage-shell relative">
+      <div className="page-ambient-system" aria-hidden="true">
+        <div className="ambient-body ambient-body--one">
+          <span className="ambient-body__core" />
+          <span className="ambient-body__mesh" />
+        </div>
+
+        <div className="ambient-body ambient-body--two">
+          <span className="ambient-body__core" />
+          <span className="ambient-body__mesh" />
+        </div>
       </div>
 
-      <HeroSection />
-      <ServicesSection />
-      <DifferenceSection />
-      <WizardTeaserSection />
-      <FeaturedSection />
-      <SocialProofSection />
-      <FeatureStripSection />
-      <CTASection />
-    </main>
+      <div className="homepage-content relative z-[1]">
+        <HeroSection />
+        <ServicesSection />
+        <DifferenceSection />
+        <WizardTeaserSection />
+        <FeaturedSection />
+        <SocialProofSection />
+        <FeatureStripSection />
+        <CTASection />
+      </div>
+    </div>
   )
 }
