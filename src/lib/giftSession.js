@@ -45,6 +45,13 @@ function sanitizeOption(option) {
   }
 }
 
+function createStatusEntry(status) {
+  return {
+    status,
+    at: new Date().toISOString(),
+  }
+}
+
 function buildBaseSession({
   code,
   selections,
@@ -58,6 +65,7 @@ function buildBaseSession({
   giftOptions,
   addressData,
   status,
+  shareLink = "",
 }) {
   const createdAt = new Date().toISOString()
 
@@ -66,12 +74,7 @@ function buildBaseSession({
     createdAt,
     updatedAt: createdAt,
     status,
-    statusTimeline: [
-      {
-        status,
-        at: createdAt,
-      },
-    ],
+    statusTimeline: [createStatusEntry(status)],
     giftPath: selections.giftPath,
     deliveryMode: selections.deliveryMode,
     revealStyle: selections.revealStyle,
@@ -93,13 +96,7 @@ function buildBaseSession({
     selectedGift: selectedGift || null,
     giftOptions: giftOptions || [],
     addressData: addressData || null,
-  }
-}
-
-function createStatusEntry(status) {
-  return {
-    status,
-    at: new Date().toISOString(),
+    shareLink,
   }
 }
 
@@ -204,11 +201,11 @@ export function getGiftStatusMeta(status, giftPath) {
     },
     direct_review_ready: {
       badge: "الطلب جاهز للمراجعة",
-      note: "تم حفظ بيانات التوصيل الأولية للهدية المحددة، والخطوة الحالية هي مراجعة الطلب واعتماده قبل التنفيذ.",
+      note: "تم تثبيت التوصية داخل الطلب. الخطوة الحالية هي مراجعة بيانات المرسل والمستلم قبل اعتماد التجهيز.",
     },
     direct_order_confirmed: {
       badge: "تم اعتماد طلب التوصيل المباشر",
-      note: "تم توحيد بيانات الهدية والتوصيل في جلسة واحدة، ويمكن الآن متابعة التنفيذ على نفس المرجع دون الاعتماد على حالة مؤقتة داخل الواجهة.",
+      note: "تم حفظ الهدية وبيانات التوصيل في جلسة واحدة وأصبح الطلب جاهزًا لمرحلة الدفع أو التنفيذ لاحقًا.",
     },
   }
 
@@ -239,7 +236,7 @@ export function createGiftSession({ code, selections, recipientData, recommendat
   })
 }
 
-export function createDirectDeliverySession({ code, selections, shippingData, recommendation, status = "direct_review_ready" }) {
+export function createDirectDeliverySession({ code, selections, shippingData, recommendation }) {
   const topPick = recommendation?.topPick ? sanitizeOption(recommendation.topPick) : null
 
   return buildBaseSession({
@@ -249,7 +246,7 @@ export function createDirectDeliverySession({ code, selections, shippingData, re
     recipientName: shippingData?.recipientName,
     recipientPhone: shippingData?.phone,
     recipientEmail: "",
-    message: shippingData?.senderMessage || "",
+    message: shippingData?.senderMessage,
     recommendationTitle: recommendation?.summaryAngle,
     selectedGift: topPick,
     giftOptions: [],
@@ -262,7 +259,7 @@ export function createDirectDeliverySession({ code, selections, shippingData, re
           notes: shippingData.notes || "",
         }
       : null,
-    status,
+    status: "direct_order_confirmed",
   })
 }
 

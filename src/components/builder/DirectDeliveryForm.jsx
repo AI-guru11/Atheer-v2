@@ -6,15 +6,9 @@ const FIELDS = [
     key: "senderName",
     label: "اسمك",
     type: "text",
-    placeholder: "اسمك الذي سيظهر في الطلب",
+    placeholder: "الاسم الذي سيظهر داخل الطلب",
     required: true,
-  },
-  {
-    key: "senderMessage",
-    label: "رسالة داخلية للطلب",
-    type: "text",
-    placeholder: "اختياري: ملاحظة سريعة مرتبطة بالمناسبة أو أسلوب التقديم",
-    required: false,
+    multiline: false,
   },
   {
     key: "recipientName",
@@ -22,6 +16,7 @@ const FIELDS = [
     type: "text",
     placeholder: "أدخل اسم المستلم",
     required: true,
+    multiline: false,
   },
   {
     key: "phone",
@@ -29,6 +24,7 @@ const FIELDS = [
     type: "tel",
     placeholder: "05XXXXXXXX",
     required: true,
+    multiline: false,
   },
   {
     key: "city",
@@ -36,6 +32,7 @@ const FIELDS = [
     type: "text",
     placeholder: "مثال: الرياض",
     required: true,
+    multiline: false,
   },
   {
     key: "address",
@@ -43,6 +40,15 @@ const FIELDS = [
     type: "text",
     placeholder: "الحي، الشارع، رقم المبنى",
     required: true,
+    multiline: false,
+  },
+  {
+    key: "senderMessage",
+    label: "ملاحظة للمستلم",
+    type: "text",
+    placeholder: "رسالة قصيرة ترفق مع الطلب",
+    required: false,
+    multiline: true,
   },
   {
     key: "notes",
@@ -50,16 +56,17 @@ const FIELDS = [
     type: "text",
     placeholder: "أي تفاصيل إضافية للتوصيل",
     required: false,
+    multiline: true,
   },
 ]
 
 const initialValues = {
   senderName: "",
-  senderMessage: "",
   recipientName: "",
   phone: "",
   city: "",
   address: "",
+  senderMessage: "",
   notes: "",
 }
 
@@ -100,10 +107,10 @@ export default function DirectDeliveryForm({ onSubmit, onBack, initialData }) {
     <div className="text-right">
       <div className="mb-6">
         <h2 className="text-xl font-bold leading-tight text-white sm:text-2xl">
-          بيانات التوصيل
+          بيانات الطلب المباشر
         </h2>
         <p className="mt-1.5 text-[13px] leading-relaxed text-slate-400">
-          أدخل معلومات المستلم لنبدأ تجهيز الهدية بشكل صحيح
+          هذا المسار يجهز طلبًا مباشرًا باسمك وبيانات المستلم، ويثبت الهدية داخل الطلب بدل تركها كتوصية عامة سهلة التسريب.
         </p>
       </div>
 
@@ -111,6 +118,10 @@ export default function DirectDeliveryForm({ onSubmit, onBack, initialData }) {
         <div className="space-y-4">
           {FIELDS.map((field) => {
             const invalid = isInvalid(field)
+            const borderClass = invalid
+              ? "border-rose-500/40 focus:border-rose-400/60"
+              : "border-white/10 focus:border-violet-400/40"
+
             return (
               <div key={field.key} className="space-y-1.5">
                 <label className="block text-[13px] font-semibold text-slate-300">
@@ -121,21 +132,37 @@ export default function DirectDeliveryForm({ onSubmit, onBack, initialData }) {
                     </span>
                   )}
                 </label>
-                <input
-                  type={field.type}
-                  value={values[field.key]}
-                  onChange={(e) => handleChange(field.key, e.target.value)}
-                  onBlur={() => handleBlur(field.key)}
-                  placeholder={field.placeholder}
-                  dir="rtl"
-                  className={cx(
-                    "w-full rounded-[14px] border bg-white/[0.03] px-4 py-2.5 text-[14px] text-white placeholder-slate-600 outline-none transition-colors duration-200",
-                    "focus:bg-white/[0.05]",
-                    invalid
-                      ? "border-rose-500/40 focus:border-rose-400/60"
-                      : "border-white/10 focus:border-violet-400/40",
-                  )}
-                />
+
+                {field.multiline ? (
+                  <textarea
+                    value={values[field.key]}
+                    onChange={(e) => handleChange(field.key, e.target.value)}
+                    onBlur={() => handleBlur(field.key)}
+                    placeholder={field.placeholder}
+                    dir="rtl"
+                    rows={field.key === "notes" ? 3 : 2}
+                    className={cx(
+                      "w-full rounded-[14px] border bg-white/[0.03] px-4 py-2.5 text-[14px] text-white placeholder-slate-600 outline-none transition-colors duration-200 resize-none",
+                      "focus:bg-white/[0.05]",
+                      borderClass,
+                    )}
+                  />
+                ) : (
+                  <input
+                    type={field.type}
+                    value={values[field.key]}
+                    onChange={(e) => handleChange(field.key, e.target.value)}
+                    onBlur={() => handleBlur(field.key)}
+                    placeholder={field.placeholder}
+                    dir="rtl"
+                    className={cx(
+                      "w-full rounded-[14px] border bg-white/[0.03] px-4 py-2.5 text-[14px] text-white placeholder-slate-600 outline-none transition-colors duration-200",
+                      "focus:bg-white/[0.05]",
+                      borderClass,
+                    )}
+                  />
+                )}
+
                 {invalid && (
                   <p className="text-[11px] text-rose-400">هذا الحقل مطلوب</p>
                 )}
@@ -156,7 +183,7 @@ export default function DirectDeliveryForm({ onSubmit, onBack, initialData }) {
             type="submit"
             className="rounded-full bg-[linear-gradient(90deg,#7c5cff,#22d3ee)] px-6 py-3 text-[15px] font-bold text-white shadow-[0_10px_30px_rgba(34,211,238,0.15)] transition-all duration-200 hover:shadow-[0_14px_40px_rgba(34,211,238,0.22)] active:scale-[0.98]"
           >
-            متابعة للمراجعة
+            متابعة لمراجعة الطلب
           </button>
         </div>
       </form>

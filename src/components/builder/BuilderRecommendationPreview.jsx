@@ -6,7 +6,13 @@ import {
   getExecutionModeDisplay,
 } from "../../utils/recommendationDisplay"
 
-export default function BuilderRecommendationPreview({ recommendation }) {
+export default function BuilderRecommendationPreview({
+  recommendation,
+  locked = false,
+  budgetLabel = "",
+  interestLabel = "",
+  giftPathLabel = "",
+}) {
   if (!recommendation || !recommendation.topPick) {
     return (
       <div className="charcoal-card rounded-[24px] p-5">
@@ -50,10 +56,95 @@ export default function BuilderRecommendationPreview({ recommendation }) {
     low: "text-slate-400",
   }
 
+  if (locked) {
+    return (
+      <div>
+        <div className="mb-4 text-right">
+          <div className="mb-2.5 flex items-center justify-end gap-1.5">
+            <span
+              className={cx(
+                "inline-block h-1.5 w-1.5 rounded-full",
+                dotColor[confidence.level] || dotColor.fair,
+              )}
+            />
+            <span
+              className={cx(
+                "text-[11px] font-medium",
+                labelColor[confidence.level] || labelColor.fair,
+              )}
+            >
+              {confidence.text}
+            </span>
+          </div>
+
+          <h3 className="text-xl font-bold leading-snug text-white sm:text-[1.35rem]">
+            {summaryAngle}
+          </h3>
+        </div>
+
+        <div className="relative overflow-hidden rounded-[28px] border border-cyan-300/18 bg-gradient-to-bl from-cyan-300/[0.05] via-white/[0.025] to-violet-500/[0.03] p-5 sm:p-6">
+          <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-l from-transparent via-cyan-300/35 to-transparent" />
+
+          <div className="space-y-3 text-right">
+            <div className="flex items-center justify-between gap-3">
+              <span className="rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1 text-[11px] font-semibold text-white/80">
+                {giftPathLabel || "مسار هدية"}
+              </span>
+              <span className="rounded-full bg-white/[0.07] px-3 py-1 text-[13px] font-semibold tabular-nums text-white/90">
+                {budgetLabel || topPick.priceRange}
+              </span>
+            </div>
+
+            <div className="space-y-1">
+              <h4 className="text-[1.2rem] font-bold leading-snug text-white">
+                تم قفل تفاصيل المنتج داخل الطلب
+              </h4>
+              <p className="text-[12px] text-cyan-300/55">
+                تفاصيل الهدية الدقيقة تظهر لاحقًا بعد تثبيت الطلب أو متابعة المسار المناسب
+              </p>
+            </div>
+
+            <p className="text-[13px] leading-relaxed text-slate-300/80">
+              أثير حدد اتجاهًا مناسبًا مبنيًا على {interestLabel || "الذوق الأقرب"} وبما يتماشى مع
+              الميزانية وأسلوب التجربة. لن نعرض اسم المنتج النهائي هنا حتى لا تتحول الأداة إلى قائمة مجانية قابلة للتسريب.
+            </p>
+
+            <div className="flex flex-wrap justify-end gap-2 pt-1">
+              <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[11px] text-white/78">
+                {topPick.label}
+              </span>
+              <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[11px] text-white/78">
+                اتجاه منسق داخل الطلب
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 grid grid-cols-2 gap-1.5">
+          <div className="rounded-[12px] bg-white/[0.025] px-3 py-3 text-right">
+            <p className="text-[10px] font-semibold tracking-widest text-slate-500/70">
+              الكشف
+            </p>
+            <p className="mt-1 text-[13px] font-bold leading-snug text-white/80">
+              {revealDescription}
+            </p>
+          </div>
+
+          <div className="rounded-[12px] bg-white/[0.025] px-3 py-3 text-right">
+            <p className="text-[10px] font-semibold tracking-widest text-slate-500/70">
+              التنفيذ
+            </p>
+            <p className="mt-1 text-[13px] font-bold leading-snug text-white/80">
+              {executionDisplay.title}
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div>
-
-      {/* ── A. Context intro — single signal leads, then headline ── */}
       <div className="mb-4 text-right">
         <div className="mb-2.5 flex items-center justify-end gap-1.5">
           <span className={cx(
@@ -73,14 +164,11 @@ export default function BuilderRecommendationPreview({ recommendation }) {
         </h3>
       </div>
 
-      {/* ── B. Top recommendation — premium, confident, uncluttered ── */}
       <div className="relative overflow-hidden rounded-[28px] border border-cyan-300/20 bg-gradient-to-bl from-cyan-300/[0.06] via-white/[0.03] to-violet-500/[0.03] p-5 sm:p-6">
         <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-l from-transparent via-cyan-300/40 to-transparent" />
         <div className="absolute inset-y-0 right-0 w-[2px] bg-gradient-to-b from-cyan-300/20 via-cyan-300/10 to-transparent" />
 
         <div className="space-y-3 text-right">
-
-          {/* Badge + price on one line */}
           <div className="flex items-center justify-between gap-3">
             <span className="rounded-full bg-white/[0.07] px-3 py-1 text-[13px] font-semibold tabular-nums text-white/90">
               {topPick.priceRange}
@@ -90,7 +178,6 @@ export default function BuilderRecommendationPreview({ recommendation }) {
             </span>
           </div>
 
-          {/* Product identity */}
           <div className="space-y-0.5">
             <h4 className="text-[1.35rem] font-bold leading-snug text-white">
               {topPick.title}
@@ -102,12 +189,10 @@ export default function BuilderRecommendationPreview({ recommendation }) {
             )}
           </div>
 
-          {/* Single supporting line — why this fits */}
           <p className="text-[13px] leading-relaxed text-slate-300/80">
             {topPick.whyFit}
           </p>
 
-          {/* Source — minimal, bottom of card */}
           {topPick.sourceName && (
             <span className="block text-[11px] text-slate-500/80">
               {formatSourceLabel(topPick.sourceName)}
@@ -116,7 +201,6 @@ export default function BuilderRecommendationPreview({ recommendation }) {
         </div>
       </div>
 
-      {/* ── C. Alternatives — clean supporting rows ── */}
       {visibleAlternatives.length > 0 && (
         <div className="mt-5 text-right">
           <p className="mb-2 px-1 text-[11px] font-semibold tracking-wide text-slate-400/70">
@@ -145,7 +229,6 @@ export default function BuilderRecommendationPreview({ recommendation }) {
         </div>
       )}
 
-      {/* ── D. Experience strip — reveal + execution mode ── */}
       <div className="mt-4 grid grid-cols-2 gap-1.5">
         <div className="rounded-[12px] bg-white/[0.025] px-3 py-3 text-right">
           <p className="text-[10px] font-semibold tracking-widest text-slate-500/70">

@@ -12,7 +12,7 @@ import RecipientContactForm from "./RecipientContactForm"
 import RecipientReview from "./RecipientReview"
 import RecipientLinkReady from "./RecipientLinkReady"
 import { runRecommendationEngine } from "../../lib/recommendation"
-import { buildGiftLink, createDirectDeliverySession, createGiftSession, getGiftPathMeta, persistGiftSession, updateGiftSession } from "../../lib/giftSession"
+import { buildGiftLink, createDirectDeliverySession, createGiftSession, getGiftPathMeta, persistGiftSession } from "../../lib/giftSession"
 
 const initialSelections = {
   recipient: "",
@@ -38,10 +38,11 @@ export default function BuilderShell() {
   const [engineResult, setEngineResult] = useState(null)
   const [directDeliveryStep, setDirectDeliveryStep] = useState(null)
   const [shippingData, setShippingData] = useState(null)
-  const [directDeliverySession, setDirectDeliverySession] = useState(null)
   const [recipientChoiceStep, setRecipientChoiceStep] = useState(null)
   const [recipientData, setRecipientData] = useState(null)
   const [giftLink, setGiftLink] = useState(null)
+  const [linkSessionCode, setLinkSessionCode] = useState(null)
+  const [directOrderSessionCode, setDirectOrderSessionCode] = useState(null)
 
   const resolvedSteps = useMemo(() => {
     return steps.map((step) => {
@@ -167,10 +168,11 @@ export default function BuilderShell() {
     setCurrentStepIndex(0)
     setDirectDeliveryStep(null)
     setShippingData(null)
-    setDirectDeliverySession(null)
     setRecipientChoiceStep(null)
     setRecipientData(null)
     setGiftLink(null)
+    setLinkSessionCode(null)
+    setDirectOrderSessionCode(null)
   }
 
   function handlePrimaryCtaClick() {
@@ -186,17 +188,6 @@ export default function BuilderShell() {
     setRecipientChoiceStep("review")
   }
 
-  function buildLabeledSelections() {
-    return {
-      ...selections,
-      recipientLabel: builderValueLabels.recipient[selections.recipient] ?? "",
-      occasionLabel: builderValueLabels.occasion[selections.occasion] ?? "",
-      budgetLabel: builderValueLabels.budget[selections.budget] ?? "",
-      interestLabel: builderValueLabels.interest[selections.interest] ?? "",
-      revealStyleLabel: builderValueLabels.revealStyle[selections.revealStyle] ?? "",
-    }
-  }
-
   function handleGenerateLink() {
     if (!recommendation || !recipientData) return
 
@@ -204,61 +195,56 @@ export default function BuilderShell() {
 
     const session = createGiftSession({
       code,
-      selections: buildLabeledSelections(),
+      selections: {
+        ...selections,
+        recipientLabel: builderValueLabels.recipient[selections.recipient] ?? "",
+        occasionLabel: builderValueLabels.occasion[selections.occasion] ?? "",
+        budgetLabel: builderValueLabels.budget[selections.budget] ?? "",
+        interestLabel: builderValueLabels.interest[selections.interest] ?? "",
+        revealStyleLabel: builderValueLabels.revealStyle[selections.revealStyle] ?? "",
+      },
       recipientData,
       recommendation,
     })
 
-    persistGiftSession(session)
+    const nextGiftLink = buildGiftLink("https://ai-guru11.github.io/Atheer-v2/", session)
+    const sessionWithLink = {
+      ...session,
+      shareLink: nextGiftLink,
+    }
 
-    setGiftLink(
-      buildGiftLink("https://ai-guru11.github.io/Atheer-v2/", session),
-    )
+    persistGiftSession(sessionWithLink)
+
+    setGiftLink(nextGiftLink)
+    setLinkSessionCode(session.code)
     setRecipientChoiceStep("link")
   }
 
   function handleDeliveryFormSubmit(data) {
     setShippingData(data)
-
-    const code = directDeliverySession?.code || Math.random().toString(36).slice(2, 9).toUpperCase()
-    const session = createDirectDeliverySession({
-      code,
-      selections: buildLabeledSelections(),
-      shippingData: data,
-      recommendation,
-      status: "direct_review_ready",
-    })
-
-    persistGiftSession(session)
-    setDirectDeliverySession(session)
     setDirectDeliveryStep("review")
   }
 
   function handleApproveOrder() {
-    const code = directDeliverySession?.code
-    if (!code) return
+    if (!recommendation || !shippingData) return
 
-    const updatedSession = updateGiftSession(code, {
-      status: "direct_order_confirmed",
-      senderName: shippingData?.senderName || directDeliverySession?.senderName || "مرسل الهدية",
-      recipientName: shippingData?.recipientName || directDeliverySession?.recipientName || "",
-      recipientPhone: shippingData?.phone || directDeliverySession?.recipientPhone || "",
-      addressData: shippingData
-        ? {
-            name: shippingData.recipientName || "",
-            phone: shippingData.phone || "",
-            city: shippingData.city || "",
-            address: shippingData.address || "",
-            notes: shippingData.notes || "",
-          }
-        : directDeliverySession?.addressData || null,
-      message: shippingData?.senderMessage || directDeliverySession?.message || "",
+    const code = Math.random().toString(36).slice(2, 9).toUpperCase()
+    const session = createDirectDeliverySession({
+      code,
+      selections: {
+        ...selections,
+        recipientLabel: builderValueLabels.recipient[selections.recipient] ?? "",
+        occasionLabel: builderValueLabels.occasion[selections.occasion] ?? "",
+        budgetLabel: builderValueLabels.budget[selections.budget] ?? "",
+        interestLabel: builderValueLabels.interest[selections.interest] ?? "",
+        revealStyleLabel: builderValueLabels.revealStyle[selections.revealStyle] ?? "",
+      },
+      shippingData,
+      recommendation,
     })
 
-    if (updatedSession) {
-      setDirectDeliverySession(updatedSession)
-    }
-
+    persistGiftSession(session)
+    setDirectOrderSessionCode(session.code)
     setDirectDeliveryStep("confirmed")
   }
 
@@ -370,7 +356,13 @@ export default function BuilderShell() {
                         </div>
                       ) : null}
 
-                      <BuilderRecommendationPreview recommendation={recommendation} />
+                      <BuilderRecommendationPreview
+                        recommendation={recommendation}
+                        locked
+                        budgetLabel={builderValueLabels.budget[selections.budget] ?? ""}
+                        interestLabel={builderValueLabels.interest[selections.interest] ?? ""}
+                        giftPathLabel={giftPathMeta.label}
+                      />
 
                       <div className="mt-6 flex flex-col-reverse gap-2.5 sm:flex-row sm:justify-end">
                         <button
@@ -404,17 +396,14 @@ export default function BuilderShell() {
                     <DirectDeliveryReview
                       recommendation={recommendation}
                       shippingData={shippingData}
-                      sessionCode={directDeliverySession?.code}
+                      giftPath={selections.giftPath}
                       onApprove={handleApproveOrder}
                       onBack={() => setDirectDeliveryStep("form")}
                     />
                   )}
 
                   {directDeliveryStep === "confirmed" && (
-                    <DirectDeliveryConfirmation
-                      session={directDeliverySession}
-                      onReset={handleReset}
-                    />
+                    <DirectDeliveryConfirmation sessionCode={directOrderSessionCode} onReset={handleReset} />
                   )}
 
                   {recipientChoiceStep === "contact" && (
@@ -440,6 +429,7 @@ export default function BuilderShell() {
                       giftLink={giftLink}
                       recipientData={recipientData}
                       giftPath={selections.giftPath}
+                      sessionCode={linkSessionCode}
                       onReset={handleReset}
                     />
                   )}

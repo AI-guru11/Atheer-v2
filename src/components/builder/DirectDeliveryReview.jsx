@@ -2,12 +2,12 @@ import {
   getRevealStyleDescription,
   getExecutionModeDisplay,
 } from "../../utils/recommendationDisplay"
-import { getGiftPathMeta, getGiftStatusMeta } from "../../lib/giftSession"
+import { getGiftPathMeta } from "../../lib/giftSession"
 
 export default function DirectDeliveryReview({
   recommendation,
   shippingData,
-  sessionCode,
+  giftPath,
   onApprove,
   onBack,
 }) {
@@ -18,13 +18,11 @@ export default function DirectDeliveryReview({
   const revealDescription = getRevealStyleDescription(
     recommendation?.revealRecommendation?.tone,
   )
-
-  const pathMeta = getGiftPathMeta("exactGift")
-  const statusMeta = getGiftStatusMeta("direct_review_ready", "exactGift")
+  const pathMeta = getGiftPathMeta(giftPath)
 
   const senderRows = [
     { label: "اسم المرسل", value: shippingData.senderName },
-    shippingData.senderMessage ? { label: "ملاحظة الطلب", value: shippingData.senderMessage } : null,
+    shippingData.senderMessage ? { label: "رسالة مرفقة", value: shippingData.senderMessage } : null,
   ].filter(Boolean)
 
   const deliveryRows = [
@@ -38,25 +36,24 @@ export default function DirectDeliveryReview({
   return (
     <div className="text-right">
       <div className="mb-6">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/[0.08] px-3 py-1.5 text-[12px] font-semibold text-emerald-300">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
-          {statusMeta.badge}
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-300/20 bg-cyan-300/[0.08] px-3 py-1.5 text-[12px] font-semibold text-cyan-300">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-cyan-300" />
+          طلب مباشر جاهز للمراجعة
         </span>
 
         <h2 className="mt-3 text-xl font-bold leading-tight text-white sm:text-2xl">
-          راجع تفاصيل الطلب قبل الاعتماد
+          راجع الطلب قبل تثبيته
         </h2>
         <p className="mt-1.5 text-[13px] leading-relaxed text-slate-400">
-          {statusMeta.note}
+          في هذا المسار نحن لا نترك التوصية معلقة كاقتراح مجاني. بمجرد اعتمادك للمراجعة التالية، سيتم تثبيت الهدية داخل جلسة طلب مباشرة وجاهزة لمرحلة الدفع لاحقًا.
         </p>
       </div>
 
       <div className="space-y-3">
-        {/* Gift summary */}
         {topPick && (
           <div className="relative overflow-hidden rounded-[18px] border border-cyan-300/20 bg-cyan-300/[0.04] p-4">
             <p className="mb-2.5 text-[10px] font-bold tracking-widest text-cyan-300/60">
-              الهدية المقترحة
+              الهدية المثبتة داخل الطلب
             </p>
             <div className="flex items-start justify-between gap-3">
               <span className="shrink-0 rounded-full bg-white/[0.07] px-2.5 py-0.5 text-[12px] tabular-nums text-white/80">
@@ -80,17 +77,11 @@ export default function DirectDeliveryReview({
               {pathMeta.label}
             </span>
             <p className="text-[10px] font-bold tracking-widest text-slate-500/70">
-              مرجع الجلسة
+              المنطق التجاري الحالي
             </p>
           </div>
-
-          <div className="mt-3 flex items-center justify-between gap-3">
-            <span className="font-mono text-[12px] text-white/80">{sessionCode}</span>
-            <span className="text-[11px] text-slate-500">رقم مرجعي</span>
-          </div>
-
           <p className="mt-3 text-[13px] leading-relaxed text-slate-300">
-            {pathMeta.senderNote}
+            تم تثبيت هذا الاختيار داخل الطلب المباشر بدل إبقائه كمعاينة قابلة للنسخ. المرحلة التالية بعد اعتمادك ستكون فتح ملخص الطلب الجاهز للانتقال التجاري لاحقًا.
           </p>
         </div>
 
@@ -104,20 +95,15 @@ export default function DirectDeliveryReview({
                 key={row.label}
                 className="flex items-baseline justify-between gap-3"
               >
-                <span className="min-w-0 flex-1 break-words text-[13px] text-white/80">
-                  {row.value}
-                </span>
-                <span className="shrink-0 text-[11px] text-slate-500">
-                  {row.label}
-                </span>
+                <span className="min-w-0 flex-1 break-words text-[13px] text-white/80">{row.value}</span>
+                <span className="shrink-0 text-[11px] text-slate-500">{row.label}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Delivery summary */}
-        <div className="rounded-[18px] border border-violet-400/15 bg-violet-400/[0.03] p-4">
-          <p className="mb-2.5 text-[10px] font-bold tracking-widest text-violet-300/60">
+        <div className="rounded-[18px] border border-white/[0.08] bg-white/[0.025] p-4">
+          <p className="mb-2.5 text-[10px] font-bold tracking-widest text-slate-500/70">
             بيانات التوصيل
           </p>
           <div className="space-y-1.5">
@@ -127,15 +113,12 @@ export default function DirectDeliveryReview({
                 className="flex items-baseline justify-between gap-3"
               >
                 <span className="text-[13px] text-white/80">{row.value}</span>
-                <span className="shrink-0 text-[11px] text-slate-500">
-                  {row.label}
-                </span>
+                <span className="shrink-0 text-[11px] text-slate-500">{row.label}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Experience strip */}
         <div className="grid grid-cols-2 gap-1.5">
           <div className="rounded-[12px] bg-white/[0.025] px-3 py-3">
             <p className="text-[10px] font-semibold tracking-widest text-slate-500/70">
@@ -169,7 +152,7 @@ export default function DirectDeliveryReview({
           onClick={onApprove}
           className="rounded-full bg-[linear-gradient(90deg,#7c5cff,#22d3ee)] px-6 py-3 text-[15px] font-bold text-white shadow-[0_10px_30px_rgba(34,211,238,0.15)] transition-all duration-200 hover:shadow-[0_14px_40px_rgba(34,211,238,0.22)] active:scale-[0.98]"
         >
-          اعتمد الطلب
+          تثبيت الطلب وفتح الملخص
         </button>
       </div>
     </div>

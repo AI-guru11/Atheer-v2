@@ -1,7 +1,15 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { getGiftPathMeta } from "../../lib/giftSession"
 
-export default function RecipientLinkReady({ giftLink, recipientData, giftPath, onReset }) {
+export default function RecipientLinkReady({
+  giftLink,
+  recipientData,
+  giftPath,
+  sessionCode,
+  onReset,
+}) {
+  const navigate = useNavigate()
   const [copied, setCopied] = useState(false)
 
   const pathMeta = getGiftPathMeta(giftPath)
@@ -9,8 +17,8 @@ export default function RecipientLinkReady({ giftLink, recipientData, giftPath, 
   const badgeLabel = isExactGift ? "رابط الكشف جاهز" : "رابط الاختيار جاهز"
   const heading = isExactGift ? "تم توليد رابط كشف الهدية" : "تم توليد رابط اختيار الهدية"
   const description = isExactGift
-    ? "شارك هذا الرابط مع المستلم ليشاهد الهدية المحددة التي اخترتها له ثم يكمل بيانات الاستلام بنفسه."
-    : "شارك هذا الرابط مع المستلم ليبدأ تجربة الاختيار، يراجع الخيارات المتاحة، ثم يختار هديته بنفسه."
+    ? "الرابط صار جاهزًا للمشاركة، والهدية نفسها أصبحت مثبتة داخل جلسة الطلب بدل أن تبقى مجرد توصية مفتوحة."
+    : "الرابط صار جاهزًا للمشاركة، وتجربة الاختيار أصبحت جزءًا من الطلب نفسه وليست مجرد معاينة عامة."
   const shareText = isExactGift
     ? "اضغط على الرابط لمشاهدة هديتك"
     : "اضغط على الرابط لتختار هديتك"
@@ -67,6 +75,22 @@ export default function RecipientLinkReady({ giftLink, recipientData, giftPath, 
       <p className="mt-2 max-w-xs text-[13px] leading-relaxed text-slate-400">
         {description}
       </p>
+
+      {sessionCode ? (
+        <div className="mt-4 w-full rounded-[18px] border border-cyan-300/15 bg-cyan-300/[0.04] px-4 py-3 text-right">
+          <div className="flex items-center justify-between gap-3">
+            <span className="font-mono text-[12px] font-semibold text-white/80" dir="ltr">
+              {sessionCode}
+            </span>
+            <span className="text-[10px] font-bold tracking-widest text-cyan-300/60">
+              مرجع الطلب
+            </span>
+          </div>
+          <p className="mt-2 text-[12px] leading-relaxed text-slate-300">
+            هذا المرجع يمثل الطلب نفسه، ويمكنك فتح صفحة الملخص التجاري لمراجعته بدل ترك الرابط وحده دون سياق.
+          </p>
+        </div>
+      ) : null}
 
       <div className="mt-4 w-full rounded-[18px] border border-white/[0.08] bg-white/[0.02] px-4 py-3 text-right">
         <div className="flex items-center justify-between gap-3">
@@ -128,6 +152,16 @@ export default function RecipientLinkReady({ giftLink, recipientData, giftPath, 
           {copied ? "تم النسخ ✓" : "نسخ الرابط"}
         </button>
       </div>
+
+      {sessionCode ? (
+        <button
+          type="button"
+          onClick={() => navigate(`/checkout?code=${sessionCode}`)}
+          className="mt-4 rounded-full border border-cyan-300/20 bg-cyan-300/[0.06] px-5 py-2.5 text-[13px] font-semibold text-cyan-300 transition-colors duration-200 hover:bg-cyan-300/[0.10]"
+        >
+          فتح ملخص الطلب
+        </button>
+      ) : null}
 
       <button
         type="button"
