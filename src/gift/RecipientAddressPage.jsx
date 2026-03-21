@@ -1,6 +1,7 @@
-import { useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useMemo, useState } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import Section from '../components/layout/Section'
+import { resolveGiftSession, updateGiftSession } from '../lib/giftSession'
 import { cx } from '../utils/helpers'
 
 const FIELDS = [
@@ -48,10 +49,12 @@ const inputBase =
 
 export default function RecipientAddressPage() {
   const navigate = useNavigate()
-  const { state } = useLocation()
-  const selectedGift = state?.selectedGift ?? null
+  const [searchParams] = useSearchParams()
+  const session = useMemo(() => resolveGiftSession(searchParams), [searchParams])
+  const code = session?.code || searchParams.get('code') || ''
+  const selectedGift = session?.selectedGift ?? null
 
-  const [values, setValues] = useState(initialValues)
+  const [values, setValues] = useState(session?.addressData ?? initialValues)
   const [touched, setTouched] = useState({})
 
   function handleChange(key, value) {
@@ -67,30 +70,49 @@ export default function RecipientAddressPage() {
   }
 
   function canSubmit() {
-    return FIELDS.every((f) => !f.required || values[f.key].trim())
+    return FIELDS.every((field) => !field.required || values[field.key].trim())
   }
 
   function handleSubmit(e) {
     e.preventDefault()
     if (!canSubmit()) {
       const all = {}
-      FIELDS.forEach((f) => {
-        all[f.key] = true
+      FIELDS.forEach((field) => {
+        all[field.key] = true
       })
       setTouched(all)
       return
     }
-    navigate('/gift/confirmed', {
-      state: { selectedGift, addressData: values },
+
+    updateGiftSession(code, {
+      addressData: values,
+      status: 'address_submitted',
     })
+
+    navigate(`/gift/confirmed?code=${code}`)
+  }
+
+  if (!session || !selectedGift) {
+    return (
+      <Section className="pt-10 sm:pt-16">
+        <div className="mx-auto max-w-lg text-right">
+          <div className="charcoal-card rounded-[24px] p-6 space-y-4">
+            <h1 className="text-2xl font-bold leading-tight text-white sm:text-3xl">
+              تعذر تحميل تفاصيل الهدية
+            </h1>
+            <p className="text-[14px] leading-relaxed text-slate-300">
+              افتح رابط الهدية من جديد ثم أكمل اختيارك قبل إدخال بيانات التوصيل.
+            </p>
+          </div>
+        </div>
+      </Section>
+    )
   }
 
   return (
     <Section className="pt-10 sm:pt-16">
       <div className="mx-auto max-w-lg text-right">
-
-        {/* Selected gift mini-summary */}
-        {selectedGift && (
+        {selectedGift ? (
           <div className="mb-5 rounded-[18px] border border-cyan-300/15 bg-cyan-300/[0.04] px-4 py-3">
             <p className="mb-1 text-[10px] font-bold tracking-widest text-cyan-300/60">
               اخترت
@@ -102,7 +124,7 @@ export default function RecipientAddressPage() {
               <p className="text-[14px] font-bold text-white">{selectedGift.title}</p>
             </div>
           </div>
-        )}
+        ) : null}
 
         <div className="mb-6">
           <h2 className="text-xl font-bold leading-tight text-white sm:text-2xl">
@@ -125,11 +147,11 @@ export default function RecipientAddressPage() {
                 <div key={field.key} className="space-y-1.5">
                   <label className="block text-[13px] font-semibold text-slate-300">
                     {field.label}
-                    {!field.required && (
+                    {!field.required ? (
                       <span className="mr-1.5 text-[11px] font-normal text-slate-500">
                         (اختياري)
                       </span>
-                    )}
+                    ) : null}
                   </label>
                   <input
                     type={field.type}
@@ -140,9 +162,9 @@ export default function RecipientAddressPage() {
                     dir="rtl"
                     className={cx(inputBase, borderClass)}
                   />
-                  {invalid && (
+                  {invalid ? (
                     <p className="text-[11px] text-rose-400">هذا الحقل مطلوب</p>
-                  )}
+                  ) : null}
                 </div>
               )
             })}
@@ -151,10 +173,10 @@ export default function RecipientAddressPage() {
           <div className="mt-7 flex flex-col-reverse gap-2.5">
             <button
               type="button"
-              onClick={() => navigate('/gift/choose')}
+              onClick={() => navigate(session.giftPath === 'recipientChoice' ? `/gift/choose?code=${code}` : `/gift/reveal?code=${code}`)}
               className="rounded-full border border-white/[0.08] bg-white/[0.02] px-5 py-2.5 text-[13px] font-semibold text-slate-400 transition-colors duration-200 hover:border-white/15 hover:text-slate-200"
             >
-              الرجوع لاختيار هدية أخرى
+              الرجوع {session.giftPath === 'recipientChoice' ? 'لاختيار هدية أخرى' : 'لتفاصيل الهدية'}
             </button>
             <button
               type="submit"
@@ -164,7 +186,6 @@ export default function RecipientAddressPage() {
             </button>
           </div>
         </form>
-
       </div>
     </Section>
   )

@@ -3,6 +3,14 @@ import { cx } from "../../utils/helpers"
 
 const FIELDS = [
   {
+    key: "senderName",
+    label: "اسمك",
+    type: "text",
+    placeholder: "اسمك الذي سيظهر للمستلم",
+    required: true,
+    multiline: false,
+  },
+  {
     key: "name",
     label: "اسم المستلم",
     type: "text",
@@ -36,7 +44,7 @@ const FIELDS = [
   },
 ]
 
-const initialValues = { name: "", phone: "", email: "", message: "" }
+const initialValues = { senderName: "", name: "", phone: "", email: "", message: "" }
 
 export default function RecipientContactForm({ onSubmit, onBack, initialData }) {
   const [values, setValues] = useState(initialData ?? initialValues)
@@ -78,10 +86,10 @@ export default function RecipientContactForm({ onSubmit, onBack, initialData }) 
     <div className="text-right">
       <div className="mb-6">
         <h2 className="text-xl font-bold leading-tight text-white sm:text-2xl">
-          بيانات المستلم
+          بيانات المرسل والمستلم
         </h2>
         <p className="mt-1.5 text-[13px] leading-relaxed text-slate-400">
-          أدخل معلومات الشخص الذي ستُرسل له رابط الهدية
+          أدخل اسمك كما تريد أن يظهر داخل تجربة الهدية، ثم أكمل بيانات المستلم الذي سيصله الرابط.
         </p>
       </div>
 
@@ -130,8 +138,8 @@ export default function RecipientContactForm({ onSubmit, onBack, initialData }) 
                   <p className="text-[11px] text-rose-400">هذا الحقل مطلوب</p>
                 )}
               </div>
-            )
-          })}
+            )}
+          )}
         </div>
 
         <div className="mt-7 flex flex-col-reverse gap-2.5 sm:flex-row sm:justify-end">

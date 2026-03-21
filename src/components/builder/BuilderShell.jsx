@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react"
-import { builderContent } from "../../data/builderContent"
+import { useEffect, useMemo, useState } from "react"
+import { builderContent, builderValueLabels } from "../../data/builderContent"
 import BuilderProgress from "./BuilderProgress"
 import BuilderChoiceGrid from "./BuilderChoiceGrid"
 import BuilderSummary from "./BuilderSummary"
@@ -12,6 +12,7 @@ import RecipientContactForm from "./RecipientContactForm"
 import RecipientReview from "./RecipientReview"
 import RecipientLinkReady from "./RecipientLinkReady"
 import { runRecommendationEngine } from "../../lib/recommendation"
+import { buildGiftLink, createGiftSession, persistGiftSession } from "../../lib/giftSession"
 
 const initialSelections = {
   recipient: "",
@@ -19,8 +20,14 @@ const initialSelections = {
   budget: "",
   interest: "",
   revealStyle: "",
-  controlMode: "",
+  giftPath: "",
   deliveryMode: "",
+}
+
+function resolveControlMode(giftPath) {
+  if (giftPath === "exactGift") return "self"
+  if (giftPath === "recipientChoice") return "copilot"
+  return "copilot"
 }
 
 export default function BuilderShell() {
@@ -35,12 +42,55 @@ export default function BuilderShell() {
   const [recipientData, setRecipientData] = useState(null)
   const [giftLink, setGiftLink] = useState(null)
 
-  const totalSteps = steps.length
-  const isComplete = steps.every((step) => Boolean(selections[step.field]))
+  const resolvedSteps = useMemo(() => {
+    return steps.map((step) => {
+      if (step.field !== "deliveryMode") {
+        return step
+      }
+
+      if (selections.giftPath === "recipientChoice") {
+        return {
+          ...step,
+          title: "كيف ستصل تجربة الاختيار؟",
+          description:
+            "بما أنك اخترت أن يدع المستلم يختار هديته، فسيتم إرسال رابط خاص له ليرى الخيارات ويكمل التفاصيل بنفسه.",
+          options: [
+            {
+              value: "recipientChoice",
+              label: "أرسل رابطًا ليختار هديته",
+              description: "نرسل له صفحة خاصة يراجع فيها الخيارات ويضيف عنوانه بنفسه",
+            },
+          ],
+        }
+      }
+
+      return {
+        ...step,
+        title: "كيف تريد إرسال الهدية المحددة؟",
+        description:
+          "بعد أن اخترت هدية محددة، قرر هل تريد إدخال عنوان المستلم الآن أو إرسال رابط تجربة الهدية أولًا.",
+        options: [
+          {
+            value: "directDelivery",
+            label: "أدخل عنوان المستلم الآن",
+            description: "أكمل العنوان الآن لنبدأ تجهيز الهدية مباشرة",
+          },
+          {
+            value: "recipientChoice",
+            label: "أرسل رابط تجربة الهدية أولًا",
+            description: "نرسل له صفحة خاصة يشاهد منها الهدية ويكمل التفاصيل بنفسه",
+          },
+        ],
+      }
+    })
+  }, [steps, selections.giftPath])
+
+  const totalSteps = resolvedSteps.length
+  const isComplete = resolvedSteps.every((step) => Boolean(selections[step.field]))
   const showCompletionState = currentStepIndex >= totalSteps && isComplete
 
   const safeStepIndex = Math.min(currentStepIndex, totalSteps - 1)
-  const currentStep = steps[safeStepIndex]
+  const currentStep = resolvedSteps[safeStepIndex]
 
   const currentStepNumber = showCompletionState ? totalSteps : safeStepIndex + 1
   const currentValue = currentStep ? selections[currentStep.field] : ""
@@ -50,13 +100,36 @@ export default function BuilderShell() {
     return Object.values(selections).filter(Boolean).length
   }, [selections])
 
+  useEffect(() => {
+    if (
+      currentStep?.field === "deliveryMode" &&
+      selections.giftPath === "recipientChoice" &&
+      selections.deliveryMode !== "recipientChoice"
+    ) {
+      setSelections((prev) => ({
+        ...prev,
+        deliveryMode: "recipientChoice",
+      }))
+    }
+  }, [currentStep, selections.giftPath, selections.deliveryMode])
+
   function handleSelect(value) {
     if (!currentStep) return
 
-    setSelections((prev) => ({
-      ...prev,
-      [currentStep.field]: value,
-    }))
+    setSelections((prev) => {
+      if (currentStep.field === "giftPath") {
+        return {
+          ...prev,
+          giftPath: value,
+          deliveryMode: "",
+        }
+      }
+
+      return {
+        ...prev,
+        [currentStep.field]: value,
+      }
+    })
   }
 
   function handlePrevious() {
@@ -78,7 +151,10 @@ export default function BuilderShell() {
       return
     }
 
-    const result = runRecommendationEngine(selections)
+    const result = runRecommendationEngine({
+      ...selections,
+      controlMode: resolveControlMode(selections.giftPath),
+    })
     setEngineResult(result)
     setCurrentStepIndex(totalSteps)
   }
@@ -108,8 +184,29 @@ export default function BuilderShell() {
   }
 
   function handleGenerateLink() {
+    if (!recommendation || !recipientData) return
+
     const code = Math.random().toString(36).slice(2, 9).toUpperCase()
-    setGiftLink(`https://ai-guru11.github.io/Atheer-v2/#/gift/open?code=${code}`)
+
+    const session = createGiftSession({
+      code,
+      selections: {
+        ...selections,
+        recipientLabel: builderValueLabels.recipient[selections.recipient] ?? "",
+        occasionLabel: builderValueLabels.occasion[selections.occasion] ?? "",
+        budgetLabel: builderValueLabels.budget[selections.budget] ?? "",
+        interestLabel: builderValueLabels.interest[selections.interest] ?? "",
+        revealStyleLabel: builderValueLabels.revealStyle[selections.revealStyle] ?? "",
+      },
+      recipientData,
+      recommendation,
+    })
+
+    persistGiftSession(session)
+
+    setGiftLink(
+      buildGiftLink("https://ai-guru11.github.io/Atheer-v2/", session),
+    )
     setRecipientChoiceStep("link")
   }
 
@@ -172,7 +269,7 @@ export default function BuilderShell() {
                     onSelect={handleSelect}
                     compact={
                       currentStep.field === "budget" ||
-                      currentStep.field === "controlMode" ||
+                      currentStep.field === "giftPath" ||
                       currentStep.field === "deliveryMode"
                     }
                   />
@@ -257,6 +354,7 @@ export default function BuilderShell() {
                     <RecipientReview
                       recommendation={recommendation}
                       recipientData={recipientData}
+                      giftPath={selections.giftPath}
                       onGenerateLink={handleGenerateLink}
                       onBack={() => setRecipientChoiceStep("contact")}
                     />
@@ -265,6 +363,8 @@ export default function BuilderShell() {
                   {recipientChoiceStep === "link" && (
                     <RecipientLinkReady
                       giftLink={giftLink}
+                      recipientData={recipientData}
+                      giftPath={selections.giftPath}
                       onReset={handleReset}
                     />
                   )}
@@ -304,7 +404,6 @@ export default function BuilderShell() {
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         </div>

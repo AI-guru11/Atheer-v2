@@ -6,6 +6,7 @@ import {
 export default function RecipientReview({
   recommendation,
   recipientData,
+  giftPath,
   onGenerateLink,
   onBack,
 }) {
@@ -17,12 +18,22 @@ export default function RecipientReview({
     recommendation?.revealRecommendation?.tone,
   )
 
-  const recipientRows = [
-    { label: "الاسم", value: recipientData.name },
-    { label: "الجوال", value: recipientData.phone },
-    { label: "البريد", value: recipientData.email },
+  const senderRows = [
+    { label: "اسم المرسل", value: recipientData.senderName },
     recipientData.message ? { label: "الرسالة", value: recipientData.message } : null,
   ].filter(Boolean)
+
+  const recipientRows = [
+    { label: "اسم المستلم", value: recipientData.name },
+    { label: "الجوال", value: recipientData.phone },
+    { label: "البريد", value: recipientData.email },
+  ].filter(Boolean)
+
+  const reviewDescription = giftPath === "exactGift"
+    ? "تحقق من اسمك وبيانات المستلم والهدية المحددة قبل توليد رابط الكشف."
+    : "تحقق من اسمك وبيانات المستلم والخيارات المقترحة قبل توليد رابط الاختيار."
+
+  const linkActionLabel = giftPath === "exactGift" ? "توليد رابط الكشف" : "توليد رابط الاختيار"
 
   return (
     <div className="text-right">
@@ -31,16 +42,15 @@ export default function RecipientReview({
           راجع تفاصيل الهدية
         </h2>
         <p className="mt-1.5 text-[13px] leading-relaxed text-slate-400">
-          تحقق من بيانات المستلم والتوصية قبل توليد رابط الهدية
+          {reviewDescription}
         </p>
       </div>
 
       <div className="space-y-3">
-        {/* Recommendation summary */}
         {topPick && (
           <div className="relative overflow-hidden rounded-[18px] border border-cyan-300/20 bg-cyan-300/[0.04] p-4">
             <p className="mb-2.5 text-[10px] font-bold tracking-widest text-cyan-300/60">
-              الهدية المقترحة
+              {giftPath === "exactGift" ? "الهدية التي ستظهر للمستلم" : "الخيار الأبرز داخل المجموعة"}
             </p>
             <div className="flex items-start justify-between gap-3">
               <span className="shrink-0 rounded-full bg-white/[0.07] px-2.5 py-0.5 text-[12px] tabular-nums text-white/80">
@@ -58,9 +68,29 @@ export default function RecipientReview({
           </div>
         )}
 
-        {/* Recipient info */}
         <div className="rounded-[18px] border border-violet-400/15 bg-violet-400/[0.03] p-4">
           <p className="mb-2.5 text-[10px] font-bold tracking-widest text-violet-300/60">
+            بيانات المرسل
+          </p>
+          <div className="space-y-1.5">
+            {senderRows.map((row) => (
+              <div
+                key={row.label}
+                className="flex items-baseline justify-between gap-3"
+              >
+                <span className="min-w-0 flex-1 break-words text-[13px] text-white/80">
+                  {row.value}
+                </span>
+                <span className="shrink-0 text-[11px] text-slate-500">
+                  {row.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-[18px] border border-white/[0.08] bg-white/[0.025] p-4">
+          <p className="mb-2.5 text-[10px] font-bold tracking-widest text-slate-500/70">
             بيانات المستلم
           </p>
           <div className="space-y-1.5">
@@ -80,7 +110,6 @@ export default function RecipientReview({
           </div>
         </div>
 
-        {/* Experience strip */}
         <div className="grid grid-cols-2 gap-1.5">
           <div className="rounded-[12px] bg-white/[0.025] px-3 py-3">
             <p className="text-[10px] font-semibold tracking-widest text-slate-500/70">
@@ -114,7 +143,7 @@ export default function RecipientReview({
           onClick={onGenerateLink}
           className="rounded-full bg-[linear-gradient(90deg,#7c5cff,#22d3ee)] px-6 py-3 text-[15px] font-bold text-white shadow-[0_10px_30px_rgba(34,211,238,0.15)] transition-all duration-200 hover:shadow-[0_14px_40px_rgba(34,211,238,0.22)] active:scale-[0.98]"
         >
-          توليد رابط الهدية
+          {linkActionLabel}
         </button>
       </div>
     </div>

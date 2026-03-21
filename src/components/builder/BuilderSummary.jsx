@@ -40,10 +40,10 @@ export default function BuilderSummary({ selections }) {
         : null,
     },
     {
-      key: "controlMode",
-      label: summaryFields.controlMode,
-      value: selections.controlMode
-        ? builderValueLabels.controlMode[selections.controlMode]
+      key: "giftPath",
+      label: summaryFields.giftPath,
+      value: selections.giftPath
+        ? builderValueLabels.giftPath[selections.giftPath]
         : null,
     },
     {

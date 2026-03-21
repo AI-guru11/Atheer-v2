@@ -3,7 +3,7 @@ export const builderContent = {
     eyebrow: "Gift Builder",
     title: "ابنِ هديتك خطوة بخطوة",
     description:
-      "ابدأ من الشخص والمناسبة والميزانية، ثم حدّد الاهتمامات وأسلوب التجربة ومستوى التحكم لنصل إلى اتجاه الهدية الأنسب.",
+      "ابدأ من الشخص والمناسبة والميزانية، ثم حدّد الاهتمامات وأسلوب التجربة ومسار الهدية لنصل إلى اتجاه الهدية الأنسب.",
   },
 
   steps: [
@@ -88,34 +88,33 @@ export const builderContent = {
       ],
     },
     {
-      id: "controlMode",
+      id: "giftPath",
       number: 6,
-      title: "كيف تريد إدارة الاختيار؟",
+      title: "ما مسار الهدية المناسب؟",
       description:
-        "حدّد هل تريد أن تختار بنفسك، أو أن يقترح أثير ثم تراجع، أو تفوض أثير بالكامل.",
-      field: "controlMode",
+        "حدّد هل ستختار هدية محددة بنفسك، أم تريد أن تمنح المستلم حرية الاختيار من مجموعة منسقة.",
+      field: "giftPath",
       options: [
-        { value: "self", label: "أختار كل شيء بنفسي" },
-        { value: "copilot", label: "أثير يقترح وأنا أراجع" },
-        { value: "delegated", label: "أفوض أثير بالكامل" },
+        { value: "exactGift", label: "أختار هدية محددة بنفسي" },
+        { value: "recipientChoice", label: "أجعل المستلم يختار من مجموعة هدايا" },
       ],
     },
     {
       id: "deliveryMode",
       number: 7,
       title: "كيف تريد إرسال الهدية؟",
-      description: "اختر الطريقة التي ستصل بها الهدية إلى المستلم.",
+      description: "اختر الطريقة التي ستصل بها الهدية أو تجربة الهدية إلى المستلم.",
       field: "deliveryMode",
       options: [
         {
           value: "directDelivery",
-          label: "أعرف عنوان المستلم",
+          label: "أدخل عنوان المستلم الآن",
           description: "أكمل العنوان الآن لنبدأ تجهيز الهدية مباشرة",
         },
         {
           value: "recipientChoice",
-          label: "أرسل له رابطًا ليختار",
-          description: "نرسل له صفحة خاصة يختار منها الهدية ويدخل عنوانه بنفسه",
+          label: "أرسل رابط تجربة الهدية",
+          description: "نرسل له صفحة خاصة يشاهد منها الهدية أو يختار منها ويكمل التفاصيل بنفسه",
         },
       ],
     },
@@ -138,7 +137,7 @@ export const builderContent = {
       budget: "الميزانية",
       interest: "الاهتمام",
       revealStyle: "أسلوب التجربة",
-      controlMode: "طريقة الاختيار",
+      giftPath: "مسار الهدية",
       deliveryMode: "طريقة الإرسال",
     },
   },
@@ -147,7 +146,7 @@ export const builderContent = {
     badge: "التوصية جاهزة",
     title: "هديتك المقترحة",
     description:
-      "راجع التوصية وتواصل معنا لتنفيذ الهدية.",
+      "راجع التوصية وحدد المسار المناسب لإكمال تجربة الهدية.",
     primaryCta: "احجز هديتك مع أثير",
     ctaByDelivery: {
       directDelivery: "أكمل بيانات التوصيل",
@@ -197,13 +196,12 @@ export const builderValueLabels = {
     surprise: "مفاجئ جدًا",
     professional: "مهني ورسمي",
   },
-  controlMode: {
-    self: "أختار كل شيء بنفسي",
-    copilot: "أثير يقترح وأنا أراجع",
-    delegated: "أفوض أثير بالكامل",
+  giftPath: {
+    exactGift: "هدية محددة من المرسل",
+    recipientChoice: "المستلم يختار من مجموعة هدايا",
   },
   deliveryMode: {
-    directDelivery: "إرسال مباشر",
-    recipientChoice: "رابط للمستلم",
+    directDelivery: "إدخال العنوان الآن",
+    recipientChoice: "رابط تجربة الهدية",
   },
 }

@@ -1,7 +1,17 @@
 import { useState } from "react"
 
-export default function RecipientLinkReady({ giftLink, onReset }) {
+export default function RecipientLinkReady({ giftLink, recipientData, giftPath, onReset }) {
   const [copied, setCopied] = useState(false)
+
+  const isExactGift = giftPath === "exactGift"
+  const badgeLabel = isExactGift ? "رابط الكشف جاهز" : "رابط الاختيار جاهز"
+  const heading = isExactGift ? "تم توليد رابط كشف الهدية" : "تم توليد رابط اختيار الهدية"
+  const description = isExactGift
+    ? "شارك هذا الرابط مع المستلم ليشاهد الهدية التي اخترتها له ثم يكمل بيانات الاستلام بنفسه."
+    : "شارك هذا الرابط مع المستلم ليشاهد الخيارات المتاحة ويختار هديته بنفسه."
+  const shareText = isExactGift
+    ? "اضغط على الرابط لمشاهدة هديتك"
+    : "اضغط على الرابط لتختار هديتك"
 
   function handleCopy() {
     if (navigator.clipboard) {
@@ -15,8 +25,8 @@ export default function RecipientLinkReady({ giftLink, onReset }) {
     if (navigator.share) {
       navigator
         .share({
-          title: "هديتك جاهزة",
-          text: "اضغط على الرابط لتختار هديتك",
+          title: isExactGift ? "هديتك جاهزة للكشف" : "هديتك جاهزة للاختيار",
+          text: shareText,
           url: giftLink,
         })
         .catch(() => {})
@@ -27,7 +37,6 @@ export default function RecipientLinkReady({ giftLink, onReset }) {
 
   return (
     <div className="flex flex-col items-center py-4 text-center">
-      {/* Icon */}
       <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-violet-400/25 bg-violet-400/[0.08]">
         <svg
           width="26"
@@ -47,17 +56,29 @@ export default function RecipientLinkReady({ giftLink, onReset }) {
 
       <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-violet-400/20 bg-violet-400/[0.08] px-3 py-1.5 text-[12px] font-semibold text-violet-300">
         <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-400" />
-        رابط الهدية جاهز
+        {badgeLabel}
       </span>
 
       <h2 className="text-xl font-bold leading-tight text-white sm:text-2xl">
-        تم توليد رابط الهدية
+        {heading}
       </h2>
       <p className="mt-2 max-w-xs text-[13px] leading-relaxed text-slate-400">
-        شارك هذا الرابط مع المستلم ليختار هديته بنفسه
+        {description}
       </p>
 
-      {/* Link display */}
+      {(recipientData?.senderName || recipientData?.name) ? (
+        <div className="mt-4 w-full rounded-[18px] border border-white/[0.08] bg-white/[0.02] px-4 py-3 text-right">
+          <div className="flex items-center justify-between gap-3 text-[12px]">
+            <span className="text-white/80">{recipientData?.name || "—"}</span>
+            <span className="text-slate-500">إلى</span>
+          </div>
+          <div className="mt-2 flex items-center justify-between gap-3 text-[12px]">
+            <span className="text-white/80">{recipientData?.senderName || "—"}</span>
+            <span className="text-slate-500">من</span>
+          </div>
+        </div>
+      ) : null}
+
       <div className="mt-5 w-full rounded-[18px] border border-violet-400/20 bg-violet-400/[0.05] px-4 py-3.5">
         <p
           className="break-all font-mono text-[13px] font-semibold leading-relaxed text-violet-300"
@@ -67,7 +88,6 @@ export default function RecipientLinkReady({ giftLink, onReset }) {
         </p>
       </div>
 
-      {/* Action buttons */}
       <div className="mt-4 flex w-full flex-col gap-2.5 sm:flex-row">
         <button
           type="button"

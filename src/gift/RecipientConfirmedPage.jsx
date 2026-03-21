@@ -1,14 +1,17 @@
-import { useNavigate } from 'react-router-dom'
+import { useMemo } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import Section from '../components/layout/Section'
+import { getGiftStatusMeta, resolveGiftSession } from '../lib/giftSession'
 
 export default function RecipientConfirmedPage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const session = useMemo(() => resolveGiftSession(searchParams), [searchParams])
+  const statusMeta = getGiftStatusMeta(session?.status, session?.giftPath)
 
   return (
     <Section className="pt-10 sm:pt-16">
       <div className="mx-auto max-w-sm text-center">
-
-        {/* Check icon */}
         <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-emerald-400/20 bg-emerald-400/[0.08]">
           <svg
             width="28"
@@ -27,7 +30,7 @@ export default function RecipientConfirmedPage() {
 
         <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/[0.08] px-3 py-1.5 text-[12px] font-semibold text-emerald-300">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
-          تم الاستلام
+          {statusMeta.badge}
         </span>
 
         <h1 className="mt-4 text-2xl font-bold leading-tight text-white sm:text-3xl">
@@ -35,14 +38,25 @@ export default function RecipientConfirmedPage() {
         </h1>
 
         <p className="mt-2 text-[14px] leading-relaxed text-slate-400">
-          تم حفظ اختيار الهدية وبيانات التوصيل
+          {statusMeta.note}
         </p>
 
-        <div className="mt-5 rounded-[18px] border border-white/[0.07] bg-white/[0.025] px-4 py-3.5 text-right">
-          <p className="text-[12px] leading-relaxed text-slate-400">
-            سيتم استكمال تجهيز الهدية بعد اعتماد الطلب من المُهدي
-          </p>
-        </div>
+        {session?.selectedGift ? (
+          <div className="mt-5 rounded-[18px] border border-cyan-300/15 bg-cyan-300/[0.04] px-4 py-3.5 text-right">
+            <p className="text-[10px] font-bold tracking-widest text-cyan-300/60">الهدية المختارة</p>
+            <p className="mt-1.5 text-[14px] font-bold text-white">{session.selectedGift.title}</p>
+          </div>
+        ) : null}
+
+        {session?.addressData?.name ? (
+          <div className="mt-5 rounded-[18px] border border-white/[0.07] bg-white/[0.025] px-4 py-3.5 text-right">
+            <p className="text-[10px] font-bold tracking-widest text-slate-500/70">سيتم التوصيل إلى</p>
+            <p className="mt-1.5 text-[14px] font-bold text-white">{session.addressData.name}</p>
+            <p className="mt-1 text-[12px] leading-relaxed text-slate-400">
+              {session.addressData.city} — {session.addressData.address}
+            </p>
+          </div>
+        ) : null}
 
         <button
           type="button"
@@ -51,7 +65,6 @@ export default function RecipientConfirmedPage() {
         >
           تم
         </button>
-
       </div>
     </Section>
   )
