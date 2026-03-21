@@ -2,10 +2,12 @@ import {
   getRevealStyleDescription,
   getExecutionModeDisplay,
 } from "../../utils/recommendationDisplay"
+import { getGiftPathMeta, getGiftStatusMeta } from "../../lib/giftSession"
 
 export default function DirectDeliveryReview({
   recommendation,
   shippingData,
+  sessionCode,
   onApprove,
   onBack,
 }) {
@@ -16,6 +18,14 @@ export default function DirectDeliveryReview({
   const revealDescription = getRevealStyleDescription(
     recommendation?.revealRecommendation?.tone,
   )
+
+  const pathMeta = getGiftPathMeta("exactGift")
+  const statusMeta = getGiftStatusMeta("direct_review_ready", "exactGift")
+
+  const senderRows = [
+    { label: "اسم المرسل", value: shippingData.senderName },
+    shippingData.senderMessage ? { label: "ملاحظة الطلب", value: shippingData.senderMessage } : null,
+  ].filter(Boolean)
 
   const deliveryRows = [
     { label: "المستلم", value: shippingData.recipientName },
@@ -28,11 +38,16 @@ export default function DirectDeliveryReview({
   return (
     <div className="text-right">
       <div className="mb-6">
-        <h2 className="text-xl font-bold leading-tight text-white sm:text-2xl">
-          راجع تفاصيل الطلب
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/[0.08] px-3 py-1.5 text-[12px] font-semibold text-emerald-300">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
+          {statusMeta.badge}
+        </span>
+
+        <h2 className="mt-3 text-xl font-bold leading-tight text-white sm:text-2xl">
+          راجع تفاصيل الطلب قبل الاعتماد
         </h2>
         <p className="mt-1.5 text-[13px] leading-relaxed text-slate-400">
-          تأكد من بيانات الهدية والتوصيل قبل اعتماد الطلب
+          {statusMeta.note}
         </p>
       </div>
 
@@ -58,6 +73,47 @@ export default function DirectDeliveryReview({
             </div>
           </div>
         )}
+
+        <div className="rounded-[18px] border border-white/[0.08] bg-white/[0.025] p-4">
+          <div className="flex items-center justify-between gap-3">
+            <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-0.5 text-[11px] font-semibold text-white/75">
+              {pathMeta.label}
+            </span>
+            <p className="text-[10px] font-bold tracking-widest text-slate-500/70">
+              مرجع الجلسة
+            </p>
+          </div>
+
+          <div className="mt-3 flex items-center justify-between gap-3">
+            <span className="font-mono text-[12px] text-white/80">{sessionCode}</span>
+            <span className="text-[11px] text-slate-500">رقم مرجعي</span>
+          </div>
+
+          <p className="mt-3 text-[13px] leading-relaxed text-slate-300">
+            {pathMeta.senderNote}
+          </p>
+        </div>
+
+        <div className="rounded-[18px] border border-violet-400/15 bg-violet-400/[0.03] p-4">
+          <p className="mb-2.5 text-[10px] font-bold tracking-widest text-violet-300/60">
+            بيانات المرسل
+          </p>
+          <div className="space-y-1.5">
+            {senderRows.map((row) => (
+              <div
+                key={row.label}
+                className="flex items-baseline justify-between gap-3"
+              >
+                <span className="min-w-0 flex-1 break-words text-[13px] text-white/80">
+                  {row.value}
+                </span>
+                <span className="shrink-0 text-[11px] text-slate-500">
+                  {row.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* Delivery summary */}
         <div className="rounded-[18px] border border-violet-400/15 bg-violet-400/[0.03] p-4">

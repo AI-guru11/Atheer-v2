@@ -3,6 +3,20 @@ import { cx } from "../../utils/helpers"
 
 const FIELDS = [
   {
+    key: "senderName",
+    label: "اسمك",
+    type: "text",
+    placeholder: "اسمك الذي سيظهر في الطلب",
+    required: true,
+  },
+  {
+    key: "senderMessage",
+    label: "رسالة داخلية للطلب",
+    type: "text",
+    placeholder: "اختياري: ملاحظة سريعة مرتبطة بالمناسبة أو أسلوب التقديم",
+    required: false,
+  },
+  {
     key: "recipientName",
     label: "اسم المستلم",
     type: "text",
@@ -40,6 +54,8 @@ const FIELDS = [
 ]
 
 const initialValues = {
+  senderName: "",
+  senderMessage: "",
   recipientName: "",
   phone: "",
   city: "",

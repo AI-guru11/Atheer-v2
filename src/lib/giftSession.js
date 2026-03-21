@@ -45,6 +45,57 @@ function sanitizeOption(option) {
   }
 }
 
+function buildBaseSession({
+  code,
+  selections,
+  senderName,
+  recipientName,
+  recipientPhone,
+  recipientEmail,
+  message,
+  recommendationTitle,
+  selectedGift,
+  giftOptions,
+  addressData,
+  status,
+}) {
+  const createdAt = new Date().toISOString()
+
+  return {
+    code,
+    createdAt,
+    updatedAt: createdAt,
+    status,
+    statusTimeline: [
+      {
+        status,
+        at: createdAt,
+      },
+    ],
+    giftPath: selections.giftPath,
+    deliveryMode: selections.deliveryMode,
+    revealStyle: selections.revealStyle,
+    recipient: selections.recipient,
+    recipientLabel: selections.recipientLabel,
+    occasion: selections.occasion,
+    occasionLabel: selections.occasionLabel,
+    budget: selections.budget,
+    budgetLabel: selections.budgetLabel,
+    interest: selections.interest,
+    interestLabel: selections.interestLabel,
+    revealStyleLabel: selections.revealStyleLabel,
+    message: message || "",
+    senderName: senderName?.trim() || "مرسل الهدية",
+    recipientName: recipientName || "",
+    recipientPhone: recipientPhone || "",
+    recipientEmail: recipientEmail || "",
+    recommendationTitle: recommendationTitle || "",
+    selectedGift: selectedGift || null,
+    giftOptions: giftOptions || [],
+    addressData: addressData || null,
+  }
+}
+
 function createStatusEntry(status) {
   return {
     status,
@@ -151,6 +202,14 @@ export function getGiftStatusMeta(status, giftPath) {
       badge: "تم حفظ بيانات الاستلام",
       note: "تم حفظ اختيار الهدية وبيانات الاستلام داخل الجلسة نفسها وأصبحت جاهزة للمتابعة النهائية.",
     },
+    direct_review_ready: {
+      badge: "الطلب جاهز للمراجعة",
+      note: "تم حفظ بيانات التوصيل الأولية للهدية المحددة، والخطوة الحالية هي مراجعة الطلب واعتماده قبل التنفيذ.",
+    },
+    direct_order_confirmed: {
+      badge: "تم اعتماد طلب التوصيل المباشر",
+      note: "تم توحيد بيانات الهدية والتوصيل في جلسة واحدة، ويمكن الآن متابعة التنفيذ على نفس المرجع دون الاعتماد على حالة مؤقتة داخل الواجهة.",
+    },
   }
 
   return statusMap[status] || fallback
@@ -163,42 +222,48 @@ export function createGiftSession({ code, selections, recipientData, recommendat
     : []
 
   const giftOptions = [topPick, ...alternatives].filter(Boolean)
-  const initialStatus = "link_ready"
-  const createdAt = new Date().toISOString()
 
-  return {
+  return buildBaseSession({
     code,
-    createdAt,
-    updatedAt: createdAt,
-    status: initialStatus,
-    statusTimeline: [
-      {
-        status: initialStatus,
-        at: createdAt,
-      },
-    ],
-    giftPath: selections.giftPath,
-    deliveryMode: selections.deliveryMode,
-    revealStyle: selections.revealStyle,
-    recipient: selections.recipient,
-    recipientLabel: selections.recipientLabel,
-    occasion: selections.occasion,
-    occasionLabel: selections.occasionLabel,
-    budget: selections.budget,
-    budgetLabel: selections.budgetLabel,
-    interest: selections.interest,
-    interestLabel: selections.interestLabel,
-    revealStyleLabel: selections.revealStyleLabel,
-    message: recipientData?.message || "",
-    senderName: recipientData?.senderName?.trim() || "مرسل الهدية",
-    recipientName: recipientData?.name || "",
-    recipientPhone: recipientData?.phone || "",
-    recipientEmail: recipientData?.email || "",
-    recommendationTitle: recommendation?.summaryAngle || "",
+    selections,
+    senderName: recipientData?.senderName,
+    recipientName: recipientData?.name,
+    recipientPhone: recipientData?.phone,
+    recipientEmail: recipientData?.email,
+    message: recipientData?.message,
+    recommendationTitle: recommendation?.summaryAngle,
     selectedGift: selections.giftPath === "exactGift" ? topPick : null,
     giftOptions: selections.giftPath === "recipientChoice" ? giftOptions : [],
     addressData: null,
-  }
+    status: "link_ready",
+  })
+}
+
+export function createDirectDeliverySession({ code, selections, shippingData, recommendation, status = "direct_review_ready" }) {
+  const topPick = recommendation?.topPick ? sanitizeOption(recommendation.topPick) : null
+
+  return buildBaseSession({
+    code,
+    selections,
+    senderName: shippingData?.senderName,
+    recipientName: shippingData?.recipientName,
+    recipientPhone: shippingData?.phone,
+    recipientEmail: "",
+    message: shippingData?.senderMessage || "",
+    recommendationTitle: recommendation?.summaryAngle,
+    selectedGift: topPick,
+    giftOptions: [],
+    addressData: shippingData
+      ? {
+          name: shippingData.recipientName || "",
+          phone: shippingData.phone || "",
+          city: shippingData.city || "",
+          address: shippingData.address || "",
+          notes: shippingData.notes || "",
+        }
+      : null,
+    status,
+  })
 }
 
 export function persistGiftSession(session) {
