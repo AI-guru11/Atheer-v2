@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import Section from '../components/layout/Section'
-import { resolveGiftSession, updateGiftSession } from '../lib/giftSession'
 import { cx } from '../utils/helpers'
+import { getGiftPathMeta, resolveGiftSession, updateGiftSession } from '../lib/giftSession'
 
 const FIELDS = [
   {
@@ -53,6 +53,7 @@ export default function RecipientAddressPage() {
   const session = useMemo(() => resolveGiftSession(searchParams), [searchParams])
   const code = session?.code || searchParams.get('code') || ''
   const selectedGift = session?.selectedGift ?? null
+  const pathMeta = getGiftPathMeta(session?.giftPath)
 
   const [values, setValues] = useState(session?.addressData ?? initialValues)
   const [touched, setTouched] = useState({})
@@ -114,10 +115,15 @@ export default function RecipientAddressPage() {
       <div className="mx-auto max-w-lg text-right">
         {selectedGift ? (
           <div className="mb-5 rounded-[18px] border border-cyan-300/15 bg-cyan-300/[0.04] px-4 py-3">
-            <p className="mb-1 text-[10px] font-bold tracking-widest text-cyan-300/60">
-              اخترت
-            </p>
             <div className="flex items-center justify-between gap-3">
+              <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-0.5 text-[11px] font-semibold text-white/75">
+                {pathMeta.label}
+              </span>
+              <p className="text-[10px] font-bold tracking-widest text-cyan-300/60">
+                الهدية التي ستُسلَّم
+              </p>
+            </div>
+            <div className="mt-3 flex items-center justify-between gap-3">
               <span className="text-[12px] tabular-nums text-white/60">
                 {selectedGift.priceRange}
               </span>
@@ -128,10 +134,10 @@ export default function RecipientAddressPage() {
 
         <div className="mb-6">
           <h2 className="text-xl font-bold leading-tight text-white sm:text-2xl">
-            أين نوصّل هديتك؟
+            {pathMeta.addressHeading}
           </h2>
           <p className="mt-1.5 text-[13px] leading-relaxed text-slate-400">
-            أدخل بيانات التوصيل لإتمام اختيارك
+            {pathMeta.addressDescription}
           </p>
         </div>
 
@@ -182,7 +188,7 @@ export default function RecipientAddressPage() {
               type="submit"
               className="rounded-full bg-[linear-gradient(90deg,#7c5cff,#22d3ee)] px-6 py-3 text-[15px] font-bold text-white shadow-[0_10px_30px_rgba(34,211,238,0.15)] transition-all duration-200 hover:shadow-[0_14px_40px_rgba(34,211,238,0.22)] active:scale-[0.98]"
             >
-              تأكيد الاختيار
+              تأكيد بيانات الاستلام
             </button>
           </div>
         </form>

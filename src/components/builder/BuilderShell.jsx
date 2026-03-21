@@ -12,7 +12,7 @@ import RecipientContactForm from "./RecipientContactForm"
 import RecipientReview from "./RecipientReview"
 import RecipientLinkReady from "./RecipientLinkReady"
 import { runRecommendationEngine } from "../../lib/recommendation"
-import { buildGiftLink, createGiftSession, persistGiftSession } from "../../lib/giftSession"
+import { buildGiftLink, createGiftSession, getGiftPathMeta, persistGiftSession } from "../../lib/giftSession"
 
 const initialSelections = {
   recipient: "",
@@ -91,6 +91,7 @@ export default function BuilderShell() {
 
   const safeStepIndex = Math.min(currentStepIndex, totalSteps - 1)
   const currentStep = resolvedSteps[safeStepIndex]
+  const giftPathMeta = getGiftPathMeta(selections.giftPath)
 
   const currentStepNumber = showCompletionState ? totalSteps : safeStepIndex + 1
   const currentValue = currentStep ? selections[currentStep.field] : ""
@@ -221,9 +222,21 @@ export default function BuilderShell() {
 
   const recommendation = engineResult?.recommendation || null
 
-  const primaryCtaLabel = selections.deliveryMode
-    ? (completion.ctaByDelivery?.[selections.deliveryMode] ?? completion.primaryCta)
-    : completion.primaryCta
+  const primaryCtaLabel = (() => {
+    if (selections.deliveryMode === "directDelivery") {
+      return "أكمل بيانات التوصيل الآن"
+    }
+
+    if (selections.deliveryMode === "recipientChoice" && selections.giftPath === "exactGift") {
+      return "أنشئ رابط كشف الهدية"
+    }
+
+    if (selections.deliveryMode === "recipientChoice" && selections.giftPath === "recipientChoice") {
+      return "أنشئ رابط اختيار الهدية"
+    }
+
+    return completion.primaryCta
+  })()
 
   return (
     <section className="section-shell">
@@ -298,6 +311,22 @@ export default function BuilderShell() {
                           {completion.title}
                         </h2>
                       </div>
+
+                      {selections.giftPath ? (
+                        <div className="mb-6 rounded-[18px] border border-white/[0.08] bg-white/[0.02] p-4">
+                          <div className="flex items-center justify-between gap-3">
+                            <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-0.5 text-[11px] font-semibold text-white/75">
+                              {giftPathMeta.label}
+                            </span>
+                            <p className="text-[10px] font-bold tracking-widest text-slate-500/70">
+                              المسار الذي بنيته الآن
+                            </p>
+                          </div>
+                          <p className="mt-3 text-[13px] leading-relaxed text-slate-300">
+                            {giftPathMeta.senderNote}
+                          </p>
+                        </div>
+                      ) : null}
 
                       <BuilderRecommendationPreview recommendation={recommendation} />
 

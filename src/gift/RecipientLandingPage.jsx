@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import Section from '../components/layout/Section'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
-import { getGiftStatusMeta, resolveGiftSession, updateGiftSession } from '../lib/giftSession'
+import { getGiftPathMeta, getGiftStatusMeta, resolveGiftSession, updateGiftSession } from '../lib/giftSession'
 
 export default function RecipientLandingPage() {
   const navigate = useNavigate()
@@ -12,6 +12,7 @@ export default function RecipientLandingPage() {
   const session = useMemo(() => resolveGiftSession(searchParams), [searchParams])
   const code = session?.code || searchParams.get('code') || ''
   const statusMeta = getGiftStatusMeta(session?.status, session?.giftPath)
+  const pathMeta = getGiftPathMeta(session?.giftPath)
 
   function handleOpenGift() {
     if (!session || !code) return
@@ -51,16 +52,6 @@ export default function RecipientLandingPage() {
     )
   }
 
-  const heading = session.giftPath === 'exactGift'
-    ? 'تم اختيار هدية لك بعناية'
-    : 'تم اختيار مجموعة هدايا لك بعناية'
-
-  const subheading = session.giftPath === 'exactGift'
-    ? 'افتح التجربة وشاهد الهدية التي تم تجهيزها لك'
-    : 'افتح التجربة وشاهد الخيارات المتاحة لك ضمن هذه المناسبة'
-
-  const ctaLabel = session.giftPath === 'exactGift' ? 'شاهد هديتك' : 'شاهد خياراتك'
-
   return (
     <Section className="pt-10 sm:pt-16">
       <div className="mx-auto max-w-lg text-right">
@@ -69,14 +60,14 @@ export default function RecipientLandingPage() {
 
           <div className="space-y-3">
             <h1 className="text-3xl font-bold leading-tight text-white sm:text-4xl">
-              {heading}
+              {pathMeta.entryHeading}
             </h1>
             <p className="text-base leading-relaxed text-slate-300 sm:text-lg">
-              {subheading}
+              {pathMeta.entryDescription}
             </p>
           </div>
 
-          <div className="charcoal-card rounded-[24px] p-5 space-y-3">
+          <div className="charcoal-card rounded-[24px] p-5 space-y-4">
             <div className="flex items-center justify-between gap-3">
               <span className="rounded-full border border-violet-400/20 bg-violet-400/[0.08] px-2.5 py-1 text-[11px] font-semibold text-violet-300">
                 {session.occasionLabel || 'مناسبة خاصة'}
@@ -84,6 +75,28 @@ export default function RecipientLandingPage() {
               <div className="text-right">
                 <p className="text-[11px] text-slate-500">من</p>
                 <p className="text-[14px] font-bold text-white">{session.senderName || 'مرسل الهدية'}</p>
+              </div>
+            </div>
+
+            <div className="rounded-[18px] border border-white/[0.08] bg-white/[0.02] p-4">
+              <div className="flex items-center justify-between gap-3">
+                <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-0.5 text-[11px] font-semibold text-white/75">
+                  {pathMeta.label}
+                </span>
+                <span className="text-[10px] font-bold tracking-widest text-slate-500/70">
+                  كيف ستسير التجربة؟
+                </span>
+              </div>
+
+              <div className="mt-3 flex flex-wrap justify-end gap-2">
+                {pathMeta.steps.map((step, index) => (
+                  <span
+                    key={step}
+                    className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[11px] text-white/80"
+                  >
+                    {index + 1}. {step}
+                  </span>
+                ))}
               </div>
             </div>
 
@@ -103,20 +116,6 @@ export default function RecipientLandingPage() {
             <p className="border-t border-white/[0.06] pt-3 text-[12px] leading-relaxed text-slate-400">
               {statusMeta.note}
             </p>
-
-            {session.giftPath === 'exactGift' && session.selectedGift ? (
-              <div className="border-t border-white/[0.06] pt-3">
-                <p className="text-[11px] text-slate-500">الهدية المختارة</p>
-                <p className="mt-1 text-[15px] font-bold text-white">{session.selectedGift.title}</p>
-              </div>
-            ) : null}
-
-            {session.giftPath === 'recipientChoice' ? (
-              <div className="border-t border-white/[0.06] pt-3">
-                <p className="text-[11px] text-slate-500">عدد الخيارات المتاحة</p>
-                <p className="mt-1 text-[15px] font-bold text-white">{session.giftOptions?.length || 0} خيارات</p>
-              </div>
-            ) : null}
           </div>
 
           <div className="flex flex-col gap-3">
@@ -125,7 +124,7 @@ export default function RecipientLandingPage() {
               className="w-full justify-center py-3.5 text-[15px]"
               onClick={handleOpenGift}
             >
-              {ctaLabel}
+              {pathMeta.entryCta}
             </Button>
             <Button
               variant="ghost"

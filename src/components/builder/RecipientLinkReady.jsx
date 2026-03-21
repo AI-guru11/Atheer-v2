@@ -1,14 +1,16 @@
 import { useState } from "react"
+import { getGiftPathMeta } from "../../lib/giftSession"
 
 export default function RecipientLinkReady({ giftLink, recipientData, giftPath, onReset }) {
   const [copied, setCopied] = useState(false)
 
+  const pathMeta = getGiftPathMeta(giftPath)
   const isExactGift = giftPath === "exactGift"
   const badgeLabel = isExactGift ? "رابط الكشف جاهز" : "رابط الاختيار جاهز"
   const heading = isExactGift ? "تم توليد رابط كشف الهدية" : "تم توليد رابط اختيار الهدية"
   const description = isExactGift
-    ? "شارك هذا الرابط مع المستلم ليشاهد الهدية التي اخترتها له ثم يكمل بيانات الاستلام بنفسه."
-    : "شارك هذا الرابط مع المستلم ليشاهد الخيارات المتاحة ويختار هديته بنفسه."
+    ? "شارك هذا الرابط مع المستلم ليشاهد الهدية المحددة التي اخترتها له ثم يكمل بيانات الاستلام بنفسه."
+    : "شارك هذا الرابط مع المستلم ليبدأ تجربة الاختيار، يراجع الخيارات المتاحة، ثم يختار هديته بنفسه."
   const shareText = isExactGift
     ? "اضغط على الرابط لمشاهدة هديتك"
     : "اضغط على الرابط لتختار هديتك"
@@ -65,6 +67,28 @@ export default function RecipientLinkReady({ giftLink, recipientData, giftPath, 
       <p className="mt-2 max-w-xs text-[13px] leading-relaxed text-slate-400">
         {description}
       </p>
+
+      <div className="mt-4 w-full rounded-[18px] border border-white/[0.08] bg-white/[0.02] px-4 py-3 text-right">
+        <div className="flex items-center justify-between gap-3">
+          <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-0.5 text-[11px] font-semibold text-white/75">
+            {pathMeta.label}
+          </span>
+          <span className="text-[10px] font-bold tracking-widest text-slate-500/70">
+            ما الذي سيحدث بعد فتح الرابط؟
+          </span>
+        </div>
+
+        <div className="mt-3 flex flex-wrap justify-end gap-2">
+          {pathMeta.steps.map((step, index) => (
+            <span
+              key={step}
+              className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[11px] text-white/80"
+            >
+              {index + 1}. {step}
+            </span>
+          ))}
+        </div>
+      </div>
 
       {(recipientData?.senderName || recipientData?.name) ? (
         <div className="mt-4 w-full rounded-[18px] border border-white/[0.08] bg-white/[0.02] px-4 py-3 text-right">

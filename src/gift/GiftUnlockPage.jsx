@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import Section from '../components/layout/Section'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
-import { getGiftStatusMeta, resolveGiftSession, updateGiftSession } from '../lib/giftSession'
+import { getGiftPathMeta, getGiftStatusMeta, resolveGiftSession, updateGiftSession } from '../lib/giftSession'
 
 export default function GiftUnlockPage() {
   const navigate = useNavigate()
@@ -12,6 +12,7 @@ export default function GiftUnlockPage() {
   const code = session?.code || searchParams.get('code') || ''
   const [acknowledged, setAcknowledged] = useState(false)
   const statusMeta = getGiftStatusMeta(session?.status, session?.giftPath)
+  const pathMeta = getGiftPathMeta(session?.giftPath)
 
   function handleContinue() {
     if (!code || !acknowledged) return
@@ -59,7 +60,7 @@ export default function GiftUnlockPage() {
               قبل أن ترى هديتك
             </h1>
             <p className="text-base leading-relaxed text-slate-300 sm:text-lg">
-              هذه لحظة الكشف الخاصة بك. عندما تكون مستعدًا، أكّد رغبتك بمتابعة التجربة لعرض تفاصيل الهدية التي أُعدّت لك.
+              هذه هي لحظة التهيئة قبل عرض الهدية المحددة. بعد المتابعة ستشاهد الهدية نفسها ثم تنتقل مباشرة إلى بيانات الاستلام.
             </p>
           </div>
 
@@ -69,8 +70,26 @@ export default function GiftUnlockPage() {
                 {session.revealStyleLabel || 'تجربة خاصة'}
               </span>
               <div className="text-right">
-                <p className="text-[11px] text-slate-500">المناسبة</p>
-                <p className="text-[14px] font-bold text-white">{session.occasionLabel || 'مناسبة خاصة'}</p>
+                <p className="text-[11px] text-slate-500">المسار</p>
+                <p className="text-[14px] font-bold text-white">{pathMeta.label}</p>
+              </div>
+            </div>
+
+            <div className="rounded-[18px] border border-white/[0.08] bg-white/[0.02] p-4">
+              <p className="text-[10px] font-bold tracking-widest text-slate-500/70">مراحل هذا المسار</p>
+              <div className="mt-3 flex flex-wrap justify-end gap-2">
+                {pathMeta.steps.map((step, index) => (
+                  <span
+                    key={step}
+                    className={`rounded-full border px-3 py-1 text-[11px] ${
+                      index === 1
+                        ? 'border-violet-400/20 bg-violet-400/[0.08] text-violet-300'
+                        : 'border-white/[0.08] bg-white/[0.03] text-white/80'
+                    }`}
+                  >
+                    {index + 1}. {step}
+                  </span>
+                ))}
               </div>
             </div>
 
@@ -84,7 +103,7 @@ export default function GiftUnlockPage() {
               </p>
             ) : (
               <p className="text-[13px] leading-relaxed text-slate-300">
-                تم إعداد هذه الصفحة لك كي تمر تجربة الهدية بلحظة افتتاح واضحة بدل الانتقال المباشر بشكل جاف.
+                تم إعداد هذه الصفحة لتجعل انتقالك إلى الهدية نفسها أكثر وضوحًا وأناقة بدل الانتقال المباشر بشكل بارد.
               </p>
             )}
 
@@ -96,7 +115,7 @@ export default function GiftUnlockPage() {
                 className="mt-1 h-4 w-4 rounded border-white/20 bg-transparent accent-violet-400"
               />
               <span className="text-[13px] leading-relaxed text-slate-300">
-                أنا جاهز الآن لمشاهدة تفاصيل الهدية ومتابعة التجربة.
+                أنا جاهز الآن لعرض الهدية المحددة ومتابعة تجربة الاستلام.
               </span>
             </label>
           </div>

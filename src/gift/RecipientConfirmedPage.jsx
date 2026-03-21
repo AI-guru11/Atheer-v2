@@ -1,13 +1,14 @@
 import { useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import Section from '../components/layout/Section'
-import { getGiftStatusMeta, resolveGiftSession } from '../lib/giftSession'
+import { getGiftPathMeta, getGiftStatusMeta, resolveGiftSession } from '../lib/giftSession'
 
 export default function RecipientConfirmedPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const session = useMemo(() => resolveGiftSession(searchParams), [searchParams])
   const statusMeta = getGiftStatusMeta(session?.status, session?.giftPath)
+  const pathMeta = getGiftPathMeta(session?.giftPath)
 
   return (
     <Section className="pt-10 sm:pt-16">
@@ -34,16 +35,26 @@ export default function RecipientConfirmedPage() {
         </span>
 
         <h1 className="mt-4 text-2xl font-bold leading-tight text-white sm:text-3xl">
-          تم استلام اختيارك
+          {pathMeta.confirmedHeading}
         </h1>
 
         <p className="mt-2 text-[14px] leading-relaxed text-slate-400">
-          {statusMeta.note}
+          {pathMeta.confirmedDescription}
         </p>
+
+        <div className="mt-5 rounded-[18px] border border-white/[0.07] bg-white/[0.025] px-4 py-3.5 text-right">
+          <div className="flex items-center justify-between gap-3">
+            <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-0.5 text-[11px] font-semibold text-white/75">
+              {pathMeta.label}
+            </span>
+            <p className="text-[10px] font-bold tracking-widest text-slate-500/70">آخر خطوة مكتملة</p>
+          </div>
+          <p className="mt-3 text-[12px] leading-relaxed text-slate-400">{statusMeta.note}</p>
+        </div>
 
         {session?.selectedGift ? (
           <div className="mt-5 rounded-[18px] border border-cyan-300/15 bg-cyan-300/[0.04] px-4 py-3.5 text-right">
-            <p className="text-[10px] font-bold tracking-widest text-cyan-300/60">الهدية المختارة</p>
+            <p className="text-[10px] font-bold tracking-widest text-cyan-300/60">الهدية المعتمدة</p>
             <p className="mt-1.5 text-[14px] font-bold text-white">{session.selectedGift.title}</p>
           </div>
         ) : null}

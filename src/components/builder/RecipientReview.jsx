@@ -2,6 +2,7 @@ import {
   getRevealStyleDescription,
   getExecutionModeDisplay,
 } from "../../utils/recommendationDisplay"
+import { getGiftPathMeta } from "../../lib/giftSession"
 
 export default function RecipientReview({
   recommendation,
@@ -17,6 +18,7 @@ export default function RecipientReview({
   const revealDescription = getRevealStyleDescription(
     recommendation?.revealRecommendation?.tone,
   )
+  const pathMeta = getGiftPathMeta(giftPath)
 
   const senderRows = [
     { label: "اسم المرسل", value: recipientData.senderName },
@@ -30,16 +32,21 @@ export default function RecipientReview({
   ].filter(Boolean)
 
   const reviewDescription = giftPath === "exactGift"
-    ? "تحقق من اسمك وبيانات المستلم والهدية المحددة قبل توليد رابط الكشف."
-    : "تحقق من اسمك وبيانات المستلم والخيارات المقترحة قبل توليد رابط الاختيار."
+    ? "تحقق من اسمك وبيانات المستلم والهدية المحددة قبل توليد رابط الكشف. هذا الرابط سيأخذ المستلم إلى لحظة كشف ثم إلى صفحة الاستلام."
+    : "تحقق من اسمك وبيانات المستلم والخيارات المقترحة قبل توليد رابط الاختيار. هذا الرابط سيأخذ المستلم إلى تجربة ثم إلى قائمة الخيارات."
 
-  const linkActionLabel = giftPath === "exactGift" ? "توليد رابط الكشف" : "توليد رابط الاختيار"
+  const linkActionLabel = giftPath === "exactGift" ? "توليد رابط كشف الهدية" : "توليد رابط اختيار الهدية"
 
   return (
     <div className="text-right">
       <div className="mb-6">
-        <h2 className="text-xl font-bold leading-tight text-white sm:text-2xl">
-          راجع تفاصيل الهدية
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-violet-400/20 bg-violet-400/[0.08] px-3 py-1.5 text-[12px] font-semibold text-violet-300">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-400" />
+          {pathMeta.badge}
+        </span>
+
+        <h2 className="mt-3 text-xl font-bold leading-tight text-white sm:text-2xl">
+          راجع تفاصيل الهدية قبل توليد الرابط
         </h2>
         <p className="mt-1.5 text-[13px] leading-relaxed text-slate-400">
           {reviewDescription}
@@ -67,6 +74,32 @@ export default function RecipientReview({
             </div>
           </div>
         )}
+
+        <div className="rounded-[18px] border border-white/[0.08] bg-white/[0.025] p-4">
+          <div className="flex items-center justify-between gap-3">
+            <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-0.5 text-[11px] font-semibold text-white/75">
+              {pathMeta.label}
+            </span>
+            <p className="text-[10px] font-bold tracking-widest text-slate-500/70">
+              كيف ستسير التجربة؟
+            </p>
+          </div>
+
+          <p className="mt-3 text-[13px] leading-relaxed text-slate-300">
+            {pathMeta.senderNote}
+          </p>
+
+          <div className="mt-3 flex flex-wrap justify-end gap-2">
+            {pathMeta.steps.map((step, index) => (
+              <span
+                key={step}
+                className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-[11px] text-white/80"
+              >
+                {index + 1}. {step}
+              </span>
+            ))}
+          </div>
+        </div>
 
         <div className="rounded-[18px] border border-violet-400/15 bg-violet-400/[0.03] p-4">
           <p className="mb-2.5 text-[10px] font-bold tracking-widest text-violet-300/60">

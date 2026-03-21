@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import Section from '../components/layout/Section'
-import { resolveGiftSession, updateGiftSession } from '../lib/giftSession'
+import { getGiftPathMeta, getGiftStatusMeta, resolveGiftSession, updateGiftSession } from '../lib/giftSession'
 
 export default function RecipientChoicePage() {
   const navigate = useNavigate()
@@ -9,6 +9,8 @@ export default function RecipientChoicePage() {
 
   const session = useMemo(() => resolveGiftSession(searchParams), [searchParams])
   const code = session?.code || searchParams.get('code') || ''
+  const pathMeta = getGiftPathMeta(session?.giftPath)
+  const statusMeta = getGiftStatusMeta(session?.status, session?.giftPath)
 
   function handleChoose(gift) {
     if (!code) return
@@ -48,13 +50,41 @@ export default function RecipientChoicePage() {
   return (
     <Section className="pt-10 sm:pt-16">
       <div className="mx-auto max-w-lg space-y-6 text-right">
-        <div className="space-y-2">
+        <div className="space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <span className="rounded-full border border-violet-400/20 bg-violet-400/[0.08] px-2.5 py-1 text-[11px] font-semibold text-violet-300">
+              {pathMeta.label}
+            </span>
+            <span className="text-[10px] font-bold tracking-widest text-slate-500/70">
+              {statusMeta.badge}
+            </span>
+          </div>
+
           <h1 className="text-2xl font-bold leading-tight text-white sm:text-3xl">
-            اختر الهدية التي تناسبك
+            اختر هدية واحدة من المجموعة
           </h1>
           <p className="text-[14px] leading-relaxed text-slate-400">
-            هذه الخيارات اختيرت لك بعناية ضمن {session.occasionLabel || 'المناسبة'} و{session.budgetLabel || 'الميزانية المحددة'}
+            هذه الخيارات اختيرت لك بعناية ضمن {session.occasionLabel || 'المناسبة'} و{session.budgetLabel || 'الميزانية المحددة'}.
+            بعد اختيار هدية واحدة ستنتقل مباشرة إلى إدخال بيانات الاستلام.
           </p>
+        </div>
+
+        <div className="rounded-[18px] border border-white/[0.08] bg-white/[0.02] p-4">
+          <p className="text-[10px] font-bold tracking-widest text-slate-500/70">مراحل هذا المسار</p>
+          <div className="mt-3 flex flex-wrap justify-end gap-2">
+            {pathMeta.steps.map((step, index) => (
+              <span
+                key={step}
+                className={`rounded-full border px-3 py-1 text-[11px] ${
+                  index === 2
+                    ? 'border-violet-400/20 bg-violet-400/[0.08] text-violet-300'
+                    : 'border-white/[0.08] bg-white/[0.03] text-white/80'
+                }`}
+              >
+                {index + 1}. {step}
+              </span>
+            ))}
+          </div>
         </div>
 
         <div className="space-y-3">

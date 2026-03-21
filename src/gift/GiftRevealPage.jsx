@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import Section from '../components/layout/Section'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
-import { getGiftStatusMeta, resolveGiftSession, updateGiftSession } from '../lib/giftSession'
+import { getGiftPathMeta, getGiftStatusMeta, resolveGiftSession, updateGiftSession } from '../lib/giftSession'
 
 export default function GiftRevealPage() {
   const navigate = useNavigate()
@@ -11,6 +11,7 @@ export default function GiftRevealPage() {
   const session = useMemo(() => resolveGiftSession(searchParams), [searchParams])
   const code = session?.code || searchParams.get('code') || ''
   const statusMeta = getGiftStatusMeta(session?.status, session?.giftPath)
+  const pathMeta = getGiftPathMeta(session?.giftPath)
 
   function handleContinue() {
     if (!code || !session) return
@@ -47,7 +48,7 @@ export default function GiftRevealPage() {
   const primaryTitle = isExactGift ? session.selectedGift?.title : session.recommendationTitle || 'مجموعة هدايا مختارة لك'
   const primaryDescription = isExactGift
     ? (session.selectedGift?.description || 'تم تجهيز هذه الهدية لك بعناية بناءً على المناسبة والذوق الأقرب.')
-    : 'تم اختيار هذه الخيارات لك بعناية لتناسب المناسبة والميزانية وأسلوب التجربة الذي تم بناؤه لك.'
+    : 'هذه هي مقدمة التجربة فقط. بعد المتابعة ستدخل إلى قائمة الهدايا المتاحة لك لاختيار واحدة منها.'
   const primaryPrice = isExactGift ? session.selectedGift?.priceRange : session.budgetLabel
 
   return (
@@ -58,10 +59,10 @@ export default function GiftRevealPage() {
 
           <div className="space-y-3">
             <h1 className="text-3xl font-bold leading-tight text-white sm:text-4xl">
-              {isExactGift ? 'هذه هديتك التي تم إعدادها لك' : 'هذه تجربتك الخاصة لاختيار الهدية'}
+              {pathMeta.revealHeading}
             </h1>
             <p className="text-base leading-relaxed text-slate-300 sm:text-lg">
-              {session.message || 'تصفح تفاصيل التجربة ثم أكمل الخطوة التالية لإتمام الاستلام.'}
+              {session.message || pathMeta.revealDescription}
             </p>
           </div>
 
@@ -71,8 +72,26 @@ export default function GiftRevealPage() {
                 {session.occasionLabel || 'مناسبة خاصة'}
               </span>
               <div className="text-right">
-                <p className="text-[11px] text-slate-500">من</p>
-                <p className="text-[14px] font-bold text-white">{session.senderName || 'مرسل الهدية'}</p>
+                <p className="text-[11px] text-slate-500">المسار</p>
+                <p className="text-[14px] font-bold text-white">{pathMeta.label}</p>
+              </div>
+            </div>
+
+            <div className="rounded-[18px] border border-white/[0.08] bg-white/[0.02] p-4">
+              <p className="text-[10px] font-bold tracking-widest text-slate-500/70">ما الذي سيحدث بعد هذه الصفحة؟</p>
+              <div className="mt-3 flex flex-wrap justify-end gap-2">
+                {pathMeta.steps.map((step, index) => (
+                  <span
+                    key={step}
+                    className={`rounded-full border px-3 py-1 text-[11px] ${
+                      (isExactGift && index === 2) || (!isExactGift && index === 1)
+                        ? 'border-cyan-300/20 bg-cyan-300/[0.08] text-cyan-300'
+                        : 'border-white/[0.08] bg-white/[0.03] text-white/80'
+                    }`}
+                  >
+                    {index + 1}. {step}
+                  </span>
+                ))}
               </div>
             </div>
 
@@ -98,7 +117,7 @@ export default function GiftRevealPage() {
 
             {!isExactGift && Array.isArray(session.giftOptions) && session.giftOptions.length > 0 ? (
               <div className="space-y-2 border-t border-white/[0.06] pt-4">
-                <p className="text-[11px] font-bold tracking-widest text-slate-500">ما الذي ينتظرك؟</p>
+                <p className="text-[11px] font-bold tracking-widest text-slate-500">من بين الخيارات المتاحة لك</p>
                 <div className="flex flex-wrap gap-2 justify-end">
                   {session.giftOptions.slice(0, 3).map((gift) => (
                     <span
@@ -126,7 +145,7 @@ export default function GiftRevealPage() {
               className="w-full justify-center py-3.5 text-[15px] sm:w-auto"
               onClick={handleContinue}
             >
-              {isExactGift ? 'أكمل بيانات الاستلام' : 'شاهد الخيارات المتاحة'}
+              {pathMeta.revealCta}
             </Button>
           </div>
         </div>
