@@ -17,8 +17,8 @@ export default function RecipientLinkReady({
   const badgeLabel = isExactGift ? "رابط الكشف جاهز" : "رابط الاختيار جاهز"
   const heading = isExactGift ? "تم توليد رابط كشف الهدية" : "تم توليد رابط اختيار الهدية"
   const description = isExactGift
-    ? "الرابط صار جاهزًا للمشاركة، والهدية نفسها أصبحت مثبتة داخل جلسة الطلب بدل أن تبقى مجرد توصية مفتوحة."
-    : "الرابط صار جاهزًا للمشاركة، وتجربة الاختيار أصبحت جزءًا من الطلب نفسه وليست مجرد معاينة عامة."
+    ? "الرابط صار جاهزًا للمشاركة، ويمكنك الآن متابعة حالة الطلب من نفس المرجع بعد أن يبدأ المستلم التجربة."
+    : "الرابط صار جاهزًا للمشاركة، ويمكنك الآن متابعة حالة الطلب من نفس المرجع بعد أن يبدأ المستلم تجربة الاختيار."
   const shareText = isExactGift
     ? "اضغط على الرابط لمشاهدة هديتك"
     : "اضغط على الرابط لتختار هديتك"
@@ -87,7 +87,7 @@ export default function RecipientLinkReady({
             </span>
           </div>
           <p className="mt-2 text-[12px] leading-relaxed text-slate-300">
-            هذا المرجع يمثل الطلب نفسه، ويمكنك فتح صفحة الملخص التجاري لمراجعته بدل ترك الرابط وحده دون سياق.
+            احتفظ بهذا المرجع وارجع إلى صفحة الملخص لمتابعة حالة الطلب بدل الاكتفاء بالرابط وحده.
           </p>
         </div>
       ) : null}
@@ -159,7 +159,7 @@ export default function RecipientLinkReady({
           onClick={() => navigate(`/checkout?code=${sessionCode}`)}
           className="mt-4 rounded-full border border-cyan-300/20 bg-cyan-300/[0.06] px-5 py-2.5 text-[13px] font-semibold text-cyan-300 transition-colors duration-200 hover:bg-cyan-300/[0.10]"
         >
-          فتح ملخص الطلب
+          متابعة حالة الطلب
         </button>
       ) : null}
 

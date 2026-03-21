@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import Section from '../components/layout/Section'
-import { getGiftPathMeta, getGiftStatusMeta, resolveGiftSession } from '../lib/giftSession'
+import { getGiftNextStepMeta, getGiftPathMeta, getGiftStatusMeta, resolveGiftSession } from '../lib/giftSession'
 
 export default function RecipientConfirmedPage() {
   const navigate = useNavigate()
@@ -9,6 +9,7 @@ export default function RecipientConfirmedPage() {
   const session = useMemo(() => resolveGiftSession(searchParams), [searchParams])
   const statusMeta = getGiftStatusMeta(session?.status, session?.giftPath)
   const pathMeta = getGiftPathMeta(session?.giftPath)
+  const nextStepMeta = getGiftNextStepMeta(session)
 
   return (
     <Section className="pt-10 sm:pt-16">
@@ -52,6 +53,12 @@ export default function RecipientConfirmedPage() {
           <p className="mt-3 text-[12px] leading-relaxed text-slate-400">{statusMeta.note}</p>
         </div>
 
+        <div className="mt-5 rounded-[18px] border border-emerald-400/15 bg-emerald-400/[0.04] px-4 py-3.5 text-right">
+          <p className="text-[10px] font-bold tracking-widest text-emerald-300/60">ما الذي يحدث الآن؟</p>
+          <p className="mt-1.5 text-[14px] font-bold text-white">{nextStepMeta.title}</p>
+          <p className="mt-1 text-[12px] leading-relaxed text-slate-400">{nextStepMeta.note}</p>
+        </div>
+
         {session?.selectedGift ? (
           <div className="mt-5 rounded-[18px] border border-cyan-300/15 bg-cyan-300/[0.04] px-4 py-3.5 text-right">
             <p className="text-[10px] font-bold tracking-widest text-cyan-300/60">الهدية المعتمدة</p>
@@ -69,13 +76,25 @@ export default function RecipientConfirmedPage() {
           </div>
         ) : null}
 
-        <button
-          type="button"
-          onClick={() => navigate('/')}
-          className="mt-6 rounded-full bg-[linear-gradient(90deg,#7c5cff,#22d3ee)] px-8 py-3 text-[15px] font-bold text-white shadow-[0_10px_30px_rgba(34,211,238,0.15)] transition-all duration-200 hover:shadow-[0_14px_40px_rgba(34,211,238,0.22)] active:scale-[0.98]"
-        >
-          تم
-        </button>
+        <div className="mt-6 flex flex-col gap-2.5">
+          {session?.code ? (
+            <button
+              type="button"
+              onClick={() => navigate(`/checkout?code=${session.code}`)}
+              className="rounded-full bg-[linear-gradient(90deg,#7c5cff,#22d3ee)] px-8 py-3 text-[15px] font-bold text-white shadow-[0_10px_30px_rgba(34,211,238,0.15)] transition-all duration-200 hover:shadow-[0_14px_40px_rgba(34,211,238,0.22)] active:scale-[0.98]"
+            >
+              متابعة حالة الطلب
+            </button>
+          ) : null}
+
+          <button
+            type="button"
+            onClick={() => navigate('/')}
+            className="rounded-full border border-white/[0.08] bg-white/[0.02] px-8 py-3 text-[15px] font-semibold text-slate-300 transition-colors duration-200 hover:border-white/15 hover:text-white"
+          >
+            العودة للرئيسية
+          </button>
+        </div>
       </div>
     </Section>
   )

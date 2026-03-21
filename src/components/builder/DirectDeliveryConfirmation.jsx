@@ -23,14 +23,14 @@ export default function DirectDeliveryConfirmation({ sessionCode, onReset }) {
 
       <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/[0.08] px-3 py-1.5 text-[12px] font-semibold text-emerald-300">
         <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
-        تم تثبيت الطلب المباشر
+        تم تأكيد الطلب
       </span>
 
       <h2 className="text-xl font-bold leading-tight text-white sm:text-2xl">
-        تم حفظ الطلب داخل جلسة موحدة
+        تم حفظ الطلب داخل مرجع موحّد
       </h2>
       <p className="mt-2 max-w-xs text-[13px] leading-relaxed text-slate-400">
-        لم تعد الهدية مجرد توصية عائمة. تم حفظها مع بيانات المرسل والمستلم داخل طلب واحد جاهز للانتقال التجاري لاحقًا.
+        أصبحت الهدية وبيانات التوصيل محفوظة داخل طلب واحد، ويمكنك الآن متابعة حالته من صفحة الملخص بدل الاعتماد على الواجهة المؤقتة فقط.
       </p>
 
       {sessionCode ? (
@@ -44,7 +44,7 @@ export default function DirectDeliveryConfirmation({ sessionCode, onReset }) {
 
       <div className="mt-5 w-full rounded-[18px] border border-white/[0.07] bg-white/[0.025] px-4 py-3.5 text-right">
         <p className="text-[12px] leading-relaxed text-slate-400">
-          الخطوة التالية ليست إعادة اختيار الهدية، بل مراجعة ملخص الطلب والانتقال لاحقًا إلى طبقة الدفع أو الاعتماد النهائي.
+          الخطوة التالية هي مراجعة حالة الطلب والبيانات المحفوظة داخل الملخص، وليس إعادة اختيار الهدية من الصفر.
         </p>
       </div>
 
@@ -55,7 +55,7 @@ export default function DirectDeliveryConfirmation({ sessionCode, onReset }) {
             onClick={() => navigate(`/checkout?code=${sessionCode}`)}
             className="flex-1 rounded-full bg-[linear-gradient(90deg,#7c5cff,#22d3ee)] px-6 py-3 text-[15px] font-bold text-white shadow-[0_10px_30px_rgba(34,211,238,0.15)] transition-all duration-200 hover:shadow-[0_14px_40px_rgba(34,211,238,0.22)] active:scale-[0.98]"
           >
-            افتح ملخص الطلب
+            متابعة حالة الطلب
           </button>
         ) : null}
         <button
