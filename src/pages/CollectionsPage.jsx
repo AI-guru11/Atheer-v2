@@ -31,7 +31,7 @@ export default function CollectionsPage() {
               {/* Collection image — square aspect ratio */}
               <div className="relative w-full aspect-square overflow-hidden">
                 <img
-                  src={col.image}
+                  src={`${import.meta.env.BASE_URL}${col.image}`}
                   alt={col.title}
                   className="w-full h-full object-cover object-center"
                   loading="lazy"
