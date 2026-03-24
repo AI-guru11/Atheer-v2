@@ -668,6 +668,107 @@ export function buildRecipientCoordinationSnippet(session) {
   ].join('\n')
 }
 
+// Build grouped preset variants for the order detail follow-up toolkit.
+// Each group returns an array of { key, label, text } ready for copy or insert-to-notes.
+// Internal notes are never included in any variant text.
+export function buildOrderPresets(session) {
+  if (!session) return { sender: [], recipient: [], ops: [] }
+
+  const statusMeta = getGiftStatusMeta(session.status, session.giftPath)
+  const nextStep   = getGiftNextStepMeta(session)
+  const sender     = session.senderName    || 'العميل'
+  const recipient  = session.recipientName || ''
+  const occasion   = session.occasionLabel || 'مناسبة مميزة'
+  const code       = session.code          || '—'
+  const recipientSuffix = recipient ? ` لـ ${recipient}` : ''
+  const giftTitle  = session.selectedGift?.title ?? null
+
+  return {
+    sender: [
+      {
+        key:   'short',
+        label: 'قصير',
+        text:  [
+          `مرحباً ${sender}،`,
+          `طلبك رقم ${code} — الحالة: ${statusMeta.badge}.`,
+          `الخطوة التالية: ${nextStep.title}`,
+        ].join('\n'),
+      },
+      {
+        key:   'formal',
+        label: 'رسمي',
+        text:  buildSenderFollowUpSnippet(session),
+      },
+      {
+        key:   'reminder',
+        label: 'تذكير',
+        text:  [
+          `تذكير — طلب هديتك${recipientSuffix} (${code})`,
+          `لا يزال في انتظار: ${nextStep.title}`,
+          `الحالة الحالية: ${statusMeta.badge}`,
+          '',
+          'يُرجى المتابعة عند أقرب فرصة. نحن هنا لمساعدتك.',
+        ].join('\n'),
+      },
+    ],
+    recipient: [
+      {
+        key:   'short',
+        label: 'قصير',
+        text:  [
+          `مرحباً${recipient ? ' ' + recipient : ''}،`,
+          `لديك هدية بمناسبة ${occasion}. المرجع: ${code}`,
+        ].join('\n'),
+      },
+      {
+        key:   'formal',
+        label: 'رسمي',
+        text:  buildRecipientCoordinationSnippet(session),
+      },
+      {
+        key:   'reminder',
+        label: 'تذكير',
+        text:  [
+          `تذكير — هديتك بمناسبة ${occasion} تنتظرك.`,
+          session.shareLink
+            ? 'افتح الرابط المرسل إليك لاستكمال تجربة استلام هديتك.'
+            : 'سيتم التواصل معك قريباً لتأكيد تفاصيل الاستلام.',
+          `المرجع: ${code}`,
+        ].join('\n'),
+      },
+    ],
+    ops: [
+      {
+        key:   'quick',
+        label: 'سريع',
+        text:  [
+          `REF ${code} — ${statusMeta.badge}`,
+          `Next: ${nextStep.title}`,
+          `${sender}${recipient ? ' → ' + recipient : ''}`,
+          giftTitle ? `Gift: ${giftTitle}` : null,
+        ].filter(Boolean).join('\n'),
+      },
+      {
+        key:   'detailed',
+        label: 'تفصيلي',
+        text:  buildGiftOpsHandoff(session),
+      },
+      {
+        key:   'status',
+        label: 'حالة',
+        text:  [
+          `Order: ${code}`,
+          `Status: ${statusMeta.badge}`,
+          `Next: ${nextStep.title}`,
+          `Path: ${session.giftPath === 'exactGift' ? 'Exact Gift' : 'Recipient Choice'}`,
+          `Mode: ${session.deliveryMode === 'directDelivery' ? 'Direct' : 'Link'}`,
+          session.addressData ? 'Address: ✓' : 'Address: pending',
+        ].join('\n'),
+      },
+    ],
+  }
+}
+
 // Returns a numeric sort priority — lower = more operationally urgent.
 // Used by the "الأولوية" sort in OrdersPage.
 export function getStatusSortPriority(session) {
