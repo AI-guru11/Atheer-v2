@@ -5,6 +5,8 @@ import Button from '../components/ui/Button'
 import Card from '../components/ui/Card'
 import {
   buildGiftOpsHandoff,
+  buildRecipientCoordinationSnippet,
+  buildSenderFollowUpSnippet,
   getGiftNextStepMeta,
   getGiftOpsChecklist,
   getGiftOpsMeta,
@@ -14,6 +16,7 @@ import {
   getGiftTimelineEntries,
   resolveGiftSession,
   saveOrderNote,
+  setFollowUpFlag,
   setOrderPriorityFlag,
 } from '../lib/giftSession'
 
@@ -35,6 +38,7 @@ export default function CheckoutPage() {
   const [copied, setCopied] = useState(false)
   const [copiedOps, setCopiedOps] = useState(false)
   const [noteSaved, setNoteSaved] = useState(false)
+  const [copiedSnippet, setCopiedSnippet] = useState(null) // 'sender' | 'recipient' | 'ops'
 
   // Mutable so note/flag mutations reflect immediately without page reload
   const [session, setSession] = useState(() => resolveGiftSession(searchParams))
@@ -74,6 +78,19 @@ export default function CheckoutPage() {
     if (updated) setSession(updated)
   }
 
+  function handleCopySnippet(key, text) {
+    if (!navigator.clipboard) return
+    navigator.clipboard.writeText(text).catch(() => {})
+    setCopiedSnippet(key)
+    setTimeout(() => setCopiedSnippet(null), 2200)
+  }
+
+  function handleToggleFollowUp() {
+    if (!session?.code) return
+    const updated = setFollowUpFlag(session.code, !session.followUpNeeded)
+    if (updated) setSession(updated)
+  }
+
   if (!session) {
     return (
       <Section>
@@ -100,6 +117,8 @@ export default function CheckoutPage() {
   const isDirectDelivery = session.deliveryMode === 'directDelivery'
   const hasExactGift = Boolean(session.selectedGift)
   const optionCount = Array.isArray(session.giftOptions) ? session.giftOptions.length : 0
+  const senderSnippet = buildSenderFollowUpSnippet(session)
+  const recipientSnippet = buildRecipientCoordinationSnippet(session)
 
   return (
     <Section>
@@ -387,6 +406,57 @@ export default function CheckoutPage() {
                 <Button variant="secondary" onClick={handleSaveNote}>
                   حفظ
                 </Button>
+              </div>
+            </Card>
+
+            {/* ── Follow-up actions ── */}
+            <Card className="section-card p-5 sm:p-6">
+              <div className="mb-4 flex items-center justify-between gap-4">
+                <span className="rounded-full border border-violet-400/20 bg-violet-400/[0.08] px-3 py-1 text-[12px] font-semibold text-violet-300">
+                  متابعة
+                </span>
+                <h3 className="text-lg font-bold text-white">إجراءات المتابعة</h3>
+              </div>
+
+              {/* Copy-ready snippets */}
+              <div className="grid gap-2 sm:grid-cols-3">
+                {[
+                  { key: 'sender',    label: 'رسالة للمرسل',    text: senderSnippet },
+                  { key: 'recipient', label: 'رسالة للمستلم',   text: recipientSnippet },
+                  { key: 'ops',       label: 'ملخص تشغيلي',     text: opsHandoff },
+                ].map(({ key, label, text }) => (
+                  <button
+                    key={key}
+                    onClick={() => handleCopySnippet(key, text)}
+                    className="flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-right transition-colors hover:border-white/20 hover:bg-white/[0.05]"
+                  >
+                    <span className={`text-[11px] font-semibold transition-colors ${
+                      copiedSnippet === key ? 'text-emerald-300' : 'text-slate-500'
+                    }`}>
+                      {copiedSnippet === key ? 'تم ✓' : 'نسخ'}
+                    </span>
+                    <p className="text-[13px] font-semibold text-white">{label}</p>
+                  </button>
+                ))}
+              </div>
+
+              {/* Follow-up toggle */}
+              <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/[0.06] pt-4">
+                <p className="text-sm text-slate-400">
+                  {session.followUpNeeded
+                    ? 'هذا الطلب مُحدَّد للمتابعة.'
+                    : 'لم يُحدَّد للمتابعة بعد.'}
+                </p>
+                <button
+                  onClick={handleToggleFollowUp}
+                  className={`whitespace-nowrap rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors ${
+                    session.followUpNeeded
+                      ? 'border-violet-500/50 bg-violet-500/15 text-violet-200'
+                      : 'border-white/10 bg-white/[0.03] text-slate-400 hover:border-white/20 hover:text-white'
+                  }`}
+                >
+                  {session.followUpNeeded ? 'تمت المتابعة' : 'يحتاج متابعة'}
+                </button>
               </div>
             </Card>
 

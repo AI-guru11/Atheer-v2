@@ -624,6 +624,50 @@ export function setOrderPriorityFlag(code, value) {
   return updateGiftSession(code, { flaggedPriority: Boolean(value) })
 }
 
+// Set or clear the "يحتاج متابعة" follow-up flag on a local session.
+export function setFollowUpFlag(code, value) {
+  return updateGiftSession(code, { followUpNeeded: Boolean(value) })
+}
+
+// Build a clean, customer-safe sender follow-up snippet from session data.
+// Internal notes and sourcing details are intentionally excluded.
+export function buildSenderFollowUpSnippet(session) {
+  if (!session) return ''
+  const statusMeta = getGiftStatusMeta(session.status, session.giftPath)
+  const nextStep = getGiftNextStepMeta(session)
+  const recipient = session.recipientName ? ` لـ ${session.recipientName}` : ''
+  const occasion = session.occasionLabel ? ` بمناسبة ${session.occasionLabel}` : ''
+  return [
+    `مرحباً ${session.senderName || 'عزيزنا العميل'}،`,
+    '',
+    `بخصوص طلب هديتك${recipient}${occasion}:`,
+    `مرجع الطلب: ${session.code}`,
+    `الحالة الحالية: ${statusMeta.badge}`,
+    '',
+    `الخطوة التالية: ${nextStep.title}`,
+    '',
+    'نحن متاحون لأي استفسار. شكراً لثقتك.',
+  ].join('\n')
+}
+
+// Build a clean, customer-safe recipient coordination snippet from session data.
+// Internal notes and sourcing details are intentionally excluded.
+export function buildRecipientCoordinationSnippet(session) {
+  if (!session) return ''
+  const occasion = session.occasionLabel || 'مناسبة مميزة'
+  const linkLine = session.shareLink
+    ? 'يمكنك فتح تجربة هديتك الخاصة عبر الرابط الذي تم إرساله إليك.'
+    : 'سيتم التواصل معك قريباً لتأكيد تفاصيل الاستلام.'
+  return [
+    `مرحباً ${session.recipientName || ''}،`.replace('، ،', '،').trim(),
+    '',
+    `لديك هدية خاصة بمناسبة ${occasion}.`,
+    linkLine,
+    '',
+    `للاستفسار يُرجى ذكر المرجع: ${session.code}`,
+  ].join('\n')
+}
+
 // Returns a numeric sort priority — lower = more operationally urgent.
 // Used by the "الأولوية" sort in OrdersPage.
 export function getStatusSortPriority(session) {
