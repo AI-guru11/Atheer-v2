@@ -11,6 +11,7 @@ export const signatureCollections = [
     revealStyleCue: 'luxury_premium',
     badge: 'الأكثر طلبًا',
     accentColor: '#a78bfa',
+    image: '/collections/coffee-ritual.jpg',
   },
   {
     id: 'executive-desk',
@@ -24,6 +25,7 @@ export const signatureCollections = [
     revealStyleCue: 'formal_polished',
     badge: 'حصري',
     accentColor: '#67e8f9',
+    image: '/collections/executive-desk.jpg',
   },
   {
     id: 'gamer-night',
@@ -37,6 +39,7 @@ export const signatureCollections = [
     revealStyleCue: 'playful_interactive',
     badge: 'ترفيه',
     accentColor: '#4ade80',
+    image: '/collections/gamer-night.jpg',
   },
   {
     id: 'self-care-evening',
@@ -50,5 +53,6 @@ export const signatureCollections = [
     revealStyleCue: 'emotional_personal',
     badge: 'رعاية',
     accentColor: '#f9a8d4',
+    image: '/collections/self-care-evening.jpg',
   },
 ];

@@ -28,10 +28,28 @@ export default function CollectionsPage() {
               key={col.id}
               className="section-card charcoal-card rounded-xl overflow-hidden flex flex-col"
             >
-              {/* Accent top strip */}
+              {/* Collection image — square aspect ratio */}
+              <div className="relative w-full aspect-square overflow-hidden">
+                <img
+                  src={col.image}
+                  alt={col.title}
+                  className="w-full h-full object-cover object-center"
+                  loading="lazy"
+                />
+                {/* Subtle bottom fade into card surface */}
+                <div
+                  className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none"
+                  style={{
+                    background:
+                      'linear-gradient(to bottom, transparent, rgba(18,18,24,0.7))',
+                  }}
+                />
+              </div>
+
+              {/* Accent top strip — sits between image and content */}
               <div
-                className="h-[3px] w-full flex-shrink-0"
-                style={{ backgroundColor: col.accentColor, opacity: 0.6 }}
+                className="h-[2px] w-full flex-shrink-0"
+                style={{ backgroundColor: col.accentColor, opacity: 0.5 }}
               />
 
               <div className="flex flex-col gap-3 p-4 flex-1">
