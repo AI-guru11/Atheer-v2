@@ -1,0 +1,54 @@
+export const signatureCollections = [
+  {
+    id: 'coffee-ritual',
+    title: 'طقم القهوة الفاخر',
+    subtitle: 'تجربة قهوة متكاملة لمحبي الأصالة',
+    description:
+      'مجموعة مختارة بعناية لعشاق القهوة: من أجود أنواع البن إلى أدوات التحضير الفاخرة، كل شيء لصنع لحظة قهوة استثنائية.',
+    audienceFit: ['الأب', 'المدير', 'الصديق'],
+    occasionFit: ['تقدير', 'عيد ميلاد', 'تهنئة'],
+    priceBand: '٣٥٠ – ٦٥٠ ر.س',
+    revealStyleCue: 'luxury_premium',
+    badge: 'الأكثر طلبًا',
+    accentColor: '#a78bfa',
+  },
+  {
+    id: 'executive-desk',
+    title: 'مكتب المحترف',
+    subtitle: 'للشخصية التي تقدّر التفاصيل الراقية',
+    description:
+      'طقم مكتبي فاخر يجمع بين الأناقة والعملية: أدوات كتابة عالية الجودة، مفكرة جلدية، وإكسسوارات مكتبية تعكس ذوقًا رفيعًا.',
+    audienceFit: ['المدير', 'الزميل', 'الشريك'],
+    occasionFit: ['ترقية', 'تقدير', 'شركات'],
+    priceBand: '٥٠٠ – ٩٠٠ ر.س',
+    revealStyleCue: 'formal_polished',
+    badge: 'حصري',
+    accentColor: '#67e8f9',
+  },
+  {
+    id: 'gamer-night',
+    title: 'ليلة الألعاب',
+    subtitle: 'جلسة ألعاب لا تُنسى مع أفضل المستلزمات',
+    description:
+      'كل ما يحتاجه صديقك لجلسة ألعاب مثالية: ملحقات عالية الأداء، وجبات خفيفة مختارة، وإضاءة محيطية تصنع الأجواء.',
+    audienceFit: ['الصديق', 'الأخ'],
+    occasionFit: ['عيد ميلاد', 'مفاجأة'],
+    priceBand: '٢٥٠ – ٥٠٠ ر.س',
+    revealStyleCue: 'playful_interactive',
+    badge: 'ترفيه',
+    accentColor: '#4ade80',
+  },
+  {
+    id: 'self-care-evening',
+    title: 'مساء العناية',
+    subtitle: 'لحظة راحة واهتمام تستحقها',
+    description:
+      'مجموعة راقية للعناية الشخصية: شموع معطرة، منتجات بشرة مختارة، وإكسسوارات استرخاء تصنع مساءً من الاهتمام والدلال.',
+    audienceFit: ['الأم', 'الزوجة', 'الصديقة'],
+    occasionFit: ['عيد ميلاد', 'ذكرى سنوية', 'تقدير'],
+    priceBand: '٣٠٠ – ٦٠٠ ر.س',
+    revealStyleCue: 'emotional_personal',
+    badge: 'رعاية',
+    accentColor: '#f9a8d4',
+  },
+];

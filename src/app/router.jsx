@@ -18,6 +18,7 @@ import RecipientConfirmedPage from '../gift/RecipientConfirmedPage';
 
 import AdminDashboardPage from '../admin/AdminDashboardPage';
 import OrdersPage from '../pages/OrdersPage';
+import CollectionsPage from '../pages/CollectionsPage';
 
 const router = createHashRouter([
   {
@@ -38,6 +39,7 @@ const router = createHashRouter([
       { path: 'gift/confirmed', element: <RecipientConfirmedPage /> },
       { path: 'orders', element: <OrdersPage /> },
       { path: 'admin', element: <AdminDashboardPage /> },
+      { path: 'collections', element: <CollectionsPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },
