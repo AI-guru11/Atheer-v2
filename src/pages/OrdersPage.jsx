@@ -298,6 +298,11 @@ export default function OrdersPage() {
                       <span className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${CAT_CLASSES[cat]}`}>
                         {statusMeta.badge}
                       </span>
+                      {session.followUpNeeded && (
+                        <span className="rounded-full border border-violet-400/20 bg-violet-400/[0.08] px-2.5 py-0.5 text-[11px] font-semibold text-violet-300">
+                          متابعة
+                        </span>
+                      )}
                     </div>
                     <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-0.5 text-[12px] font-semibold text-white/80">
                       {pathMeta.label}
