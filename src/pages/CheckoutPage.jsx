@@ -4,7 +4,10 @@ import Section from '../components/layout/Section'
 import Button from '../components/ui/Button'
 import Card from '../components/ui/Card'
 import {
+  buildGiftOpsHandoff,
   getGiftNextStepMeta,
+  getGiftOpsChecklist,
+  getGiftOpsMeta,
   getGiftPathMeta,
   getGiftReadinessChecklist,
   getGiftStatusMeta,
@@ -29,8 +32,10 @@ export default function CheckoutPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [copied, setCopied] = useState(false)
+  const [copiedOps, setCopiedOps] = useState(false)
 
   const session = useMemo(() => resolveGiftSession(searchParams), [searchParams])
+  const showOpsView = searchParams.get('ops') === '1'
 
   function handleCopyShareLink() {
     if (!session?.shareLink) return
@@ -39,6 +44,13 @@ export default function CheckoutPage() {
     }
     setCopied(true)
     setTimeout(() => setCopied(false), 2200)
+  }
+
+  function handleCopyOpsHandoff() {
+    if (!session || !navigator.clipboard) return
+    navigator.clipboard.writeText(buildGiftOpsHandoff(session)).catch(() => {})
+    setCopiedOps(true)
+    setTimeout(() => setCopiedOps(false), 2200)
   }
 
   if (!session) {
@@ -61,6 +73,9 @@ export default function CheckoutPage() {
   const nextStepMeta = getGiftNextStepMeta(session)
   const timelineEntries = getGiftTimelineEntries(session).slice().reverse()
   const readinessChecklist = getGiftReadinessChecklist(session)
+  const opsMeta = getGiftOpsMeta(session)
+  const opsChecklist = getGiftOpsChecklist(session)
+  const opsHandoff = buildGiftOpsHandoff(session)
   const isDirectDelivery = session.deliveryMode === 'directDelivery'
   const hasExactGift = Boolean(session.selectedGift)
   const optionCount = Array.isArray(session.giftOptions) ? session.giftOptions.length : 0
@@ -70,9 +85,11 @@ export default function CheckoutPage() {
       <div className="mx-auto max-w-4xl space-y-6 text-right">
         <div className="section-heading mb-0">
           <p className="eyebrow">Order Status</p>
-          <h1>ملخص الطلب وحالة المتابعة</h1>
+          <h1>{showOpsView ? 'ملخص الطلب + handoff داخلي' : 'ملخص الطلب وحالة المتابعة'}</h1>
           <p className="section-copy mt-3 max-w-2xl">
-            هذه الصفحة هي المرجع الحالي للطلب: تعرض الحالة العامة، الخطوة التالية، وكل التفاصيل المحفوظة حتى هذه اللحظة بدون الحاجة لإعادة بناء الهدية من البداية.
+            {showOpsView
+              ? 'هذا العرض مخصص للمراجعة الداخلية الخفيفة: يوضح جاهزية handoff التشغيلي من نفس الجلسة، بدون بناء لوحة تشغيل كاملة.'
+              : 'هذه الصفحة هي المرجع الحالي للطلب: تعرض الحالة العامة، الخطوة التالية، وكل التفاصيل المحفوظة حتى هذه اللحظة بدون الحاجة لإعادة بناء الهدية من البداية.'}
           </p>
         </div>
 
@@ -109,6 +126,66 @@ export default function CheckoutPage() {
                 <p className="mt-2 text-sm leading-relaxed text-slate-300">{nextStepMeta.note}</p>
               </div>
             </Card>
+
+            {showOpsView ? (
+              <Card className="section-card p-5 sm:p-6">
+                <div className="mb-4 flex items-center justify-between gap-4">
+                  <span className="rounded-full border border-amber-300/20 bg-amber-300/[0.08] px-3 py-1 text-[12px] font-semibold text-amber-300">
+                    Ops داخلي
+                  </span>
+                  <h3 className="text-lg font-bold text-white">جاهزية التنفيذ اليدوي الخفيفة</h3>
+                </div>
+
+                <div className="rounded-2xl border border-amber-300/15 bg-amber-300/[0.04] p-4 space-y-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-0.5 text-[11px] font-semibold text-white/80">
+                      {opsMeta.readiness}
+                    </span>
+                    <p className="text-[14px] font-bold text-white">{opsMeta.badge}</p>
+                  </div>
+                  <p className="text-sm leading-relaxed text-slate-300">{opsMeta.note}</p>
+                  <div className="flex items-center justify-between gap-3 border-t border-white/[0.06] pt-3">
+                    <span className="text-[12px] text-white/65">{session.deliveryMode === 'directDelivery' ? 'Direct Delivery' : 'Recipient Link'}</span>
+                    <span className="text-[12px] font-semibold text-slate-400">مسار handoff: {opsMeta.lane}</span>
+                  </div>
+                </div>
+
+                <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                  {opsChecklist.map((item) => (
+                    <div
+                      key={item.key}
+                      className={`rounded-2xl border px-4 py-3 ${
+                        item.done
+                          ? 'border-cyan-300/15 bg-cyan-300/[0.04]'
+                          : 'border-white/10 bg-white/[0.03]'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <span className={`text-[12px] font-semibold ${item.done ? 'text-cyan-300' : 'text-slate-400'}`}>
+                          {item.done ? 'جاهز' : 'ناقص'}
+                        </span>
+                        <p className="text-[13px] font-semibold text-white">{item.label}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-[11px] text-slate-500">Copy-ready</span>
+                    <p className="text-[13px] font-bold text-white">حزمة handoff داخلية</p>
+                  </div>
+                  <pre className="mt-3 overflow-x-auto whitespace-pre-wrap break-words rounded-[18px] border border-white/[0.06] bg-[#0f1117] px-4 py-3 text-left font-mono text-[12px] leading-6 text-slate-300" dir="ltr">
+                    {opsHandoff}
+                  </pre>
+                  <div className="mt-3 flex justify-start">
+                    <Button variant="secondary" onClick={handleCopyOpsHandoff}>
+                      {copiedOps ? 'تم نسخ handoff ✓' : 'نسخ handoff الداخلي'}
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ) : null}
 
             <Card className="section-card p-5 sm:p-6">
               <div className="mb-4 flex items-center justify-between gap-4">
@@ -279,6 +356,14 @@ export default function CheckoutPage() {
               <p className="mt-2 text-sm leading-relaxed text-slate-300">
                 احتفظ بمرجع الطلب الحالي، وارجع إلى هذه الصفحة في أي وقت لمراجعة الحالة العامة والتفاصيل المثبتة داخل الطلب.
               </p>
+              <div className="mt-4 flex flex-col gap-2">
+                <Button
+                  variant="secondary"
+                  onClick={() => navigate(`/checkout?code=${session.code}${showOpsView ? '' : '&ops=1'}`)}
+                >
+                  {showOpsView ? 'الرجوع لعرض العميل' : 'فتح العرض الداخلي الخفيف'}
+                </Button>
+              </div>
             </Card>
 
             <Card className="p-5">
