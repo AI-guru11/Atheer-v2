@@ -6,7 +6,7 @@ export default function DifferenceSection() {
 
   return (
     <Section className="text-white">
-      {/* Editorial emotional-value section — no card grid, visual pause */}
+      {/* Editorial emotional-value section — visual pause */}
       <div className="relative mx-auto max-w-4xl text-center">
         {/* Ambient glow behind statement */}
         <div
@@ -23,19 +23,20 @@ export default function DifferenceSection() {
           {difference.eyebrow}
         </span>
 
-        {/* Large editorial statement */}
+        {/* Large editorial statement with accent */}
         <h2 className="mt-5 text-3xl font-bold leading-[1.2] sm:text-4xl lg:text-[3.25rem] lg:leading-[1.15]">
-          {difference.title}
+          <span className="heading-accent">الهدية</span> في أثير تبدأ قبل أن
+          تُفتح
         </h2>
 
-        {/* Extended description — editorial voice */}
+        {/* Extended description */}
         <p className="mx-auto mt-6 max-w-2xl text-base leading-[1.9] text-[#9ca3af] sm:text-lg">
           {difference.description}
         </p>
 
         {/* Supporting points — inline, not in cards */}
-        <div className="mt-12 grid gap-8 sm:grid-cols-3 sm:gap-6">
-          {difference.points.map((point, index) => (
+        <div className="mt-14 grid gap-10 sm:grid-cols-3 sm:gap-8">
+          {difference.points.map((point) => (
             <div key={point.title} className="space-y-3 text-center">
               {/* Accent line */}
               <div className="mx-auto h-px w-10 bg-gradient-to-r from-transparent via-[#7c5cff]/40 to-transparent" />
