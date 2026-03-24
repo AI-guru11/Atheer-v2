@@ -436,6 +436,14 @@
   -webkit-text-fill-color: transparent;
 }
 
+/* Selective heading word accent — softer than glow-text */
+.heading-accent {
+  background: linear-gradient(135deg, #d8cbff 0%, #a78bfa 70%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .grid-noise {
   background-image:
     linear-gradient(rgba(255,255,255,0.020) 1px, transparent 1px),

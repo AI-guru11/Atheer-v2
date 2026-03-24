@@ -8,13 +8,14 @@ export default function CollectionsTeaserSection() {
   return (
     <Section className="text-white">
       <div className="space-y-10">
-        {/* Header */}
+        {/* Header with accent */}
         <div className="space-y-3 text-right">
           <span className="text-xs font-semibold tracking-[0.14em] text-[#a78bfa]/70">
             مجموعات أثير المختارة
           </span>
           <h2 className="text-3xl font-bold leading-tight sm:text-4xl">
-            كوليكشن موثوق، وكل هدية مصممة بعناية
+            كوليكشن موثوق، وكل{" "}
+            <span className="heading-accent">هدية</span> مصممة بعناية
           </h2>
           <p className="max-w-2xl text-base leading-relaxed text-[#7c8099] sm:text-lg">
             طواقم مختارة بدقة لكل مناسبة وكل شخصية — تجربة كاملة من أول لمسة.
