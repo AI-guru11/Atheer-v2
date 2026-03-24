@@ -26,42 +26,67 @@ export default function CollectionsTeaserSection() {
           {preview.map((col) => (
             <div
               key={col.id}
-              className="section-card charcoal-card rounded-2xl p-6 flex flex-col gap-4"
+              className="section-card charcoal-card rounded-2xl overflow-hidden flex flex-col"
             >
-              {/* Badge + accent dot */}
-              <div className="flex items-center justify-between">
-                <span
-                  className="h-2 w-2 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: col.accentColor }}
+              {/* Collection image — 4:3 aspect for teaser layout */}
+              <div className="relative w-full overflow-hidden" style={{ aspectRatio: '4/3' }}>
+                <img
+                  src={col.image}
+                  alt={col.title}
+                  className="w-full h-full object-cover object-center"
+                  loading="lazy"
                 />
-                <span className="rounded-full border border-white/[0.07] bg-white/[0.04] px-3 py-1 text-xs font-semibold text-[#a78bfa]">
-                  {col.badge}
-                </span>
+                <div
+                  className="absolute inset-x-0 bottom-0 h-1/3 pointer-events-none"
+                  style={{
+                    background:
+                      'linear-gradient(to bottom, transparent, rgba(18,18,24,0.65))',
+                  }}
+                />
               </div>
 
-              {/* Title + subtitle */}
-              <div className="space-y-1 text-right">
-                <h3 className="text-xl font-bold leading-snug">{col.title}</h3>
-                <p className="text-sm text-[#7c8099]">{col.subtitle}</p>
-              </div>
+              {/* Accent strip */}
+              <div
+                className="h-[2px] w-full flex-shrink-0"
+                style={{ backgroundColor: col.accentColor, opacity: 0.5 }}
+              />
 
-              {/* Price band */}
-              <div className="text-right">
-                <span className="text-sm font-semibold text-[#67e8f9]/80">
-                  {col.priceBand}
-                </span>
-              </div>
-
-              {/* Audience tags */}
-              <div className="flex flex-wrap justify-end gap-2">
-                {col.audienceFit.map((tag) => (
+              <div className="flex flex-col gap-4 p-6">
+                {/* Badge + accent dot */}
+                <div className="flex items-center justify-between">
                   <span
-                    key={tag}
-                    className="rounded-full border border-white/[0.06] bg-white/[0.03] px-2.5 py-0.5 text-xs text-[#9ca3af]"
-                  >
-                    {tag}
+                    className="h-2 w-2 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: col.accentColor }}
+                  />
+                  <span className="rounded-full border border-white/[0.07] bg-white/[0.04] px-3 py-1 text-xs font-semibold text-[#a78bfa]">
+                    {col.badge}
                   </span>
-                ))}
+                </div>
+
+                {/* Title + subtitle */}
+                <div className="space-y-1 text-right">
+                  <h3 className="text-xl font-bold leading-snug">{col.title}</h3>
+                  <p className="text-sm text-[#7c8099]">{col.subtitle}</p>
+                </div>
+
+                {/* Price band */}
+                <div className="text-right">
+                  <span className="text-sm font-semibold text-[#67e8f9]/80">
+                    {col.priceBand}
+                  </span>
+                </div>
+
+                {/* Audience tags */}
+                <div className="flex flex-wrap justify-end gap-2">
+                  {col.audienceFit.map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full border border-white/[0.06] bg-white/[0.03] px-2.5 py-0.5 text-xs text-[#9ca3af]"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           ))}
