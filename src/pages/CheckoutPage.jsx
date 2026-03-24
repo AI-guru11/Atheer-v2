@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import Section from '../components/layout/Section'
 import Button from '../components/ui/Button'
@@ -13,11 +13,12 @@ import {
   getGiftStatusMeta,
   getGiftTimelineEntries,
   resolveGiftSession,
+  saveOrderNote,
+  setOrderPriorityFlag,
 } from '../lib/giftSession'
 
 function formatDateTime(value) {
   if (!value) return '—'
-
   try {
     return new Intl.DateTimeFormat('ar-SA', {
       dateStyle: 'medium',
@@ -33,8 +34,14 @@ export default function CheckoutPage() {
   const [searchParams] = useSearchParams()
   const [copied, setCopied] = useState(false)
   const [copiedOps, setCopiedOps] = useState(false)
+  const [noteSaved, setNoteSaved] = useState(false)
 
-  const session = useMemo(() => resolveGiftSession(searchParams), [searchParams])
+  // Mutable so note/flag mutations reflect immediately without page reload
+  const [session, setSession] = useState(() => resolveGiftSession(searchParams))
+  const [notesText, setNotesText] = useState(
+    () => resolveGiftSession(searchParams)?.notes || ''
+  )
+
   const showOpsView = searchParams.get('ops') === '1'
 
   function handleCopyShareLink() {
@@ -51,6 +58,20 @@ export default function CheckoutPage() {
     navigator.clipboard.writeText(buildGiftOpsHandoff(session)).catch(() => {})
     setCopiedOps(true)
     setTimeout(() => setCopiedOps(false), 2200)
+  }
+
+  function handleSaveNote() {
+    if (!session?.code) return
+    const updated = saveOrderNote(session.code, notesText)
+    if (updated) setSession(updated)
+    setNoteSaved(true)
+    setTimeout(() => setNoteSaved(false), 2200)
+  }
+
+  function handleToggleFlag() {
+    if (!session?.code) return
+    const updated = setOrderPriorityFlag(session.code, !session.flaggedPriority)
+    if (updated) setSession(updated)
   }
 
   if (!session) {
@@ -85,7 +106,7 @@ export default function CheckoutPage() {
       <div className="mx-auto max-w-4xl space-y-6 text-right">
         <div className="section-heading mb-0">
           <p className="eyebrow">Order Status</p>
-          <h1>{showOpsView ? 'ملخص الطلب + handoff داخلي' : 'ملخص الطلب وحالة المتابعة'}</h1>
+          <h1>{showOpsView ? 'ملخص الطلب + عرض تشغيلي' : 'ملخص الطلب وحالة المتابعة'}</h1>
           <p className="section-copy mt-3 max-w-2xl">
             {showOpsView
               ? 'هذا العرض مخصص للمراجعة الداخلية الخفيفة: يوضح جاهزية handoff التشغيلي من نفس الجلسة، بدون بناء لوحة تشغيل كاملة.'
@@ -95,6 +116,8 @@ export default function CheckoutPage() {
 
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
           <div className="space-y-4">
+
+            {/* ── Status card ── */}
             <Card className="section-card p-5 sm:p-6">
               <div className="flex items-start justify-between gap-4">
                 <div className="space-y-2 text-right">
@@ -112,6 +135,7 @@ export default function CheckoutPage() {
               </div>
             </Card>
 
+            {/* ── Next step card ── */}
             <Card className="section-card p-5 sm:p-6">
               <div className="mb-4 flex items-center justify-between gap-4">
                 <span className="rounded-full border border-emerald-400/20 bg-emerald-400/[0.08] px-3 py-1 text-[12px] font-semibold text-emerald-300">
@@ -127,6 +151,7 @@ export default function CheckoutPage() {
               </div>
             </Card>
 
+            {/* ── Ops view (internal — behind ?ops=1) ── */}
             {showOpsView ? (
               <Card className="section-card p-5 sm:p-6">
                 <div className="mb-4 flex items-center justify-between gap-4">
@@ -136,7 +161,7 @@ export default function CheckoutPage() {
                   <h3 className="text-lg font-bold text-white">جاهزية التنفيذ اليدوي الخفيفة</h3>
                 </div>
 
-                <div className="rounded-2xl border border-amber-300/15 bg-amber-300/[0.04] p-4 space-y-3">
+                <div className="space-y-3 rounded-2xl border border-amber-300/15 bg-amber-300/[0.04] p-4">
                   <div className="flex items-center justify-between gap-3">
                     <span className="rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-0.5 text-[11px] font-semibold text-white/80">
                       {opsMeta.readiness}
@@ -145,7 +170,7 @@ export default function CheckoutPage() {
                   </div>
                   <p className="text-sm leading-relaxed text-slate-300">{opsMeta.note}</p>
                   <div className="flex items-center justify-between gap-3 border-t border-white/[0.06] pt-3">
-                    <span className="text-[12px] text-white/65">{session.deliveryMode === 'directDelivery' ? 'Direct Delivery' : 'Recipient Link'}</span>
+                    <span className="text-[12px] text-white/65">{isDirectDelivery ? 'Direct Delivery' : 'Recipient Link'}</span>
                     <span className="text-[12px] font-semibold text-slate-400">مسار handoff: {opsMeta.lane}</span>
                   </div>
                 </div>
@@ -187,6 +212,7 @@ export default function CheckoutPage() {
               </Card>
             ) : null}
 
+            {/* ── Gift details ── */}
             <Card className="section-card p-5 sm:p-6">
               <div className="mb-4 flex items-center justify-between gap-4">
                 <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[12px] font-semibold text-white/80">
@@ -232,6 +258,7 @@ export default function CheckoutPage() {
               )}
             </Card>
 
+            {/* ── Parties & delivery ── */}
             <Card className="section-card p-5 sm:p-6">
               <div className="mb-4 flex items-center justify-between gap-4">
                 <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[12px] font-semibold text-white/80">
@@ -241,13 +268,13 @@ export default function CheckoutPage() {
               </div>
 
               <div className="grid gap-3 md:grid-cols-2">
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 space-y-2">
+                <div className="space-y-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                   <p className="text-[10px] font-bold tracking-widest text-slate-500">المرسل</p>
                   <p className="text-sm font-semibold text-white">{session.senderName || 'مرسل الهدية'}</p>
                   {session.message ? <p className="text-sm leading-relaxed text-slate-300">{session.message}</p> : null}
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 space-y-2">
+                <div className="space-y-2 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                   <p className="text-[10px] font-bold tracking-widest text-slate-500">المستلم</p>
                   <p className="text-sm font-semibold text-white">{session.recipientName || 'غير محدد'}</p>
                   {session.recipientPhone ? <p className="text-sm text-slate-300">{session.recipientPhone}</p> : null}
@@ -272,6 +299,7 @@ export default function CheckoutPage() {
               )}
             </Card>
 
+            {/* ── Readiness checklist ── */}
             <Card className="section-card p-5 sm:p-6">
               <div className="mb-4 flex items-center justify-between gap-4">
                 <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[12px] font-semibold text-white/80">
@@ -301,15 +329,16 @@ export default function CheckoutPage() {
               </div>
             </Card>
 
-            {timelineEntries.length > 0 ? (
-              <Card className="section-card p-5 sm:p-6">
-                <div className="mb-4 flex items-center justify-between gap-4">
-                  <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[12px] font-semibold text-white/80">
-                    سجل الحالة
-                  </span>
-                  <h3 className="text-lg font-bold text-white">آخر التحديثات المسجلة</h3>
-                </div>
+            {/* ── Activity timeline — always visible ── */}
+            <Card className="section-card p-5 sm:p-6">
+              <div className="mb-4 flex items-center justify-between gap-4">
+                <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[12px] font-semibold text-white/80">
+                  سجل النشاط
+                </span>
+                <h3 className="text-lg font-bold text-white">نشاط الطلب</h3>
+              </div>
 
+              {timelineEntries.length > 0 ? (
                 <div className="space-y-3">
                   {timelineEntries.map((entry) => (
                     <div
@@ -324,9 +353,44 @@ export default function CheckoutPage() {
                     </div>
                   ))}
                 </div>
-              </Card>
-            ) : null}
+              ) : (
+                <p className="text-sm text-slate-400">لا توجد تحديثات نشاط مسجلة بعد.</p>
+              )}
+            </Card>
 
+            {/* ── Internal notes ── */}
+            <Card className="section-card p-5 sm:p-6">
+              <div className="mb-4 flex items-center justify-between gap-4">
+                <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[12px] font-semibold text-white/80">
+                  داخلي
+                </span>
+                <h3 className="text-lg font-bold text-white">ملاحظة تشغيلية</h3>
+              </div>
+
+              <textarea
+                value={notesText}
+                onChange={(e) => setNotesText(e.target.value)}
+                placeholder="أضف ملاحظة تشغيلية لهذا الطلب... (داخلية فقط، لا تظهر للعميل)"
+                className="input resize-none"
+                rows={4}
+                dir="rtl"
+              />
+
+              <div className="mt-3 flex items-center justify-between gap-3">
+                <span
+                  className={`text-[12px] text-emerald-300 transition-opacity duration-300 ${
+                    noteSaved ? 'opacity-100' : 'opacity-0'
+                  }`}
+                >
+                  تم حفظ الملاحظة ✓
+                </span>
+                <Button variant="secondary" onClick={handleSaveNote}>
+                  حفظ
+                </Button>
+              </div>
+            </Card>
+
+            {/* ── Share link ── */}
             {session.shareLink ? (
               <Card className="section-card p-5 sm:p-6">
                 <div className="mb-4 flex items-center justify-between gap-4">
@@ -348,8 +412,10 @@ export default function CheckoutPage() {
                 </div>
               </Card>
             ) : null}
+
           </div>
 
+          {/* ── Right sidebar ── */}
           <div className="space-y-4">
             <Card className="p-5">
               <h3 className="text-lg font-bold text-white">نقطة المتابعة الحالية</h3>
@@ -361,8 +427,20 @@ export default function CheckoutPage() {
                   variant="secondary"
                   onClick={() => navigate(`/checkout?code=${session.code}${showOpsView ? '' : '&ops=1'}`)}
                 >
-                  {showOpsView ? 'الرجوع لعرض العميل' : 'فتح العرض الداخلي الخفيف'}
+                  {showOpsView ? 'الرجوع لعرض المتابعة' : 'فتح العرض التشغيلي'}
                 </Button>
+
+                {/* Priority flag toggle */}
+                <button
+                  onClick={handleToggleFlag}
+                  className={`w-full rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
+                    session.flaggedPriority
+                      ? 'border-amber-300/30 bg-amber-300/[0.08] text-amber-300'
+                      : 'border-white/10 bg-white/[0.03] text-slate-400 hover:border-white/20 hover:text-white'
+                  }`}
+                >
+                  {session.flaggedPriority ? '★ مُعلَّم للمتابعة' : '☆ علّم للمتابعة'}
+                </button>
               </div>
             </Card>
 

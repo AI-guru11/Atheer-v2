@@ -613,6 +613,17 @@ export function getOrderFilterCategory(session) {
   return 'active'
 }
 
+// Save a plain-text internal note on a local session.
+// The note is internal only — never surfaced in customer-facing messages.
+export function saveOrderNote(code, noteText) {
+  return updateGiftSession(code, { notes: (noteText ?? '').trim() })
+}
+
+// Set or clear the "علّم للمتابعة" priority flag on a local session.
+export function setOrderPriorityFlag(code, value) {
+  return updateGiftSession(code, { flaggedPriority: Boolean(value) })
+}
+
 // Returns a numeric sort priority — lower = more operationally urgent.
 // Used by the "الأولوية" sort in OrdersPage.
 export function getStatusSortPriority(session) {
