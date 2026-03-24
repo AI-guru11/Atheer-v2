@@ -613,6 +613,24 @@ export function getOrderFilterCategory(session) {
   return 'active'
 }
 
+// Returns a numeric sort priority — lower = more operationally urgent.
+// Used by the "الأولوية" sort in OrdersPage.
+export function getStatusSortPriority(session) {
+  const s = session?.status
+  if (!s) return 10
+  if (s === 'direct_review_ready') return 1
+  if (s === 'link_ready' && session.deliveryMode === 'directDelivery') return 2
+  if (s === 'gift_selected') return 3
+  if (s === 'choice_pending') return 4
+  if (s === 'revealed') return 5
+  if (s === 'opened') return 6
+  if (s === 'unlocked') return 7
+  if (s === 'link_ready') return 8           // recipientChoice — waiting on recipient
+  if (s === 'address_submitted') return 9
+  if (s === 'direct_order_confirmed') return 10
+  return 11
+}
+
 export function archiveOrder(code) {
   updateGiftSession(code, { archived: true })
 }
