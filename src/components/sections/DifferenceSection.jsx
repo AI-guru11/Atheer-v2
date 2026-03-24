@@ -6,48 +6,35 @@ export default function DifferenceSection() {
 
   return (
     <Section className="text-white">
-      {/* Editorial emotional-value section — visual pause */}
-      <div className="relative mx-auto max-w-4xl text-center">
-        {/* Ambient glow behind statement */}
-        <div
-          className="pointer-events-none absolute inset-0 -z-10"
-          aria-hidden="true"
-          style={{
-            background:
-              "radial-gradient(ellipse 60% 50% at 50% 40%, rgba(124, 92, 255, 0.06) 0%, transparent 70%)",
-          }}
-        />
+      <div className="manifesto-stage mx-auto max-w-5xl space-y-10 sm:space-y-12">
+        <div className="space-y-4 text-right">
+          <span className="text-xs font-semibold tracking-[0.14em] text-[#a78bfa]/70">
+            {difference.eyebrow}
+          </span>
+          <h2 className="max-w-4xl text-3xl font-bold leading-[1.15] sm:text-4xl lg:text-[3.45rem]">
+            <span className="heading-accent">الهدية</span> في أثير تبدأ قبل أن تُفتح
+          </h2>
+          <p className="max-w-3xl text-base leading-[1.95] text-[#a2a8ba] sm:text-lg">
+            {difference.description}
+          </p>
+        </div>
 
-        {/* Eyebrow */}
-        <span className="text-xs font-semibold tracking-[0.14em] text-[#a78bfa]/70">
-          {difference.eyebrow}
-        </span>
-
-        {/* Large editorial statement with accent */}
-        <h2 className="mt-5 text-3xl font-bold leading-[1.2] sm:text-4xl lg:text-[3.25rem] lg:leading-[1.15]">
-          <span className="heading-accent">الهدية</span> في أثير تبدأ قبل أن
-          تُفتح
-        </h2>
-
-        {/* Extended description */}
-        <p className="mx-auto mt-6 max-w-2xl text-base leading-[1.9] text-[#9ca3af] sm:text-lg">
-          {difference.description}
-        </p>
-
-        {/* Supporting points — inline, not in cards */}
-        <div className="mt-14 grid gap-10 sm:grid-cols-3 sm:gap-8">
-          {difference.points.map((point) => (
-            <div key={point.title} className="space-y-3 text-center">
-              {/* Accent line */}
-              <div className="mx-auto h-px w-10 bg-gradient-to-r from-transparent via-[#7c5cff]/40 to-transparent" />
-
-              <h3 className="text-lg font-semibold leading-snug sm:text-xl">
-                {point.title}
-              </h3>
-              <p className="mx-auto max-w-xs text-sm leading-[1.8] text-[#7c8099]">
-                {point.description}
-              </p>
-            </div>
+        <div className="space-y-7 sm:space-y-8">
+          {difference.points.map((point, index) => (
+            <article
+              key={point.title}
+              className={`manifesto-point ${
+                index === 1 ? "sm:mr-[8%]" : index === 2 ? "sm:ml-[10%]" : "sm:max-w-[84%]"
+              }`}
+            >
+              <div className="manifesto-point__accent" aria-hidden="true" />
+              <div className="space-y-3 text-right">
+                <h3 className="text-2xl font-bold leading-snug sm:text-[2rem]">{point.title}</h3>
+                <p className="max-w-2xl text-base leading-[1.95] text-[#8e94aa] sm:text-lg">
+                  {point.description}
+                </p>
+              </div>
+            </article>
           ))}
         </div>
       </div>

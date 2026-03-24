@@ -3,76 +3,58 @@ import { siteContent } from "../../data/siteContent"
 
 export default function FeaturedSection() {
   const { featured } = siteContent
+  const [lead, ...secondary] = featured.items
 
   return (
     <Section className="text-white">
-      <div className="space-y-12">
-        {/* Header with accent */}
+      <div className="scenario-stage space-y-10 sm:space-y-12">
         <div className="space-y-3 text-right">
           <span className="text-xs font-semibold tracking-[0.14em] text-[#a78bfa]/70">
             {featured.eyebrow}
           </span>
-          <h2 className="text-3xl font-bold leading-tight sm:text-4xl">
-            لكل مناسبة،{" "}
-            <span className="heading-accent">تجربة إهداء</span> تليق بها
+          <h2 className="max-w-4xl text-3xl font-bold leading-[1.15] sm:text-4xl lg:text-[3.1rem]">
+            لكل مناسبة، <span className="heading-accent">تجربة إهداء</span> تليق بها
           </h2>
         </div>
 
-        {/* Asymmetric feature blocks */}
-        <div className="space-y-4 sm:space-y-0 sm:grid sm:grid-cols-12 sm:gap-4">
-          {featured.items.map((item, index) => {
-            const spans = [
-              "sm:col-span-7",
-              "sm:col-span-5",
-              "sm:col-span-12",
-            ]
-            const span = spans[index] || "sm:col-span-12"
+        <div className="grid gap-4 lg:grid-cols-12">
+          <article className="scenario-feature charcoal-card card-accent-top rounded-[30px] p-7 text-right lg:col-span-7 lg:p-9">
+            <div className="space-y-5">
+              <div className="flex justify-end">
+                <span className="rounded-full border border-white/[0.07] bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-[#a78bfa]">
+                  {lead.tag}
+                </span>
+              </div>
+              <h3 className="text-[2rem] font-bold leading-tight sm:text-[2.4rem]">{lead.title}</h3>
+              <p className="max-w-2xl text-lg leading-[1.9] text-[#9ca3af]">{lead.description}</p>
+              <div className="flex justify-end">
+                <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1 text-xs text-[#67e8f9]">
+                  تجربة رئيسية
+                </span>
+              </div>
+            </div>
+          </article>
 
-            return (
-              <div
+          <div className="grid gap-4 lg:col-span-5">
+            {secondary.map((item, index) => (
+              <article
                 key={item.title}
-                className={`group relative overflow-hidden rounded-2xl border border-white/[0.07] p-7 sm:p-8 ${span}`}
-                style={{
-                  background:
-                    index === 2
-                      ? "linear-gradient(135deg, rgba(19, 19, 22, 0.45) 0%, rgba(124, 92, 255, 0.04) 100%)"
-                      : "rgba(19, 19, 22, 0.40)",
-                }}
+                className={`scenario-support rounded-[26px] border border-white/[0.07] p-6 text-right ${
+                  index === 1 ? "scenario-support--lower lg:mr-[8%]" : "lg:ml-[4%]"
+                }`}
               >
-                {/* Subtle top accent line on first card */}
-                {index === 0 && (
-                  <div
-                    className="absolute top-0 right-0 h-px w-20 pointer-events-none"
-                    style={{
-                      background:
-                        "linear-gradient(to left, rgba(124, 92, 255, 0.4), transparent)",
-                    }}
-                    aria-hidden="true"
-                  />
-                )}
-
-                <div className="flex flex-col gap-4 text-right">
+                <div className="space-y-4">
                   <div className="flex justify-end">
-                    <span className="rounded-full border border-white/[0.07] bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-[#a78bfa]">
+                    <span className="rounded-full border border-white/[0.07] bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-[#c4b5fd]">
                       {item.tag}
                     </span>
                   </div>
-
-                  <h3 className="text-xl font-bold leading-snug sm:text-2xl">
-                    {item.title}
-                  </h3>
-
-                  <p
-                    className={`text-base leading-[1.8] text-[#7c8099] ${
-                      index === 2 ? "max-w-xl" : "max-w-lg"
-                    }`}
-                  >
-                    {item.description}
-                  </p>
+                  <h3 className="text-2xl font-bold leading-snug">{item.title}</h3>
+                  <p className="text-base leading-[1.9] text-[#8e94aa]">{item.description}</p>
                 </div>
-              </div>
-            )
-          })}
+              </article>
+            ))}
+          </div>
         </div>
       </div>
     </Section>

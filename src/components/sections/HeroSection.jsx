@@ -47,18 +47,22 @@ export default function HeroSection() {
         </div>
       </div>
 
-      <div className="mt-10 grid gap-4 sm:grid-cols-3 lg:mt-14">
-        {hero.stats.map((item) => (
-          <div
-            key={item.label}
-            className="ambient-stat-card glass-panel rounded-[24px] px-5 py-5 text-white"
-          >
-            <div className="relative z-10 space-y-2 text-right">
-              <p className="text-lg font-semibold text-[#d8cbff]">{item.value}</p>
-              <p className="text-sm leading-relaxed text-slate-400">{item.label}</p>
+      <div className="hero-route-strip mt-10 lg:mt-14">
+        <div className="hero-route-strip__line" aria-hidden="true" />
+        <div className="grid gap-3 sm:grid-cols-3">
+          {hero.stats.map((item, index) => (
+            <div key={item.label} className="hero-route-chip glass-panel rounded-[22px] px-4 py-4 text-right text-white">
+              <div className="hero-route-chip__marker" aria-hidden="true">
+                <span className="hero-route-chip__index">0{index + 1}</span>
+                <span className="hero-route-chip__dot" />
+              </div>
+              <div className="space-y-1.5">
+                <p className="text-lg font-semibold text-[#d8cbff]">{item.value}</p>
+                <p className="text-sm leading-relaxed text-slate-400">{item.label}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </Section>
   )
