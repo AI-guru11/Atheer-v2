@@ -265,7 +265,7 @@ export function getGiftNextStepMeta(session) {
     },
     direct_order_confirmed: {
       title: "الطلب محفوظ وجاهز للمتابعة",
-      note: "يمكنك الآن الاعتماد على صفحة الملخص كمرجع ثابت للطلب والتفاصيل المحفوظة.",
+      note: "يمكنك الآن الاعتماد على صفحة الملخص كمرجع ثابت للطلب والتفاصيل المحفوظة داخله.",
     },
   }
 
@@ -325,6 +325,163 @@ export function getGiftReadinessChecklist(session) {
   }
 
   return items
+}
+
+export function getGiftOpsMeta(session) {
+  if (!session) {
+    return {
+      badge: "Ops غير متاح",
+      note: "الجلسة غير موجودة، لذلك لا يمكن تجهيز handoff داخلي.",
+      lane: "غير متاح",
+      readiness: "غير مكتمل",
+    }
+  }
+
+  const statusMap = {
+    link_ready: session.deliveryMode === "directDelivery"
+      ? {
+          badge: "جاهز لمراجعة التنفيذ",
+          note: "كل العناصر الأساسية موجودة والطلب ينتظر تثبيتًا نهائيًا قبل إدخاله في متابعة التنفيذ.",
+          lane: "مراجعة داخلية",
+          readiness: "شبه جاهز",
+        }
+      : {
+          badge: "بانتظار تفاعل المستلم",
+          note: "تم حفظ الرابط داخل الجلسة، لكن handoff الداخلي يظل ناقصًا حتى يبدأ المستلم التجربة أو يكمل اختياره.",
+          lane: "انتظار تفاعل",
+          readiness: "معلّق",
+        },
+    opened: {
+      badge: "المستلم داخل التجربة",
+      note: "الطلب نشط حاليًا من جهة المستلم. لا يلزم إجراء داخلي الآن سوى المتابعة من نفس المرجع.",
+      lane: "متابعة",
+      readiness: "معلّق",
+    },
+    unlocked: {
+      badge: "الكشف تم فتحه",
+      note: "تجربة الكشف بدأت، لكن handoff الداخلي يكتمل بعد ظهور تفاصيل الهدية أو استلام الاختيار النهائي.",
+      lane: "متابعة",
+      readiness: "معلّق",
+    },
+    revealed: session.giftPath === "exactGift"
+      ? {
+          badge: "بانتظار عنوان الاستلام",
+          note: "الهدية أصبحت واضحة داخل الجلسة، لكن التنفيذ لا ينتقل للمرحلة التالية قبل حفظ بيانات التوصيل.",
+          lane: "استكمال بيانات",
+          readiness: "معلّق",
+        }
+      : {
+          badge: "بانتظار اختيار نهائي",
+          note: "المجموعة ظهرت للمستلم، لكن handoff الداخلي لا يكتمل قبل تثبيت هدية واحدة داخل الطلب.",
+          lane: "استكمال اختيار",
+          readiness: "معلّق",
+        },
+    choice_pending: {
+      badge: "بانتظار تثبيت الهدية",
+      note: "تجربة الاختيار جاهزة، وأقرب نقطة تشغيلية حقيقية هي لحظة اختيار المستلم لهدية واحدة.",
+      lane: "استكمال اختيار",
+      readiness: "معلّق",
+    },
+    gift_selected: {
+      badge: "الهدية محددة داخليًا",
+      note: "الهدية النهائية ثبتت داخل الجلسة، والخطوة الحاسمة المتبقية هي بيانات التوصيل فقط.",
+      lane: "استكمال بيانات",
+      readiness: "شبه جاهز",
+    },
+    address_submitted: {
+      badge: "جاهز للتنفيذ اليدوي",
+      note: "الهدية وبيانات التوصيل والمستلم أصبحت محفوظة، ويمكن استخدام هذه الصفحة كنقطة handoff تشغيلية داخلية.",
+      lane: "handoff جاهز",
+      readiness: "جاهز",
+    },
+    direct_review_ready: {
+      badge: "جاهز للمراجعة النهائية",
+      note: "الطلب المباشر أصبح قريبًا من handoff الكامل، والخطوة المتبقية هي تثبيت الطلب من جهة المرسل.",
+      lane: "مراجعة داخلية",
+      readiness: "شبه جاهز",
+    },
+    direct_order_confirmed: {
+      badge: "handoff مباشر جاهز",
+      note: "الطلب المباشر محفوظ بالكامل داخل الجلسة ويمكن استخدام مرجع الطلب كحزمة تنفيذ داخلية دون الرجوع للـ Builder.",
+      lane: "handoff جاهز",
+      readiness: "جاهز",
+    },
+  }
+
+  return statusMap[session.status] || {
+    badge: "يتطلب مراجعة",
+    note: "الجلسة تحتوي على بيانات مفيدة، لكن الحالة الحالية لا تزال تحتاج مراجعة داخلية قبل اعتماد handoff الكامل.",
+    lane: "مراجعة داخلية",
+    readiness: "معلّق",
+  }
+}
+
+export function getGiftOpsChecklist(session) {
+  if (!session) return []
+
+  const hasRecipientContact = Boolean(session.recipientName && (session.recipientPhone || session.recipientEmail))
+  const hasGiftLocked = session.giftPath === "exactGift"
+    ? Boolean(session.selectedGift)
+    : Boolean(session.selectedGift || (Array.isArray(session.giftOptions) && session.giftOptions.length > 0))
+
+  return [
+    {
+      key: "ops-reference",
+      label: "مرجع الطلب جاهز للاستخدام الداخلي",
+      done: Boolean(session.code),
+    },
+    {
+      key: "ops-path",
+      label: "مسار الهدية واضح داخل الجلسة",
+      done: Boolean(session.giftPath && session.deliveryMode),
+    },
+    {
+      key: "ops-gift",
+      label: session.giftPath === "exactGift" ? "الهدية النهائية مثبتة" : "بيانات الاختيار النهائي أو المجموعة جاهزة",
+      done: hasGiftLocked,
+    },
+    {
+      key: "ops-recipient",
+      label: "بيانات التواصل مع المستلم موجودة",
+      done: hasRecipientContact,
+    },
+    {
+      key: "ops-address",
+      label: "بيانات التوصيل صالحة للتنفيذ",
+      done: Boolean(session.addressData?.name && session.addressData?.city && session.addressData?.address),
+    },
+    {
+      key: "ops-status",
+      label: "حالة العميل متزامنة مع آخر خطوة",
+      done: Array.isArray(session.statusTimeline) && session.statusTimeline.length > 0,
+    },
+  ]
+}
+
+export function buildGiftOpsHandoff(session) {
+  if (!session) return "لا توجد جلسة متاحة لبناء handoff داخلي."
+
+  const pathMeta = getGiftPathMeta(session.giftPath)
+  const opsMeta = getGiftOpsMeta(session)
+  const selectedGiftTitle = session.selectedGift?.title || (session.giftOptions?.[0]?.title ?? "—")
+  const lines = [
+    `Order Ref: ${session.code || "—"}`,
+    `Ops Lane: ${opsMeta.lane}`,
+    `Ops Readiness: ${opsMeta.readiness}`,
+    `Gift Path: ${pathMeta.label}`,
+    `Delivery Mode: ${session.deliveryMode === "directDelivery" ? "Direct Delivery" : "Recipient Link"}`,
+    `Occasion: ${session.occasionLabel || "—"}`,
+    `Budget: ${session.budgetLabel || "—"}`,
+    `Sender: ${session.senderName || "—"}`,
+    `Recipient: ${session.recipientName || "—"}`,
+    `Phone: ${session.recipientPhone || session.addressData?.phone || "—"}`,
+    `Gift: ${selectedGiftTitle}`,
+    `Address: ${session.addressData ? `${session.addressData.city || "—"} — ${session.addressData.address || "—"}` : "—"}`,
+    `Customer Status: ${getGiftStatusMeta(session.status, session.giftPath).badge}`,
+    `Ops Note: ${opsMeta.note}`,
+  ]
+
+  return lines.join("\n")
 }
 
 export function createGiftSession({ code, selections, recipientData, recommendation }) {
