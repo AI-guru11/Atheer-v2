@@ -2,8 +2,12 @@ node_modules
 dist
 .env
 .env.*
+*.local
 coverage
 .DS_Store
 .vscode
 .idea
 *.log
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
