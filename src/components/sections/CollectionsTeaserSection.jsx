@@ -31,7 +31,7 @@ export default function CollectionsTeaserSection() {
               {/* Collection image — 4:3 aspect for teaser layout */}
               <div className="relative w-full overflow-hidden" style={{ aspectRatio: '4/3' }}>
                 <img
-                  src={col.image}
+                  src={`${import.meta.env.BASE_URL}${col.image}`}
                   alt={col.title}
                   className="w-full h-full object-cover object-center"
                   loading="lazy"
