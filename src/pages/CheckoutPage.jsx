@@ -5,6 +5,7 @@ import Button from '../components/ui/Button'
 import Card from '../components/ui/Card'
 import {
   buildGiftOpsHandoff,
+  buildOrderPresets,
   buildRecipientCoordinationSnippet,
   buildSenderFollowUpSnippet,
   getGiftNextStepMeta,
@@ -32,13 +33,22 @@ function formatDateTime(value) {
   }
 }
 
+const PRESET_GROUPS = [
+  { key: 'sender',    label: 'للمرسل' },
+  { key: 'recipient', label: 'للمستلم' },
+  { key: 'ops',       label: 'داخلي' },
+]
+
 export default function CheckoutPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [copied, setCopied] = useState(false)
   const [copiedOps, setCopiedOps] = useState(false)
   const [noteSaved, setNoteSaved] = useState(false)
-  const [copiedSnippet, setCopiedSnippet] = useState(null) // 'sender' | 'recipient' | 'ops'
+  const [copiedSnippet, setCopiedSnippet] = useState(null)  // 'sender' | 'recipient' | 'ops'
+  const [presetGroup, setPresetGroup]           = useState('sender')
+  const [presetVariantIdx, setPresetVariantIdx] = useState(0)
+  const [copiedPreset, setCopiedPreset]         = useState(false)
 
   // Mutable so note/flag mutations reflect immediately without page reload
   const [session, setSession] = useState(() => resolveGiftSession(searchParams))
@@ -91,6 +101,26 @@ export default function CheckoutPage() {
     if (updated) setSession(updated)
   }
 
+  function handlePresetGroupChange(group) {
+    setPresetGroup(group)
+    setPresetVariantIdx(0)
+  }
+
+  function handleCopyPreset(text) {
+    if (!text || !navigator.clipboard) return
+    navigator.clipboard.writeText(text).catch(() => {})
+    setCopiedPreset(true)
+    setTimeout(() => setCopiedPreset(false), 2200)
+  }
+
+  function handleInsertPresetToNotes(text) {
+    if (!text) return
+    setNotesText((prev) => {
+      if (!prev.trim()) return text
+      return `${prev}\n\n---\n${text}`
+    })
+  }
+
   if (!session) {
     return (
       <Section>
@@ -119,6 +149,9 @@ export default function CheckoutPage() {
   const optionCount = Array.isArray(session.giftOptions) ? session.giftOptions.length : 0
   const senderSnippet = buildSenderFollowUpSnippet(session)
   const recipientSnippet = buildRecipientCoordinationSnippet(session)
+  const presets = buildOrderPresets(session)
+  const activePresets = presets[presetGroup] || []
+  const activePreset  = activePresets[presetVariantIdx] ?? activePresets[0] ?? null
 
   return (
     <Section>
@@ -456,6 +489,72 @@ export default function CheckoutPage() {
                   }`}
                 >
                   {session.followUpNeeded ? 'تمت المتابعة' : 'يحتاج متابعة'}
+                </button>
+              </div>
+            </Card>
+
+            {/* ── Ready presets ── */}
+            <Card className="section-card p-5 sm:p-6">
+              <div className="mb-4 flex items-center justify-between gap-4">
+                <span className="rounded-full border border-sky-400/20 bg-sky-400/[0.08] px-3 py-1 text-[12px] font-semibold text-sky-300">
+                  قوالب
+                </span>
+                <h3 className="text-lg font-bold text-white">قوالب جاهزة</h3>
+              </div>
+
+              {/* Group selector */}
+              <div className="flex flex-wrap gap-2">
+                {PRESET_GROUPS.map(({ key, label }) => (
+                  <button
+                    key={key}
+                    onClick={() => handlePresetGroupChange(key)}
+                    className={`rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors ${
+                      presetGroup === key
+                        ? 'border-sky-400/40 bg-sky-400/[0.12] text-sky-200'
+                        : 'border-white/10 bg-white/[0.03] text-slate-400 hover:border-white/20 hover:text-white'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Variant selector */}
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {activePresets.map((preset, idx) => (
+                  <button
+                    key={preset.key}
+                    onClick={() => setPresetVariantIdx(idx)}
+                    className={`rounded-full border px-3 py-1 text-[12px] font-semibold transition-colors ${
+                      presetVariantIdx === idx
+                        ? 'border-sky-400/30 bg-sky-400/[0.08] text-sky-300'
+                        : 'border-white/10 bg-white/[0.03] text-slate-400 hover:border-white/20 hover:text-white'
+                    }`}
+                  >
+                    {preset.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Preset text preview */}
+              {activePreset && (
+                <div className="mt-3 max-h-32 overflow-y-auto rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+                  <pre className="whitespace-pre-wrap break-words font-sans text-[13px] leading-relaxed text-slate-300" dir="rtl">
+                    {activePreset.text}
+                  </pre>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <Button variant="secondary" onClick={() => handleCopyPreset(activePreset?.text)}>
+                  {copiedPreset ? 'تم النسخ ✓' : 'نسخ النص'}
+                </Button>
+                <button
+                  onClick={() => handleInsertPresetToNotes(activePreset?.text)}
+                  className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[12px] font-semibold text-slate-400 transition-colors hover:border-white/20 hover:text-white"
+                >
+                  أضف للملاحظات
                 </button>
               </div>
             </Card>
