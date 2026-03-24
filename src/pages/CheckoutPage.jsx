@@ -392,6 +392,9 @@ export default function CheckoutPage() {
               <Button variant="primary" onClick={() => navigate('/builder')}>
                 ابدأ طلبًا جديدًا
               </Button>
+              <Button variant="secondary" onClick={() => navigate('/orders')}>
+                عرض كل الطلبات
+              </Button>
               <Button variant="secondary" onClick={() => navigate('/')}>
                 العودة للرئيسية
               </Button>

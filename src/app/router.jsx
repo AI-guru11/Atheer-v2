@@ -17,6 +17,7 @@ import RecipientAddressPage from '../gift/RecipientAddressPage';
 import RecipientConfirmedPage from '../gift/RecipientConfirmedPage';
 
 import AdminDashboardPage from '../admin/AdminDashboardPage';
+import OrdersPage from '../pages/OrdersPage';
 
 const router = createHashRouter([
   {
@@ -35,6 +36,7 @@ const router = createHashRouter([
       { path: 'gift/choose', element: <RecipientChoicePage /> },
       { path: 'gift/address', element: <RecipientAddressPage /> },
       { path: 'gift/confirmed', element: <RecipientConfirmedPage /> },
+      { path: 'orders', element: <OrdersPage /> },
       { path: 'admin', element: <AdminDashboardPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],

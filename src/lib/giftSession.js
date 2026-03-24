@@ -580,6 +580,39 @@ export function buildGiftLink(baseUrl, session) {
   return `${baseUrl}#/gift/open?code=${session.code}&gift=${payload}`
 }
 
+export function getAllGiftSessions() {
+  if (!isBrowser()) return []
+
+  const sessions = []
+  for (let i = 0; i < window.localStorage.length; i++) {
+    const key = window.localStorage.key(i)
+    if (!key?.startsWith(STORAGE_PREFIX)) continue
+    try {
+      const raw = window.localStorage.getItem(key)
+      if (raw) sessions.push(JSON.parse(raw))
+    } catch {
+      // skip malformed entries
+    }
+  }
+
+  return sessions.sort((a, b) => {
+    const ta = a.updatedAt || a.createdAt || ''
+    const tb = b.updatedAt || b.createdAt || ''
+    return tb.localeCompare(ta)
+  })
+}
+
+export function getOrderFilterCategory(session) {
+  if (!session?.status) return 'active'
+  const s = session.status
+  if (s === 'address_submitted' || s === 'direct_order_confirmed') return 'completed'
+  if (
+    s === 'direct_review_ready' ||
+    (s === 'link_ready' && session.deliveryMode === 'directDelivery')
+  ) return 'awaiting'
+  return 'active'
+}
+
 export function resolveGiftSession(searchParams) {
   const code = searchParams.get("code")
   const payload = searchParams.get("gift")
