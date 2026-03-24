@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run build:github",
+    "build:github": "vite build",
+    "build:server": "BUILD_TARGET=server vite build",
     "preview": "vite preview --host 0.0.0.0"
   },
   "dependencies": {
