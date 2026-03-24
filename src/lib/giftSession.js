@@ -613,6 +613,14 @@ export function getOrderFilterCategory(session) {
   return 'active'
 }
 
+export function archiveOrder(code) {
+  updateGiftSession(code, { archived: true })
+}
+
+export function unarchiveOrder(code) {
+  updateGiftSession(code, { archived: false })
+}
+
 export function resolveGiftSession(searchParams) {
   const code = searchParams.get("code")
   const payload = searchParams.get("gift")
