@@ -710,6 +710,72 @@
   }
 }
 
+/* ── Premium header system ── */
+
+/*
+ * .header-bar        — main glass bar with softly curved lower corners
+ * .header-bar::after — thin bottom divider: violet → Tiffany aqua blend
+ * .header-bar--scrolled — tighter, denser variant when page is scrolled
+ */
+
+.header-bar {
+  background-color: rgba(13, 13, 15, 0.84);
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.046) 0%, rgba(255, 255, 255, 0.010) 100%),
+    linear-gradient(135deg, rgba(124, 92, 255, 0.022) 0%, transparent 50%),
+    linear-gradient(225deg, rgba(20, 184, 166, 0.015) 0%, transparent 44%);
+  backdrop-filter: blur(22px) saturate(1.10);
+  -webkit-backdrop-filter: blur(22px) saturate(1.10);
+  /* Soft scooped lower-left and lower-right corners — the center-bottom stays flatter */
+  border-bottom-left-radius: 1.25rem;
+  border-bottom-right-radius: 1.25rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.062),
+    0 6px 28px rgba(0, 0, 0, 0.26);
+  position: relative;
+  /* Smooth transitions for all visual properties */
+  transition:
+    border-bottom-left-radius  0.55s cubic-bezier(0.4, 0, 0.2, 1),
+    border-bottom-right-radius 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow                 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color           0.40s ease,
+    backdrop-filter            0.40s ease;
+}
+
+/* Bottom glow divider — restrained violet ↔ Tiffany aqua */
+.header-bar::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 7%;
+  right: 7%;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(124, 92, 255, 0.26) 20%,
+    rgba(34, 211, 238, 0.18) 46%,
+    rgba(20, 184, 166, 0.16) 60%,
+    rgba(124, 92, 255, 0.14) 80%,
+    transparent 100%
+  );
+  border-radius: 999px;
+  pointer-events: none;
+  transition: opacity 0.50s ease;
+}
+
+/* Scrolled state — denser glass, calmer curves */
+.header-bar--scrolled {
+  background-color: rgba(10, 10, 12, 0.91);
+  backdrop-filter: blur(30px) saturate(1.14);
+  -webkit-backdrop-filter: blur(30px) saturate(1.14);
+  border-bottom-left-radius: 0.875rem;
+  border-bottom-right-radius: 0.875rem;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.042),
+    0 10px 44px rgba(0, 0, 0, 0.40);
+}
+
 /* ── Hero route cards ── */
 .hero-route-stack {
   position: relative;
