@@ -7,6 +7,7 @@
   --bg: #141414;
   --bg-soft: #191919;
   --surface: rgba(20, 20, 22, 0.70);
+  --surface-strong: rgba(18, 18, 20, 0.90);
   --surface-alt: rgba(22, 22, 24, 0.72);
   --line: rgba(255, 255, 255, 0.06);
 
@@ -138,59 +139,47 @@
 
 /* ── Glass & surface effects ── */
 .glass-panel {
-  background-color: rgba(24, 24, 28, 0.54);
-  background-image:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.018) 100%),
-    linear-gradient(140deg, rgba(34, 211, 238, 0.022) 0%, transparent 36%);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  backdrop-filter: blur(28px) saturate(1.08);
-  -webkit-backdrop-filter: blur(28px) saturate(1.08);
+  background: rgba(28, 28, 32, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  backdrop-filter: blur(26px);
+  -webkit-backdrop-filter: blur(26px);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 0 0 1px rgba(255, 255, 255, 0.015),
-    0 12px 42px rgba(0, 0, 0, 0.42);
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    0 14px 52px rgba(0, 0, 0, 0.52);
 }
 
 .glass-panel-strong {
-  background-color: rgba(17, 17, 19, 0.62);
-  background-image:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.012) 100%),
-    linear-gradient(135deg, rgba(124, 92, 255, 0.03) 0%, transparent 42%);
-  border: 1px solid rgba(255, 255, 255, 0.09);
-  backdrop-filter: blur(24px) saturate(1.06);
-  -webkit-backdrop-filter: blur(24px) saturate(1.06);
+  background: rgba(18, 18, 20, 0.90);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 0 0 1px rgba(110, 86, 230, 0.05),
-    0 14px 48px rgba(0, 0, 0, 0.40);
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 0 0 1px rgba(110, 86, 230, 0.07),
+    0 12px 48px rgba(0, 0, 0, 0.44);
 }
 
 /* Subtle surface for stat / data cells */
 .surface-panel {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.055);
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* Dark glass card — section content cards */
 .charcoal-card {
-  background-color: rgba(19, 19, 22, 0.56);
-  background-image:
-    linear-gradient(
-      160deg,
-      rgba(54, 54, 64, 0.58) 0%,
-      rgba(18, 18, 22, 0.50) 52%,
-      rgba(12, 12, 14, 0.46) 100%
-    ),
-    radial-gradient(circle at top right, rgba(255, 255, 255, 0.045) 0%, transparent 38%);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  backdrop-filter: blur(26px) saturate(1.06);
-  -webkit-backdrop-filter: blur(26px) saturate(1.06);
+  background: linear-gradient(
+    160deg,
+    rgba(42, 42, 50, 0.85) 0%,
+    rgba(14, 14, 16, 0.83) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.09),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.20),
-    0 0 0 1px rgba(255, 255, 255, 0.015),
-    0 14px 44px rgba(0, 0, 0, 0.42),
-    0 2px 8px rgba(0, 0, 0, 0.20);
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.30),
+    0 12px 40px rgba(0, 0, 0, 0.52),
+    0 2px 8px rgba(0, 0, 0, 0.28);
 }
 
 /* ── Page ambient system — controlled recovery of the living background ── */
@@ -357,13 +346,13 @@
 }
 
 .ambient-card {
-  background: rgba(20, 20, 22, 0.66);
-  border: 1px solid rgba(255, 255, 255, 0.075);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(20, 20, 22, 0.76);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 16px 56px rgba(0, 0, 0, 0.34);
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 16px 56px rgba(0, 0, 0, 0.38);
   position: relative;
   overflow: hidden;
 }
@@ -399,7 +388,7 @@
   background: linear-gradient(
     to right,
     transparent,
-    rgba(124, 92, 255, 0.24),
+    rgba(124, 92, 255, 0.18),
     transparent
   );
   pointer-events: none;
@@ -434,14 +423,6 @@
   background: linear-gradient(90deg, #ffffff 0%, #c4b5fd 42%, #a78bfa 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-
-/* Selective heading word accent — softer than glow-text */
-.heading-accent {
-  background: linear-gradient(135deg, #d8cbff 0%, #a78bfa 70%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .grid-noise {
@@ -710,322 +691,377 @@
   }
 }
 
-/* ── Premium header system ── */
-
-/*
- * .header-bar        — main glass bar with softly curved lower corners
- * .header-bar::after — thin bottom divider: violet → Tiffany aqua blend
- * .header-bar--scrolled — tighter, denser variant when page is scrolled
- */
-
-.header-bar {
-  background-color: rgba(13, 13, 15, 0.84);
-  background-image:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.046) 0%, rgba(255, 255, 255, 0.010) 100%),
-    linear-gradient(135deg, rgba(124, 92, 255, 0.022) 0%, transparent 50%),
-    linear-gradient(225deg, rgba(20, 184, 166, 0.015) 0%, transparent 44%);
-  backdrop-filter: blur(22px) saturate(1.10);
-  -webkit-backdrop-filter: blur(22px) saturate(1.10);
-  /* Soft scooped lower-left and lower-right corners — the center-bottom stays flatter */
-  border-bottom-left-radius: 1.25rem;
-  border-bottom-right-radius: 1.25rem;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.062),
-    0 6px 28px rgba(0, 0, 0, 0.26);
-  position: relative;
-  /* Smooth transitions for all visual properties */
-  transition:
-    border-bottom-left-radius  0.55s cubic-bezier(0.4, 0, 0.2, 1),
-    border-bottom-right-radius 0.55s cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow                 0.55s cubic-bezier(0.4, 0, 0.2, 1),
-    background-color           0.40s ease,
-    backdrop-filter            0.40s ease;
+/* ── Atheer Liquid Aurora Background System v2 ── */
+:root {
+  --aurora-bg-1: #06070b;
+  --aurora-bg-2: #0a0d14;
+  --aurora-violet: #5b3df5;
+  --aurora-indigo: #243bff;
+  --aurora-lavender: #bcaeff;
+  --aurora-tiffany: #7ef2e3;
+  --aurora-rim: rgba(235, 238, 255, 0.24);
+  --aurora-trace: rgba(210, 218, 255, 0.28);
 }
 
-/* Bottom glow divider — restrained violet ↔ Tiffany aqua */
-.header-bar::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 7%;
-  right: 7%;
-  height: 1px;
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    rgba(124, 92, 255, 0.26) 20%,
-    rgba(34, 211, 238, 0.18) 46%,
-    rgba(20, 184, 166, 0.16) 60%,
-    rgba(124, 92, 255, 0.14) 80%,
-    transparent 100%
-  );
-  border-radius: 999px;
-  pointer-events: none;
-  transition: opacity 0.50s ease;
+body {
+  background:
+    radial-gradient(circle at 14% 8%, rgba(91, 61, 245, 0.08) 0%, transparent 22%),
+    radial-gradient(circle at 88% 92%, rgba(36, 59, 255, 0.06) 0%, transparent 24%),
+    linear-gradient(180deg, var(--aurora-bg-2) 0%, var(--aurora-bg-1) 42%, #05060a 100%);
 }
 
-/* Scrolled state — denser glass, calmer curves */
-.header-bar--scrolled {
-  background-color: rgba(10, 10, 12, 0.91);
-  backdrop-filter: blur(30px) saturate(1.14);
-  -webkit-backdrop-filter: blur(30px) saturate(1.14);
-  border-bottom-left-radius: 0.875rem;
-  border-bottom-right-radius: 0.875rem;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.042),
-    0 10px 44px rgba(0, 0, 0, 0.40);
-}
-
-/* ── Hero route cards ── */
-.hero-route-stack {
-  position: relative;
-}
-
-.hero-route-flow {
-  position: absolute;
-  inset: -1rem -0.5rem -1.5rem;
-  pointer-events: none;
+.page-ambient-system {
+  position: fixed;
+  inset: 0;
   z-index: 0;
-}
-
-.hero-route-flow__trail {
-  position: absolute;
-  inset: 1.5rem 0.75rem 0;
-  border-radius: 999px;
-  background:
-    radial-gradient(circle at 18% 16%, rgba(167, 139, 250, 0.16), transparent 24%),
-    radial-gradient(circle at 84% 52%, rgba(34, 211, 238, 0.12), transparent 22%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent 18%, transparent 82%, rgba(255, 255, 255, 0.012));
-  filter: blur(22px);
-  opacity: 0.72;
-}
-
-.hero-route-flow__orb {
-  position: absolute;
-  width: 10rem;
-  height: 10rem;
-  border-radius: 999px;
-  filter: blur(48px);
-  opacity: 0.28;
-}
-
-.hero-route-flow__orb--one {
-  left: 8%;
-  top: 22%;
-  background: rgba(124, 92, 255, 0.28);
-}
-
-.hero-route-flow__orb--two {
-  right: 0;
-  bottom: 8%;
-  background: rgba(34, 211, 238, 0.22);
-}
-
-.hero-route-card {
-  position: relative;
+  pointer-events: none;
   overflow: hidden;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 6.5rem;
-  align-items: center;
-  gap: 0.9rem;
-  min-height: 9.75rem;
-  padding: 1.05rem 1.1rem 1.05rem 1rem;
-  border-radius: 1.9rem;
-  background:
-    linear-gradient(180deg, rgba(28, 28, 36, 0.84) 0%, rgba(16, 16, 20, 0.8) 100%),
-    radial-gradient(circle at top left, rgba(255,255,255,0.05) 0%, transparent 36%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.07),
-    0 18px 44px rgba(0, 0, 0, 0.38),
-    0 0 0 1px rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(18px) saturate(1.05);
-  -webkit-backdrop-filter: blur(18px) saturate(1.05);
+  isolation: isolate;
 }
 
-.hero-route-card + .hero-route-card {
-  margin-top: 1rem;
-}
-
-.hero-route-card--featured {
-  min-height: 10.5rem;
-}
-
-.hero-route-card--1 {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 18px 44px rgba(0, 0, 0, 0.38),
-    0 0 0 1px rgba(255, 255, 255, 0.02),
-    0 0 0 1px rgba(124, 92, 255, 0.15);
-}
-
-.hero-route-card--2 {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 18px 44px rgba(0, 0, 0, 0.38),
-    0 0 0 1px rgba(255, 255, 255, 0.02),
-    0 0 0 1px rgba(192, 132, 252, 0.13);
-}
-
-.hero-route-card--3 {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 18px 44px rgba(0, 0, 0, 0.38),
-    0 0 0 1px rgba(255, 255, 255, 0.02),
-    0 0 0 1px rgba(34, 211, 238, 0.13);
-}
-
-.hero-route-card::before {
+.page-ambient-system::before {
   content: "";
   position: absolute;
-  inset: auto 0 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
-  opacity: 0.5;
-}
-
-.hero-route-card__dot {
-  position: absolute;
-  left: 1rem;
-  top: 1rem;
-  width: 0.85rem;
-  height: 0.85rem;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #8b5cf6 0%, #38bdf8 100%);
-  box-shadow: 0 0 14px rgba(124, 92, 255, 0.48);
-}
-
-.hero-route-card__number {
-  position: absolute;
-  top: 1rem;
-  right: 1.1rem;
-  font-size: 1.2rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: rgba(210, 194, 255, 0.72);
-}
-
-.hero-route-card__visual {
-  grid-column: 2;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.hero-route-card__visual-shell {
-  position: relative;
-  width: 6rem;
-  height: 6rem;
-  border-radius: 1.5rem;
+  inset: -10%;
   background:
-    radial-gradient(circle at 30% 20%, rgba(255,255,255,0.08) 0%, transparent 30%),
-    linear-gradient(160deg, rgba(34, 34, 40, 0.92) 0%, rgba(17, 17, 21, 0.78) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 10px 24px rgba(0, 0, 0, 0.28),
-    0 0 24px rgba(124, 92, 255, 0.08);
-  padding: 0.8rem;
+    radial-gradient(ellipse 58% 40% at 12% 8%, rgba(91, 61, 245, 0.12) 0%, rgba(91, 61, 245, 0.06) 24%, transparent 62%),
+    radial-gradient(ellipse 68% 54% at 92% 96%, rgba(36, 59, 255, 0.10) 0%, rgba(126, 242, 227, 0.05) 26%, transparent 62%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.016), transparent 14%, transparent 86%, rgba(255, 255, 255, 0.012));
+  filter: saturate(1.15);
+  opacity: 0.96;
 }
 
-.hero-route-card__visual-shell::after {
+.page-ambient-system::after {
   content: "";
   position: absolute;
-  inset: auto 0.8rem 0.55rem;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-  opacity: 0.45;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.018) 0%, transparent 14%, transparent 84%, rgba(255, 255, 255, 0.014) 100%),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.008) 0 1px, transparent 1px 120px);
+  opacity: 0.12;
+  mix-blend-mode: soft-light;
+  -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.38) 30%, rgba(0, 0, 0, 0.38) 70%, rgba(0, 0, 0, 0.95));
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.38) 30%, rgba(0, 0, 0, 0.38) 70%, rgba(0, 0, 0, 0.95));
 }
 
-.hero-route-card__body {
-  grid-column: 1;
-  text-align: right;
-  padding-right: 1.4rem;
-  padding-left: 1.8rem;
+.aurora-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
 }
 
-.hero-route-card__title {
-  margin: 0;
-  color: #f6f4ff;
-  font-size: 2rem;
-  line-height: 1.15;
-  font-weight: 800;
+.aurora-noise,
+.aurora-vignette,
+.liquid-aurora,
+.liquid-aurora::before,
+.liquid-aurora > span {
+  position: absolute;
+  border-radius: inherit;
 }
 
-.hero-route-card__copy {
-  margin-top: 0.55rem;
-  color: #c7cad7;
-  font-size: 1.08rem;
-  line-height: 1.8;
+.liquid-aurora {
+  isolation: isolate;
+  will-change: transform, opacity;
+  filter: saturate(1.12);
 }
 
-@media (min-width: 640px) {
-  .hero-route-stack {
-    max-width: 58rem;
-    margin-inline: auto;
-  }
+.liquid-aurora::before {
+  content: "";
+  inset: 0;
+  background:
+    radial-gradient(circle at 22% 24%, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.025) 12%, transparent 28%),
+    radial-gradient(ellipse at 36% 42%, rgba(188, 174, 255, 0.16) 0%, rgba(91, 61, 245, 0.13) 24%, rgba(36, 59, 255, 0.08) 50%, transparent 74%),
+    radial-gradient(ellipse at 62% 66%, rgba(126, 242, 227, 0.08) 0%, rgba(126, 242, 227, 0.04) 14%, transparent 42%);
+  filter: blur(12px);
+  opacity: 0.86;
+}
 
-  .hero-route-card {
-    grid-template-columns: minmax(0, 1fr) 7.5rem;
-    min-height: 10.75rem;
-    padding: 1.2rem 1.4rem 1.15rem 1.15rem;
-  }
+.liquid-aurora--northwest {
+  width: min(70vw, 60rem);
+  height: min(64vw, 52rem);
+  top: -20rem;
+  left: -22rem;
+  border-radius: 57% 43% 48% 52% / 58% 42% 56% 44%;
+  transform: rotate(-18deg);
+  animation: aurora-drift-northwest 28s cubic-bezier(0.42, 0, 0.2, 1) infinite alternate;
+}
 
-  .hero-route-card--featured {
-    min-height: 11.5rem;
-  }
+.liquid-aurora--southeast {
+  width: min(76vw, 64rem);
+  height: min(70vw, 56rem);
+  right: -26rem;
+  bottom: -26rem;
+  border-radius: 46% 54% 59% 41% / 44% 48% 52% 56%;
+  transform: rotate(17deg);
+  opacity: 0.88;
+  animation: aurora-drift-southeast 32s cubic-bezier(0.42, 0, 0.2, 1) infinite alternate;
+}
 
-  .hero-route-card:nth-child(2) {
-    margin-inline-start: 1.8rem;
-  }
+.liquid-aurora__halo {
+  inset: -16%;
+  background:
+    radial-gradient(circle at 42% 45%, rgba(91, 61, 245, 0.30) 0%, rgba(91, 61, 245, 0.14) 24%, rgba(36, 59, 255, 0.08) 42%, transparent 70%),
+    radial-gradient(circle at 64% 58%, rgba(126, 242, 227, 0.16) 0%, rgba(126, 242, 227, 0.06) 18%, transparent 48%);
+  filter: blur(56px);
+  opacity: 0.70;
+  mix-blend-mode: screen;
+  animation: aurora-halo-drift 24s ease-in-out infinite alternate;
+}
 
-  .hero-route-card:nth-child(3) {
-    margin-inline-start: 0.7rem;
-  }
+.liquid-aurora__core {
+  inset: 10% 12% 12% 10%;
+  background:
+    radial-gradient(circle at 34% 34%, rgba(126, 242, 227, 0.38) 0%, rgba(126, 242, 227, 0.16) 16%, transparent 42%),
+    radial-gradient(ellipse at 45% 42%, rgba(188, 174, 255, 0.32) 0%, rgba(91, 61, 245, 0.30) 20%, rgba(36, 59, 255, 0.24) 42%, transparent 70%),
+    radial-gradient(ellipse at 60% 64%, rgba(8, 14, 48, 0.32) 0%, transparent 66%);
+  filter: blur(26px);
+  opacity: 0.88;
+  mix-blend-mode: screen;
+  animation: aurora-core-pulse 20s ease-in-out infinite alternate;
+}
 
-  .hero-route-card__visual-shell {
-    width: 7rem;
-    height: 7rem;
-  }
+.liquid-aurora__sheen {
+  inset: 0;
+  background:
+    linear-gradient(132deg, transparent 0%, rgba(255, 255, 255, 0.18) 18%, rgba(255, 255, 255, 0.05) 30%, transparent 42%),
+    linear-gradient(310deg, transparent 0%, rgba(126, 242, 227, 0.12) 14%, transparent 34%),
+    linear-gradient(82deg, transparent 0%, rgba(188, 174, 255, 0.10) 28%, transparent 52%);
+  filter: blur(10px);
+  opacity: 0.72;
+  mix-blend-mode: screen;
+  animation: aurora-sheen-shift 22s ease-in-out infinite alternate;
+}
 
-  .hero-route-card__title {
-    font-size: 2.2rem;
+.liquid-aurora__rim,
+.liquid-aurora__trace {
+  box-sizing: border-box;
+  border: 1px solid var(--aurora-rim);
+  filter: url(#aurora-edge-distort);
+}
+
+.liquid-aurora__rim {
+  inset: 0;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 0 0 1px rgba(255, 255, 255, 0.02),
+    0 0 28px rgba(126, 242, 227, 0.05);
+  opacity: 0.74;
+  animation: aurora-rim-breathe 14s ease-in-out infinite alternate;
+}
+
+.liquid-aurora__trace {
+  inset: -5%;
+  border-color: var(--aurora-trace);
+  opacity: 0.44;
+  box-shadow: 0 0 22px rgba(255, 255, 255, 0.035);
+}
+
+.liquid-aurora__trace--northwest {
+  transform: translate3d(5%, -2%, 0) rotate(2deg) scale(1.02);
+  -webkit-mask-image: linear-gradient(130deg, transparent 0%, rgba(0, 0, 0, 0.96) 22%, rgba(0, 0, 0, 0.96) 70%, transparent 86%);
+  mask-image: linear-gradient(130deg, transparent 0%, rgba(0, 0, 0, 0.96) 22%, rgba(0, 0, 0, 0.96) 70%, transparent 86%);
+  animation: aurora-trace-northwest 30s ease-in-out infinite alternate;
+}
+
+.liquid-aurora__trace--southeast {
+  transform: translate3d(-5%, 5%, 0) rotate(-5deg) scale(1.03);
+  -webkit-mask-image: linear-gradient(312deg, transparent 0%, rgba(0, 0, 0, 0.96) 18%, rgba(0, 0, 0, 0.96) 72%, transparent 86%);
+  mask-image: linear-gradient(312deg, transparent 0%, rgba(0, 0, 0, 0.96) 18%, rgba(0, 0, 0, 0.96) 72%, transparent 86%);
+  animation: aurora-trace-southeast 34s ease-in-out infinite alternate;
+}
+
+.aurora-noise {
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.06) 0.5px, transparent 0.8px),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.04) 0.4px, transparent 0.7px);
+  background-size: 18px 18px, 27px 27px;
+  background-position: 0 0, 9px 11px;
+  opacity: 0.03;
+  mix-blend-mode: soft-light;
+}
+
+.aurora-vignette {
+  inset: 0;
+  background:
+    radial-gradient(ellipse at center, transparent 32%, rgba(3, 4, 7, 0.08) 60%, rgba(3, 4, 7, 0.32) 100%),
+    linear-gradient(180deg, rgba(3, 4, 7, 0.02) 0%, transparent 18%, transparent 82%, rgba(3, 4, 7, 0.10) 100%);
+}
+
+@keyframes aurora-drift-northwest {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(-18deg) scale(0.98);
+    opacity: 0.88;
+  }
+  50% {
+    transform: translate3d(1.6rem, 1.1rem, 0) rotate(-15deg) scale(1.01);
+    opacity: 0.96;
+  }
+  100% {
+    transform: translate3d(2.6rem, 2rem, 0) rotate(-12deg) scale(1.04);
+    opacity: 0.90;
   }
 }
 
-@media (max-width: 639px) {
-  .hero-route-stack {
-    margin-top: 2rem;
+@keyframes aurora-drift-southeast {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(17deg) scale(0.96);
+    opacity: 0.72;
+  }
+  50% {
+    transform: translate3d(-1.4rem, -1.2rem, 0) rotate(14deg) scale(1.01);
+    opacity: 0.86;
+  }
+  100% {
+    transform: translate3d(-2.8rem, -2.4rem, 0) rotate(11deg) scale(1.05);
+    opacity: 0.78;
+  }
+}
+
+@keyframes aurora-halo-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.98);
+    opacity: 0.60;
+  }
+  100% {
+    transform: translate3d(1.4rem, -0.8rem, 0) scale(1.04);
+    opacity: 0.78;
+  }
+}
+
+@keyframes aurora-core-pulse {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.98);
+    opacity: 0.78;
+  }
+  50% {
+    transform: translate3d(-0.8rem, 0.6rem, 0) scale(1.02);
+    opacity: 0.94;
+  }
+  100% {
+    transform: translate3d(0.9rem, -0.7rem, 0) scale(1.05);
+    opacity: 0.86;
+  }
+}
+
+@keyframes aurora-sheen-shift {
+  0% {
+    transform: translate3d(-1%, 0, 0) rotate(0deg) scale(1);
+    opacity: 0.58;
+  }
+  100% {
+    transform: translate3d(2%, 1%, 0) rotate(4deg) scale(1.04);
+    opacity: 0.82;
+  }
+}
+
+@keyframes aurora-rim-breathe {
+  0% {
+    opacity: 0.42;
+  }
+  50% {
+    opacity: 0.76;
+  }
+  100% {
+    opacity: 0.58;
+  }
+}
+
+@keyframes aurora-trace-northwest {
+  0% {
+    transform: translate3d(5%, -2%, 0) rotate(2deg) scale(1.02);
+    opacity: 0.28;
+  }
+  50% {
+    transform: translate3d(3%, -1%, 0) rotate(4deg) scale(1.04);
+    opacity: 0.46;
+  }
+  100% {
+    transform: translate3d(7%, -3%, 0) rotate(0deg) scale(1.01);
+    opacity: 0.34;
+  }
+}
+
+@keyframes aurora-trace-southeast {
+  0% {
+    transform: translate3d(-5%, 5%, 0) rotate(-5deg) scale(1.03);
+    opacity: 0.26;
+  }
+  50% {
+    transform: translate3d(-3%, 4%, 0) rotate(-2deg) scale(1.05);
+    opacity: 0.42;
+  }
+  100% {
+    transform: translate3d(-6%, 6%, 0) rotate(-7deg) scale(1.02);
+    opacity: 0.32;
+  }
+}
+
+@media (max-width: 1024px) {
+  .liquid-aurora--northwest {
+    width: min(82vw, 50rem);
+    height: min(72vw, 42rem);
+    top: -16rem;
+    left: -20rem;
   }
 
-  .hero-route-card {
-    grid-template-columns: minmax(0, 1fr) 5.65rem;
-    min-height: 8.9rem;
-    padding: 1rem 0.95rem 0.95rem 0.9rem;
+  .liquid-aurora--southeast {
+    width: min(88vw, 54rem);
+    height: min(82vw, 48rem);
+    right: -24rem;
+    bottom: -22rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .page-ambient-system::before {
+    background:
+      radial-gradient(ellipse 68% 44% at 8% 6%, rgba(91, 61, 245, 0.14) 0%, rgba(91, 61, 245, 0.06) 24%, transparent 62%),
+      radial-gradient(ellipse 78% 58% at 94% 96%, rgba(36, 59, 255, 0.10) 0%, rgba(126, 242, 227, 0.05) 24%, transparent 62%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.014), transparent 18%, transparent 84%, rgba(255, 255, 255, 0.012));
   }
 
-  .hero-route-card__visual-shell {
-    width: 5.2rem;
-    height: 5.2rem;
-    padding: 0.7rem;
-    border-radius: 1.25rem;
+  .liquid-aurora--northwest {
+    width: 96vw;
+    height: 86vw;
+    top: -10rem;
+    left: -16rem;
   }
 
-  .hero-route-card__title {
-    font-size: 1.75rem;
+  .liquid-aurora--southeast {
+    width: 108vw;
+    height: 94vw;
+    right: -18rem;
+    bottom: -14rem;
+    opacity: 0.78;
   }
 
-  .hero-route-card__copy {
-    font-size: 1rem;
-    line-height: 1.65;
+  .liquid-aurora__halo {
+    filter: blur(48px);
   }
 
-  .hero-route-card__body {
-    padding-right: 1rem;
-    padding-left: 1.4rem;
+  .liquid-aurora__core {
+    filter: blur(22px);
   }
 
-  .hero-route-card__number {
-    font-size: 1.05rem;
+  .aurora-noise {
+    opacity: 0.02;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liquid-aurora,
+  .liquid-aurora__halo,
+  .liquid-aurora__core,
+  .liquid-aurora__sheen,
+  .liquid-aurora__rim,
+  .liquid-aurora__trace {
+    animation: none !important;
+  }
+
+  .liquid-aurora__rim,
+  .liquid-aurora__trace {
+    filter: none;
   }
 }
