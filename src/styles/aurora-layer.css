@@ -96,6 +96,9 @@
     rgba(3, 5, 8, 0.24) 52%,
     rgba(3, 5, 8, 0.82) 100%
   );
+  /* Fade out at the bottom so the hero doesn't create a hard dark seam */
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 60%, rgba(0,0,0,0.2) 85%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 0%, black 60%, rgba(0,0,0,0.2) 85%, transparent 100%);
 }
 
 .hero-mesh-sheen {
@@ -139,6 +142,156 @@
   height: min(18rem, 24vw);
   transform: translateX(-50%);
   background: radial-gradient(circle, rgba(161, 102, 171, 0.12) 0%, transparent 70%);
+}
+
+/* ── Hero Route Stack ── */
+.hero-route-stack {
+  max-width: 38rem;
+  margin-inline: auto;
+  width: 100%;
+}
+
+/* Decorative flow background layer */
+.hero-route-flow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.hero-route-flow__orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(44px);
+  pointer-events: none;
+}
+
+.hero-route-flow__orb--one {
+  top: 5%;
+  left: 5%;
+  width: min(16rem, 46vw);
+  height: min(12rem, 32vw);
+  background: radial-gradient(circle, rgba(0, 255, 135, 0.07) 0%, transparent 70%);
+  opacity: 0.55;
+}
+
+.hero-route-flow__orb--two {
+  bottom: 5%;
+  right: 5%;
+  width: min(14rem, 40vw);
+  height: min(10rem, 28vw);
+  background: radial-gradient(circle, rgba(96, 239, 255, 0.06) 0%, transparent 70%);
+  opacity: 0.48;
+}
+
+.hero-route-flow__trail {
+  position: absolute;
+  top: 5%;
+  bottom: 5%;
+  left: 3.25rem;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 20%,
+    rgba(255, 255, 255, 0.07) 50%,
+    rgba(255, 255, 255, 0.03) 80%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* Route card base */
+.hero-route-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.875rem 1.125rem;
+  border-radius: 1.1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-route-card--featured {
+  background: rgba(91, 61, 245, 0.06);
+  border-color: rgba(91, 61, 245, 0.15);
+  box-shadow: 0 4px 24px rgba(91, 61, 245, 0.06);
+}
+
+.hero-route-card__dot {
+  flex-shrink: 0;
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(0, 255, 135, 0.55);
+  box-shadow: 0 0 5px rgba(0, 255, 135, 0.25);
+}
+
+.hero-route-card--featured .hero-route-card__dot {
+  background: rgba(96, 239, 255, 0.65);
+  box-shadow: 0 0 6px rgba(96, 239, 255, 0.3);
+}
+
+.hero-route-card__number {
+  flex-shrink: 0;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.18);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  min-width: 1.4rem;
+}
+
+/* Visual / SVG container — explicit size to prevent runaway growth */
+.hero-route-card__visual {
+  flex-shrink: 0;
+  width: 3.25rem;
+  height: 3.25rem;
+}
+
+.hero-route-card__visual-shell {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hero-route-card__visual-shell svg {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+.hero-route-card__body {
+  flex: 1;
+  min-width: 0;
+  text-align: right;
+}
+
+.hero-route-card__title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #f0f2f8;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.hero-route-card__copy {
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.42);
+  line-height: 1.5;
+  margin: 0.2rem 0 0;
 }
 
 .header-bar {
@@ -190,6 +343,25 @@ footer {
   .hero-blob {
     filter: blur(46px);
     opacity: 0.24;
+  }
+
+  .hero-route-card {
+    gap: 0.75rem;
+    padding: 0.8125rem 0.9375rem;
+  }
+
+  .hero-route-card__visual {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .hero-route-card__title {
+    font-size: 0.875rem;
+  }
+
+  .hero-route-card__number {
+    font-size: 0.6rem;
+    min-width: 1.2rem;
   }
 }
 
