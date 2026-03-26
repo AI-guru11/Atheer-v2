@@ -1,0 +1,211 @@
+:root {
+  --aurora-bg-dark: #030508;
+  --aurora-green: #00ff87;
+  --aurora-cyan: #60efff;
+  --aurora-violet-soft: #a166ab;
+}
+
+.site-shell {
+  position: relative;
+  isolation: isolate;
+  background-color: var(--aurora-bg-dark);
+}
+
+.site-content {
+  position: relative;
+}
+
+.aurora-simple-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 24%, rgba(0, 255, 135, 0.11) 0%, transparent 34%),
+    radial-gradient(circle at 82% 68%, rgba(96, 239, 255, 0.11) 0%, transparent 34%),
+    radial-gradient(circle at 42% 88%, rgba(161, 102, 171, 0.07) 0%, transparent 32%),
+    linear-gradient(125deg, #030508 0%, #071019 54%, #08141f 100%);
+  animation: aurora-soft-drift 20s infinite alternate ease-in-out;
+  will-change: background-position;
+}
+
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: repeating-radial-gradient(
+    circle at 20% 30%,
+    rgba(0, 0, 0, 0.05) 0px,
+    rgba(0, 0, 0, 0.05) 2px,
+    transparent 2px,
+    transparent 4px
+  );
+  mix-blend-mode: overlay;
+}
+
+.stardust-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+.reveal-block {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0);
+  transition:
+    opacity 0.72s cubic-bezier(0.2, 0.9, 0.4, 1),
+    transform 0.72s ease;
+  will-change: opacity, transform;
+}
+
+.reveal-block.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+.hero-ambient-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hero-grid-fade {
+  position: absolute;
+  inset: 0;
+  opacity: 0.09;
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(circle at 50% 20%, rgba(0,0,0,0.95), transparent 78%);
+}
+
+.hero-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% 38%,
+    transparent 16%,
+    rgba(3, 5, 8, 0.24) 52%,
+    rgba(3, 5, 8, 0.82) 100%
+  );
+}
+
+.hero-mesh-sheen {
+  position: absolute;
+  inset: -8% -4%;
+  background:
+    linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.04) 24%, transparent 44%),
+    linear-gradient(300deg, transparent 0%, rgba(96, 239, 255, 0.06) 16%, transparent 34%),
+    linear-gradient(42deg, transparent 0%, rgba(0, 255, 135, 0.05) 24%, transparent 44%);
+  filter: blur(28px);
+  opacity: 0.5;
+}
+
+.hero-blob {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(56px);
+  opacity: 0.3;
+}
+
+.hero-blob--left {
+  top: 4%;
+  left: -8%;
+  width: min(34rem, 48vw);
+  height: min(26rem, 34vw);
+  background: radial-gradient(circle, rgba(0, 255, 135, 0.22) 0%, transparent 68%);
+}
+
+.hero-blob--right {
+  top: 16%;
+  right: -8%;
+  width: min(32rem, 44vw);
+  height: min(24rem, 30vw);
+  background: radial-gradient(circle, rgba(96, 239, 255, 0.2) 0%, transparent 70%);
+}
+
+.hero-blob--center {
+  top: 36%;
+  left: 50%;
+  width: min(28rem, 36vw);
+  height: min(18rem, 24vw);
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(161, 102, 171, 0.12) 0%, transparent 70%);
+}
+
+.header-bar {
+  background: rgba(8, 11, 15, 0.42);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.header-bar--scrolled {
+  background: rgba(6, 8, 12, 0.72);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+footer {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(3, 5, 8, 0.12), rgba(3, 5, 8, 0.38));
+}
+
+@keyframes aurora-soft-drift {
+  0% {
+    background-position: 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+  }
+  100% {
+    background-position: 5% 2%, -3% 5%, 2% -2%, 0% 0%;
+  }
+}
+
+@media (max-width: 640px) {
+  .grain-overlay {
+    opacity: 0.018;
+  }
+
+  .stardust-canvas {
+    opacity: 0.42;
+  }
+
+  .hero-grid-fade {
+    background-size: 52px 52px;
+    opacity: 0.06;
+  }
+
+  .hero-blob {
+    filter: blur(46px);
+    opacity: 0.24;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-simple-bg,
+  .reveal-block {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .reveal-block {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .stardust-canvas {
+    display: none;
+  }
+}
