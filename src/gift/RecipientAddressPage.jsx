@@ -2,6 +2,11 @@ import { useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import Section from '../components/layout/Section'
 import { cx } from '../utils/helpers'
+import {
+  getRequiredFieldError,
+  getSaudiMobileError,
+  sanitizeSaudiMobileInput,
+} from '../utils/formValidation'
 import { buildGiftFlowUrl, getGiftPathMeta, resolveGiftSession, updateGiftSession } from '../lib/giftSession'
 
 const FIELDS = [
@@ -18,6 +23,8 @@ const FIELDS = [
     type: 'tel',
     placeholder: '05XXXXXXXX',
     required: true,
+    inputMode: 'numeric',
+    maxLength: 10,
   },
   {
     key: 'city',
@@ -47,6 +54,24 @@ const initialValues = { name: '', phone: '', city: '', address: '', notes: '' }
 const inputBase =
   'w-full rounded-[14px] border bg-white/[0.03] px-4 py-2.5 text-[14px] text-white placeholder-slate-600 outline-none transition-colors duration-200 focus:bg-white/[0.05]'
 
+function sanitizeValues(values) {
+  return {
+    ...values,
+    name: values.name.trim(),
+    phone: sanitizeSaudiMobileInput(values.phone),
+    city: values.city.trim(),
+    address: values.address.trim(),
+    notes: values.notes.trim(),
+  }
+}
+
+function getFieldError(field, value) {
+  if (!field.required && !String(value).trim()) return ''
+  if (field.key === 'phone') return getSaudiMobileError(value)
+  if (field.required) return getRequiredFieldError(value)
+  return ''
+}
+
 export default function RecipientAddressPage() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -59,19 +84,21 @@ export default function RecipientAddressPage() {
   const [touched, setTouched] = useState({})
 
   function handleChange(key, value) {
-    setValues((prev) => ({ ...prev, [key]: value }))
+    const nextValue = key === 'phone' ? sanitizeSaudiMobileInput(value) : value
+    setValues((prev) => ({ ...prev, [key]: nextValue }))
   }
 
   function handleBlur(key) {
     setTouched((prev) => ({ ...prev, [key]: true }))
   }
 
-  function isInvalid(field) {
-    return field.required && touched[field.key] && !values[field.key].trim()
+  function fieldError(field) {
+    if (!touched[field.key]) return ''
+    return getFieldError(field, values[field.key])
   }
 
   function canSubmit() {
-    return FIELDS.every((field) => !field.required || values[field.key].trim())
+    return FIELDS.every((field) => !getFieldError(field, values[field.key]))
   }
 
   function handleSubmit(e) {
@@ -85,12 +112,14 @@ export default function RecipientAddressPage() {
       return
     }
 
+    const sanitizedValues = sanitizeValues(values)
+
     updateGiftSession(code, {
-      addressData: values,
+      addressData: sanitizedValues,
       status: 'address_submitted',
     })
 
-    navigate(buildGiftFlowUrl('/gift/confirmed', session, searchParams))
+    navigate(buildGiftFlowUrl('/gift/confirmed', { ...session, addressData: sanitizedValues, status: 'address_submitted' }, searchParams))
   }
 
   if (!session || !selectedGift) {
@@ -144,7 +173,8 @@ export default function RecipientAddressPage() {
         <form onSubmit={handleSubmit} noValidate>
           <div className="space-y-4">
             {FIELDS.map((field) => {
-              const invalid = isInvalid(field)
+              const errorMessage = fieldError(field)
+              const invalid = Boolean(errorMessage)
               const borderClass = invalid
                 ? 'border-rose-500/40 focus:border-rose-400/60'
                 : 'border-white/10 focus:border-violet-400/40'
@@ -165,11 +195,17 @@ export default function RecipientAddressPage() {
                     onChange={(e) => handleChange(field.key, e.target.value)}
                     onBlur={() => handleBlur(field.key)}
                     placeholder={field.placeholder}
-                    dir="rtl"
+                    dir={field.key === 'phone' ? 'ltr' : 'rtl'}
+                    inputMode={field.inputMode}
+                    maxLength={field.maxLength}
+                    aria-invalid={invalid}
                     className={cx(inputBase, borderClass)}
                   />
+                  {field.key === 'phone' ? (
+                    <p className="text-[11px] text-slate-500">أدخل 10 أرقام تبدأ بـ 05</p>
+                  ) : null}
                   {invalid ? (
-                    <p className="text-[11px] text-rose-400">هذا الحقل مطلوب</p>
+                    <p className="text-[11px] text-rose-400">{errorMessage}</p>
                   ) : null}
                 </div>
               )

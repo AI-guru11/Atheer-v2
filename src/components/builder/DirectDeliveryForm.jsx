@@ -1,5 +1,10 @@
 import { useState } from "react"
 import { cx } from "../../utils/helpers"
+import {
+  getRequiredFieldError,
+  getSaudiMobileError,
+  sanitizeSaudiMobileInput,
+} from "../../utils/formValidation"
 
 const FIELDS = [
   {
@@ -25,6 +30,8 @@ const FIELDS = [
     placeholder: "05XXXXXXXX",
     required: true,
     multiline: false,
+    inputMode: "numeric",
+    maxLength: 10,
   },
   {
     key: "city",
@@ -70,37 +77,62 @@ const initialValues = {
   notes: "",
 }
 
+const inputBase =
+  "w-full rounded-[14px] border bg-white/[0.03] px-4 py-2.5 text-[14px] text-white placeholder-slate-600 outline-none transition-colors duration-200"
+
+function sanitizeValues(values) {
+  return {
+    ...values,
+    senderName: values.senderName.trim(),
+    recipientName: values.recipientName.trim(),
+    phone: sanitizeSaudiMobileInput(values.phone),
+    city: values.city.trim(),
+    address: values.address.trim(),
+    senderMessage: values.senderMessage.trim(),
+    notes: values.notes.trim(),
+  }
+}
+
+function getFieldError(field, value) {
+  if (!field.required && !String(value).trim()) return ""
+  if (field.key === "phone") return getSaudiMobileError(value)
+  if (field.required) return getRequiredFieldError(value)
+  return ""
+}
+
 export default function DirectDeliveryForm({ onSubmit, onBack, initialData }) {
   const [values, setValues] = useState(initialData ?? initialValues)
   const [touched, setTouched] = useState({})
 
   function handleChange(key, value) {
-    setValues((prev) => ({ ...prev, [key]: value }))
+    const nextValue = key === "phone" ? sanitizeSaudiMobileInput(value) : value
+    setValues((prev) => ({ ...prev, [key]: nextValue }))
   }
 
   function handleBlur(key) {
     setTouched((prev) => ({ ...prev, [key]: true }))
   }
 
-  function isInvalid(field) {
-    return field.required && touched[field.key] && !values[field.key].trim()
+  function fieldError(field) {
+    if (!touched[field.key]) return ""
+    return getFieldError(field, values[field.key])
   }
 
   function canSubmit() {
-    return FIELDS.every((f) => !f.required || values[f.key].trim())
+    return FIELDS.every((field) => !getFieldError(field, values[field.key]))
   }
 
   function handleSubmit(e) {
     e.preventDefault()
     if (!canSubmit()) {
       const allTouched = {}
-      FIELDS.forEach((f) => {
-        allTouched[f.key] = true
+      FIELDS.forEach((field) => {
+        allTouched[field.key] = true
       })
       setTouched(allTouched)
       return
     }
-    onSubmit(values)
+    onSubmit(sanitizeValues(values))
   }
 
   return (
@@ -117,7 +149,8 @@ export default function DirectDeliveryForm({ onSubmit, onBack, initialData }) {
       <form onSubmit={handleSubmit} noValidate>
         <div className="space-y-4">
           {FIELDS.map((field) => {
-            const invalid = isInvalid(field)
+            const errorMessage = fieldError(field)
+            const invalid = Boolean(errorMessage)
             const borderClass = invalid
               ? "border-rose-500/40 focus:border-rose-400/60"
               : "border-white/10 focus:border-violet-400/40"
@@ -141,9 +174,10 @@ export default function DirectDeliveryForm({ onSubmit, onBack, initialData }) {
                     placeholder={field.placeholder}
                     dir="rtl"
                     rows={field.key === "notes" ? 3 : 2}
+                    aria-invalid={invalid}
                     className={cx(
-                      "w-full rounded-[14px] border bg-white/[0.03] px-4 py-2.5 text-[14px] text-white placeholder-slate-600 outline-none transition-colors duration-200 resize-none",
-                      "focus:bg-white/[0.05]",
+                      inputBase,
+                      "resize-none focus:bg-white/[0.05]",
                       borderClass,
                     )}
                   />
@@ -154,17 +188,20 @@ export default function DirectDeliveryForm({ onSubmit, onBack, initialData }) {
                     onChange={(e) => handleChange(field.key, e.target.value)}
                     onBlur={() => handleBlur(field.key)}
                     placeholder={field.placeholder}
-                    dir="rtl"
-                    className={cx(
-                      "w-full rounded-[14px] border bg-white/[0.03] px-4 py-2.5 text-[14px] text-white placeholder-slate-600 outline-none transition-colors duration-200",
-                      "focus:bg-white/[0.05]",
-                      borderClass,
-                    )}
+                    dir={field.key === "phone" ? "ltr" : "rtl"}
+                    inputMode={field.inputMode}
+                    maxLength={field.maxLength}
+                    aria-invalid={invalid}
+                    className={cx(inputBase, "focus:bg-white/[0.05]", borderClass)}
                   />
                 )}
 
+                {field.key === "phone" && (
+                  <p className="text-[11px] text-slate-500">أدخل 10 أرقام تبدأ بـ 05</p>
+                )}
+
                 {invalid && (
-                  <p className="text-[11px] text-rose-400">هذا الحقل مطلوب</p>
+                  <p className="text-[11px] text-rose-400">{errorMessage}</p>
                 )}
               </div>
             )

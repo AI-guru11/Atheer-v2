@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { builderContent, builderValueLabels } from "../../data/builderContent"
 import BuilderProgress from "./BuilderProgress"
 import BuilderChoiceGrid from "./BuilderChoiceGrid"
@@ -43,6 +43,9 @@ export default function BuilderShell() {
   const [giftLink, setGiftLink] = useState(null)
   const [linkSessionCode, setLinkSessionCode] = useState(null)
   const [directOrderSessionCode, setDirectOrderSessionCode] = useState(null)
+
+  const builderCardRef = useRef(null)
+  const builderStepAnchorRef = useRef(null)
 
   // هندسة المسارات الذكية بناءً على اختيارات المستخدم
   const resolvedSteps = useMemo(() => {
@@ -99,6 +102,24 @@ export default function BuilderShell() {
   const selectedCount = useMemo(() => {
     return Object.values(selections).filter(Boolean).length
   }, [selections])
+
+  const optionLayout = useMemo(() => {
+    if (!currentStep) return "grid"
+    if (currentStep.field === "giftPath" || currentStep.field === "deliveryMode") return "stack"
+    if (currentStep.field === "budget") return "compact"
+    return "grid"
+  }, [currentStep])
+
+  useEffect(() => {
+    const target = builderStepAnchorRef.current || builderCardRef.current
+    if (!target) return
+
+    const frame = window.requestAnimationFrame(() => {
+      target.scrollIntoView({ behavior: "smooth", block: "start" })
+    })
+
+    return () => window.cancelAnimationFrame(frame)
+  }, [currentStepIndex, directDeliveryStep, recipientChoiceStep])
 
   // التزامن التلقائي للمسارات
   useEffect(() => {
@@ -256,7 +277,8 @@ export default function BuilderShell() {
             {/* Main Interactive Card */}
             <div 
               key={currentStepIndex} // يضمن إعادة تشغيل الحركة عند تغيير الخطوة
-              className="reveal-block charcoal-card rounded-[40px] p-6 sm:p-10 lg:p-12 border-white/[0.03] shadow-2xl"
+              ref={builderCardRef}
+              className="reveal-block scroll-mt-24 charcoal-card rounded-[40px] p-6 sm:p-10 lg:p-12 border-white/[0.03] shadow-2xl"
             >
               {!showCompletionState ? (
                 <div className="space-y-10">
@@ -266,7 +288,7 @@ export default function BuilderShell() {
                     currentTitle={currentStep.title}
                   />
 
-                  <div className="space-y-4 text-right">
+                  <div ref={builderStepAnchorRef} className="space-y-4 text-right scroll-mt-24">
                     <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
                       {currentStep.title}
                     </h2>
@@ -279,11 +301,7 @@ export default function BuilderShell() {
                     options={currentStep.options}
                     selectedValue={currentValue}
                     onSelect={handleSelect}
-                    compact={
-                      currentStep.field === "budget" ||
-                      currentStep.field === "giftPath" ||
-                      currentStep.field === "deliveryMode"
-                    }
+                    layout={optionLayout}
                   />
 
                   <div className="pt-6 border-t border-white/[0.05]">
@@ -415,7 +433,7 @@ export default function BuilderShell() {
               }`}>
                 <div className="space-y-4 text-right">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold tabular-nums text-slate-500 tracking-widest">
+                    <span dir="ltr" className="text-[11px] font-bold tabular-nums text-slate-500 tracking-widest">
                       {selectedCount} / {totalSteps}
                     </span>
                     <h3 className="text-xs font-black uppercase tracking-wider text-white/90">

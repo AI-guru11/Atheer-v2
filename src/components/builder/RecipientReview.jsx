@@ -4,6 +4,27 @@ import {
 } from "../../utils/recommendationDisplay"
 import { getGiftPathMeta } from "../../lib/giftSession"
 
+function DetailRows({ rows }) {
+  return (
+    <div className="space-y-2.5">
+      {rows.map((row) => (
+        <div
+          key={row.label}
+          className="rounded-2xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-right md:flex md:items-start md:justify-between md:gap-4 md:border-0 md:bg-transparent md:px-0 md:py-1"
+        >
+          <div className="md:min-w-0 md:flex-1">
+            <p className="text-[11px] font-semibold text-slate-500 md:hidden">{row.label}</p>
+            <p className="mt-1 text-[14px] leading-7 text-white/85 break-words whitespace-pre-wrap md:mt-0">
+              {row.value}
+            </p>
+          </div>
+          <p className="hidden shrink-0 text-[11px] text-slate-500 md:block">{row.label}</p>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function RecipientReview({
   recommendation,
   recipientData,
@@ -22,34 +43,31 @@ export default function RecipientReview({
 
   const senderRows = [
     { label: "اسم المرسل", value: recipientData.senderName },
-    recipientData.message ? { label: "الرسالة", value: recipientData.message } : null,
+    recipientData.message ? { label: "رسالة مرفقة", value: recipientData.message } : null,
   ].filter(Boolean)
 
   const recipientRows = [
-    { label: "اسم المستلم", value: recipientData.name },
+    { label: "المستلم", value: recipientData.name },
     { label: "الجوال", value: recipientData.phone },
     { label: "البريد", value: recipientData.email },
   ].filter(Boolean)
 
-  const reviewDescription = giftPath === "exactGift"
-    ? "تحقق من اسمك وبيانات المستلم والهدية المحددة قبل توليد رابط الكشف. هذا الرابط سيأخذ المستلم إلى لحظة كشف ثم إلى صفحة الاستلام."
-    : "تحقق من اسمك وبيانات المستلم والخيارات المقترحة قبل توليد رابط الاختيار. هذا الرابط سيأخذ المستلم إلى تجربة ثم إلى قائمة الخيارات."
-
-  const linkActionLabel = giftPath === "exactGift" ? "توليد رابط كشف الهدية" : "توليد رابط اختيار الهدية"
+  const linkActionLabel =
+    giftPath === "exactGift" ? "تجهيز رابط كشف الهدية" : "تجهيز رابط عرض الخيارات"
 
   return (
     <div className="text-right">
       <div className="mb-6">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-violet-400/20 bg-violet-400/[0.08] px-3 py-1.5 text-[12px] font-semibold text-violet-300">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-violet-400" />
-          {pathMeta.badge}
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-300/20 bg-cyan-300/[0.08] px-3 py-1.5 text-[12px] font-semibold text-cyan-300">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-cyan-300" />
+          مراجعة بيانات رابط المستلم
         </span>
 
         <h2 className="mt-3 text-xl font-bold leading-tight text-white sm:text-2xl">
-          راجع تفاصيل الهدية قبل توليد الرابط
+          راجع تجربة الرابط قبل توليدها
         </h2>
         <p className="mt-1.5 text-[13px] leading-relaxed text-slate-400">
-          {reviewDescription}
+          تأكد من اسمك وبيانات المستلم أولًا. بعد ذلك سنجهز رابطًا خاصًا يفتح التجربة المناسبة للمسار الذي اخترته.
         </p>
       </div>
 
@@ -105,45 +123,17 @@ export default function RecipientReview({
           <p className="mb-2.5 text-[10px] font-bold tracking-widest text-violet-300/60">
             بيانات المرسل
           </p>
-          <div className="space-y-1.5">
-            {senderRows.map((row) => (
-              <div
-                key={row.label}
-                className="flex items-baseline justify-between gap-3"
-              >
-                <span className="min-w-0 flex-1 break-words text-[13px] text-white/80">
-                  {row.value}
-                </span>
-                <span className="shrink-0 text-[11px] text-slate-500">
-                  {row.label}
-                </span>
-              </div>
-            ))}
-          </div>
+          <DetailRows rows={senderRows} />
         </div>
 
         <div className="rounded-[18px] border border-white/[0.08] bg-white/[0.025] p-4">
           <p className="mb-2.5 text-[10px] font-bold tracking-widest text-slate-500/70">
             بيانات المستلم
           </p>
-          <div className="space-y-1.5">
-            {recipientRows.map((row) => (
-              <div
-                key={row.label}
-                className="flex items-baseline justify-between gap-3"
-              >
-                <span className="min-w-0 flex-1 break-words text-[13px] text-white/80">
-                  {row.value}
-                </span>
-                <span className="shrink-0 text-[11px] text-slate-500">
-                  {row.label}
-                </span>
-              </div>
-            ))}
-          </div>
+          <DetailRows rows={recipientRows} />
         </div>
 
-        <div className="grid grid-cols-2 gap-1.5">
+        <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
           <div className="rounded-[12px] bg-white/[0.025] px-3 py-3">
             <p className="text-[10px] font-semibold tracking-widest text-slate-500/70">
               أسلوب الكشف

@@ -1,5 +1,12 @@
 import { useState } from "react"
 import { cx } from "../../utils/helpers"
+import {
+  getEmailError,
+  getRequiredFieldError,
+  getSaudiMobileError,
+  sanitizeEmailInput,
+  sanitizeSaudiMobileInput,
+} from "../../utils/formValidation"
 
 const FIELDS = [
   {
@@ -25,6 +32,8 @@ const FIELDS = [
     placeholder: "05XXXXXXXX",
     required: true,
     multiline: false,
+    inputMode: "numeric",
+    maxLength: 10,
   },
   {
     key: "email",
@@ -46,37 +55,60 @@ const FIELDS = [
 
 const initialValues = { senderName: "", name: "", phone: "", email: "", message: "" }
 
+function sanitizeValues(values) {
+  return {
+    ...values,
+    senderName: values.senderName.trim(),
+    name: values.name.trim(),
+    phone: sanitizeSaudiMobileInput(values.phone),
+    email: sanitizeEmailInput(values.email),
+    message: values.message.trim(),
+  }
+}
+
+function getFieldError(field, value) {
+  if (!field.required && !String(value).trim()) return ""
+  if (field.key === "phone") return getSaudiMobileError(value)
+  if (field.key === "email") return getEmailError(value)
+  if (field.required) return getRequiredFieldError(value)
+  return ""
+}
+
 export default function RecipientContactForm({ onSubmit, onBack, initialData }) {
   const [values, setValues] = useState(initialData ?? initialValues)
   const [touched, setTouched] = useState({})
 
   function handleChange(key, value) {
-    setValues((prev) => ({ ...prev, [key]: value }))
+    let nextValue = value
+    if (key === "phone") nextValue = sanitizeSaudiMobileInput(value)
+    if (key === "email") nextValue = sanitizeEmailInput(value)
+    setValues((prev) => ({ ...prev, [key]: nextValue }))
   }
 
   function handleBlur(key) {
     setTouched((prev) => ({ ...prev, [key]: true }))
   }
 
-  function isInvalid(field) {
-    return field.required && touched[field.key] && !values[field.key].trim()
+  function fieldError(field) {
+    if (!touched[field.key]) return ""
+    return getFieldError(field, values[field.key])
   }
 
   function canSubmit() {
-    return FIELDS.every((f) => !f.required || values[f.key].trim())
+    return FIELDS.every((field) => !getFieldError(field, values[field.key]))
   }
 
   function handleSubmit(e) {
     e.preventDefault()
     if (!canSubmit()) {
       const all = {}
-      FIELDS.forEach((f) => {
-        all[f.key] = true
+      FIELDS.forEach((field) => {
+        all[field.key] = true
       })
       setTouched(all)
       return
     }
-    onSubmit(values)
+    onSubmit(sanitizeValues(values))
   }
 
   const inputBase =
@@ -96,7 +128,8 @@ export default function RecipientContactForm({ onSubmit, onBack, initialData }) 
       <form onSubmit={handleSubmit} noValidate>
         <div className="space-y-4">
           {FIELDS.map((field) => {
-            const invalid = isInvalid(field)
+            const errorMessage = fieldError(field)
+            const invalid = Boolean(errorMessage)
             const borderClass = invalid
               ? "border-rose-500/40 focus:border-rose-400/60"
               : "border-white/10 focus:border-violet-400/40"
@@ -120,6 +153,7 @@ export default function RecipientContactForm({ onSubmit, onBack, initialData }) 
                     placeholder={field.placeholder}
                     dir="rtl"
                     rows={3}
+                    aria-invalid={invalid}
                     className={cx(inputBase, "resize-none", borderClass)}
                   />
                 ) : (
@@ -129,13 +163,20 @@ export default function RecipientContactForm({ onSubmit, onBack, initialData }) 
                     onChange={(e) => handleChange(field.key, e.target.value)}
                     onBlur={() => handleBlur(field.key)}
                     placeholder={field.placeholder}
-                    dir="rtl"
+                    dir={field.key === "phone" || field.key === "email" ? "ltr" : "rtl"}
+                    inputMode={field.inputMode}
+                    maxLength={field.maxLength}
+                    aria-invalid={invalid}
                     className={cx(inputBase, borderClass)}
                   />
                 )}
 
+                {field.key === "phone" && (
+                  <p className="text-[11px] text-slate-500">أدخل 10 أرقام تبدأ بـ 05</p>
+                )}
+
                 {invalid && (
-                  <p className="text-[11px] text-rose-400">هذا الحقل مطلوب</p>
+                  <p className="text-[11px] text-rose-400">{errorMessage}</p>
                 )}
               </div>
             )}

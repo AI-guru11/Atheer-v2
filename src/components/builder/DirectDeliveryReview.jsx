@@ -4,6 +4,27 @@ import {
 } from "../../utils/recommendationDisplay"
 import { getGiftPathMeta } from "../../lib/giftSession"
 
+function DetailRows({ rows }) {
+  return (
+    <div className="space-y-2.5">
+      {rows.map((row) => (
+        <div
+          key={row.label}
+          className="rounded-2xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-right md:flex md:items-start md:justify-between md:gap-4 md:border-0 md:bg-transparent md:px-0 md:py-1"
+        >
+          <div className="md:min-w-0 md:flex-1">
+            <p className="text-[11px] font-semibold text-slate-500 md:hidden">{row.label}</p>
+            <p className="mt-1 text-[14px] leading-7 text-white/85 break-words whitespace-pre-wrap md:mt-0">
+              {row.value}
+            </p>
+          </div>
+          <p className="hidden shrink-0 text-[11px] text-slate-500 md:block">{row.label}</p>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export default function DirectDeliveryReview({
   recommendation,
   shippingData,
@@ -89,37 +110,17 @@ export default function DirectDeliveryReview({
           <p className="mb-2.5 text-[10px] font-bold tracking-widest text-violet-300/60">
             بيانات المرسل
           </p>
-          <div className="space-y-1.5">
-            {senderRows.map((row) => (
-              <div
-                key={row.label}
-                className="flex items-baseline justify-between gap-3"
-              >
-                <span className="min-w-0 flex-1 break-words text-[13px] text-white/80">{row.value}</span>
-                <span className="shrink-0 text-[11px] text-slate-500">{row.label}</span>
-              </div>
-            ))}
-          </div>
+          <DetailRows rows={senderRows} />
         </div>
 
         <div className="rounded-[18px] border border-white/[0.08] bg-white/[0.025] p-4">
           <p className="mb-2.5 text-[10px] font-bold tracking-widest text-slate-500/70">
             بيانات التوصيل
           </p>
-          <div className="space-y-1.5">
-            {deliveryRows.map((row) => (
-              <div
-                key={row.label}
-                className="flex items-baseline justify-between gap-3"
-              >
-                <span className="text-[13px] text-white/80">{row.value}</span>
-                <span className="shrink-0 text-[11px] text-slate-500">{row.label}</span>
-              </div>
-            ))}
-          </div>
+          <DetailRows rows={deliveryRows} />
         </div>
 
-        <div className="grid grid-cols-2 gap-1.5">
+        <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
           <div className="rounded-[12px] bg-white/[0.025] px-3 py-3">
             <p className="text-[10px] font-semibold tracking-widest text-slate-500/70">
               أسلوب الكشف
