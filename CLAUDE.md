@@ -89,8 +89,8 @@ The visual system is already approved and should be preserved.
 
 ### Core visual direction
 - premium dark interface
-- charcoal / deep-dark atmospheric background
-- restrained ambient glow
+- charcoal / deep-dark atmospheric background (`#0d0d12` base)
+- restrained ambient glow (AuroraBackground effect layer)
 - subtle neon contour accents
 - dark smoked-glass surfaces
 - strong readability
@@ -114,16 +114,18 @@ The design language should remain:
 
 ## 5) Current Stack
 
-- React 19
-- React Router DOM 7
-- Vite 8
-- Tailwind CSS 3
+- React 19 (`^19.2.4`)
+- React Router DOM 7 (`^7.13.1`)
+- Vite 8 (`^8.0.0`)
+- Tailwind CSS 3 (`^3.4.19`)
 - plain JavaScript (no TypeScript)
 - localStorage-backed local session model
 - no backend
 - no database
 - no auth system
 - no global state library
+
+Node engine requirement: `>=20.19.0 || >=22.12.0`
 
 This project currently uses **component-level React state + local session helpers**.
 
@@ -140,11 +142,16 @@ The app uses:
 This is intentional for GitHub Pages compatibility.
 
 ### Current routes
+
+**Sender / Browse:**
 - `/` → `HomePage`
 - `/builder` → `GiftBuilderPage`
-- `/corporate` → `CorporatePage`
+- `/collections` → `CollectionsPage` *(Signature Collections browse page)*
+- `/corporate` → `CorporatePage` *(placeholder — not yet built)*
 - `/checkout` → `CheckoutPage`
 - `/success` → `SuccessPage`
+
+**Gift / Recipient experience:**
 - `/gift` → `GiftLandingPage`
 - `/gift/unlock` → `GiftUnlockPage`
 - `/gift/reveal` → `GiftRevealPage`
@@ -152,8 +159,12 @@ This is intentional for GitHub Pages compatibility.
 - `/gift/choose` → `RecipientChoicePage`
 - `/gift/address` → `RecipientAddressPage`
 - `/gift/confirmed` → `RecipientConfirmedPage`
+
+**Ops / Admin:**
 - `/orders` → `OrdersPage`
-- `/admin` → `AdminDashboardPage`
+- `/admin` → `AdminDashboardPage` *(placeholder — explicitly deferred, not yet built)*
+
+**Fallback:**
 - `*` → `NotFoundPage`
 
 Do not switch this app to `createBrowserRouter` unless there is an explicit deliberate deployment change.
@@ -163,16 +174,20 @@ Do not switch this app to `createBrowserRouter` unless there is an explicit deli
 ## 7) Core Architecture Snapshot
 
 ### Main application shell
-- `src/app/App.jsx`
-- `src/components/layout/*`
+- `src/app/App.jsx` — layout shell, scroll-to-top, smart reveal system (IntersectionObserver)
+- `src/components/layout/` — Header, Footer, Section, Container
 
 ### Builder flow
 - `src/pages/GiftBuilderPage.jsx`
-- `src/components/builder/*`
-- `src/data/builderContent.js`
+- `src/components/builder/` — BuilderShell, BuilderChoiceGrid, BuilderChoiceCard, BuilderProgress, BuilderActions, BuilderSummary, BuilderRecommendationPreview, DirectDeliveryForm, DirectDeliveryReview, DirectDeliveryConfirmation, RecipientContactForm, RecipientReview, RecipientLinkReady
+- `src/data/builderContent.js` — all builder step content + value labels
 
 ### Gift / recipient experience
-- `src/gift/*`
+- `src/gift/` — GiftLandingPage, GiftUnlockPage, GiftRevealPage, RecipientLandingPage, RecipientChoicePage, RecipientAddressPage, RecipientConfirmedPage
+
+### Collections entry point *(basic implementation)*
+- `src/pages/CollectionsPage.jsx`
+- `src/data/signatureCollections.js` — curated collection definitions (id, title, badge, priceBand, accentColor, image)
 
 ### Order / status / ops-lite layer
 - `src/pages/CheckoutPage.jsx`
@@ -180,14 +195,33 @@ Do not switch this app to `createBrowserRouter` unless there is an explicit deli
 - `src/lib/giftSession.js`
 
 ### Recommendation engine
-- `src/lib/recommendation/*`
+- `src/lib/recommendation/index.js`
+- `src/lib/recommendation/normalizeGiftIntentProfile.js`
+- `src/lib/recommendation/filterCandidates.js`
+- `src/lib/recommendation/scoreCandidates.js`
+- `src/lib/recommendation/buildRecommendationResult.js`
 - `src/data/productCatalog.sample.js`
 - `src/data/recommendationSchema.js`
 - `src/utils/recommendationDisplay.js`
 
+### Utilities / helpers
+- `src/utils/helpers.js`
+- `src/data/recipientMockData.js`
+
 ### Styles
 - `src/styles/globals.css`
 - `src/styles/tokens.css`
+- `src/styles/aurora-layer.css`
+
+### Effects
+- `src/components/effects/AuroraBackground.jsx`
+
+### UI primitives
+- `src/components/ui/` — Button, Card, Input, Badge
+
+### Placeholder pages (route exists, content not yet built)
+- `src/pages/CorporatePage.jsx` — placeholder card
+- `src/admin/AdminDashboardPage.jsx` — placeholder card, explicitly deferred
 
 ---
 
@@ -251,8 +285,9 @@ The operational spine of the current MVP is **local gift sessions**.
 Main file:
 - `src/lib/giftSession.js`
 
-This helper is now central to the product.
-It is not a minor utility anymore.
+localStorage prefix: `atheer_gift_session:<code>`
+
+This helper is now central to the product. It is not a minor utility anymore.
 
 ### Current role of gift sessions
 Gift sessions store the working order state across:
@@ -262,7 +297,9 @@ Gift sessions store the working order state across:
 - checkout / status view
 - orders index
 - ops-lite view
-- notes / snippets / timeline / flags / presets
+- status timeline (timestamped entries)
+- gift path metadata (`getGiftPathMeta`)
+- status metadata (`getGiftStatusMeta`)
 
 ### Core expectation
 Any new module touching order continuity should extend the existing gift session model **minimally** instead of introducing another storage layer.
@@ -317,6 +354,8 @@ It now includes a lightweight operational layer:
 ### Important rule
 This is still a **lightweight local operational layer**, not a full admin system.
 
+The `/admin` route exists but is a **placeholder**. The admin dashboard has not been built yet. Do not treat it as existing functionality.
+
 Do not turn it into:
 - a heavy admin dashboard
 - a CRM
@@ -350,9 +389,7 @@ It should **not** become a dense enterprise admin table unless explicitly reques
 
 ## 14) Current Module Progress
 
-This repo has already progressed through a significant structured implementation path.
-
-### Completed or substantially implemented modules
+### Completed or substantially implemented
 - **A + B** — Builder path alignment
 - **C** — Gift Session Storage + Generated Link Hardening
 - **D** — Reveal / Unlock / Reveal layer grounding
@@ -365,15 +402,22 @@ This repo has already progressed through a significant structured implementation
 - **L** — Sender approval action + internal status advance
 - **M** — Orders list view from local sessions
 - **N** — Orders Actions Polish
-- **O** — Lightweight Admin / Orders Dashboard Polish
+- **O** — Lightweight Orders Dashboard Polish *(note: `/admin` route is a placeholder; ops features live in OrdersPage)*
 - **P** — Order Detail Notes + Activity Timeline Lite
 - **Q** — Follow-up Toolkit + Communication Snippets Lite
 - **R** — Lightweight Templates + Reusable Gift Operations Presets
+- **S** — Signature Collections Lite *(basic implementation: `/collections` route, `CollectionsPage.jsx`, `signatureCollections.js` data with 6+ collections; CTAs currently route to `/builder`, not collection-specific flows)*
 
-### Proposed / future modules discussed but not guaranteed to exist in code yet
-- S — Signature Collections Lite + Curated Offers Entry
+### Placeholder routes (route registered, page not yet built)
+- `/admin` → `AdminDashboardPage` — explicitly deferred; the file contains a placeholder card only
+- `/corporate` → `CorporatePage` — placeholder card only
 
-If a future module is not in the code yet, do **not** describe it as implemented truth.
+### Future / not yet in code
+- Full admin dashboard with orders, requests, analytics modules
+- Corporate gifting flow beyond the placeholder page
+- Collection-specific purchase paths (currently Collections CTAs go to `/builder`)
+
+If a module or page is not confirmed in the live code, do **not** describe it as implemented truth.
 
 ---
 
@@ -428,9 +472,15 @@ Preview:
 npm run preview
 ```
 
-Build:
+Build (GitHub Pages — default):
 ```bash
 npm run build
+# same as: npm run build:github
+```
+
+Build (server / nginx — base path `/`):
+```bash
+BUILD_TARGET=server npm run build:server
 ```
 
 ### Important note
@@ -448,14 +498,21 @@ Treat those as environment issues first, not architecture issues.
 
 ## 17) Deployment Notes
 
-This repo is intended for GitHub Pages deployment.
+This repo supports **two deployment targets**:
 
-Key constraints:
-- `vite.config.js` uses GitHub Pages base path
-- routing uses `createHashRouter`
-- generated links often target the GitHub Pages deployed URL
+### GitHub Pages (default)
+- `npm run build` or `npm run build:github`
+- `vite.config.js` sets `base: '/Atheer-v2/'`
+- routing uses `createHashRouter` (required for Pages compatibility)
+- generated links target the GitHub Pages deployed URL
+
+### Server / nginx
+- `BUILD_TARGET=server npm run build:server`
+- `vite.config.js` sets `base: '/'`
+- routing still uses `createHashRouter`
 
 Do not casually remove or change these assumptions unless deployment strategy is intentionally changing.
+Do not switch to `createBrowserRouter` without a deliberate deployment-strategy decision.
 
 ---
 
@@ -480,6 +537,7 @@ Any AI model working in this repository should behave like this:
 - leak internal business mechanics into customer UI
 - rewrite recommendation engine logic without need
 - expand scope into unrelated modules
+- treat placeholder pages as implemented features
 
 ---
 
