@@ -44,18 +44,16 @@ export default function BuilderShell() {
   const [linkSessionCode, setLinkSessionCode] = useState(null)
   const [directOrderSessionCode, setDirectOrderSessionCode] = useState(null)
 
+  // هندسة المسارات الذكية بناءً على اختيارات المستخدم
   const resolvedSteps = useMemo(() => {
     return steps.map((step) => {
-      if (step.field !== "deliveryMode") {
-        return step
-      }
+      if (step.field !== "deliveryMode") return step
 
       if (selections.giftPath === "recipientChoice") {
         return {
           ...step,
           title: "كيف ستصل تجربة الاختيار؟",
-          description:
-            "بما أنك اخترت أن يدع المستلم يختار هديته، فسيتم إرسال رابط خاص له ليرى الخيارات ويكمل التفاصيل بنفسه.",
+          description: "بما أنك اخترت أن يدع المستلم يختار هديته، فسيتم إرسال رابط خاص له ليرى الخيارات ويكمل التفاصيل بنفسه.",
           options: [
             {
               value: "recipientChoice",
@@ -69,8 +67,7 @@ export default function BuilderShell() {
       return {
         ...step,
         title: "كيف تريد إرسال الهدية المحددة؟",
-        description:
-          "بعد أن اخترت هدية محددة، قرر هل تريد إدخال عنوان المستلم الآن أو إرسال رابط تجربة الهدية أولًا.",
+        description: "بعد أن اخترت هدية محددة، قرر هل تريد إدخال عنوان المستلم الآن أو إرسال رابط تجربة الهدية أولًا.",
         options: [
           {
             value: "directDelivery",
@@ -103,35 +100,24 @@ export default function BuilderShell() {
     return Object.values(selections).filter(Boolean).length
   }, [selections])
 
+  // التزامن التلقائي للمسارات
   useEffect(() => {
     if (
       currentStep?.field === "deliveryMode" &&
       selections.giftPath === "recipientChoice" &&
       selections.deliveryMode !== "recipientChoice"
     ) {
-      setSelections((prev) => ({
-        ...prev,
-        deliveryMode: "recipientChoice",
-      }))
+      setSelections((prev) => ({ ...prev, deliveryMode: "recipientChoice" }))
     }
   }, [currentStep, selections.giftPath, selections.deliveryMode])
 
   function handleSelect(value) {
     if (!currentStep) return
-
     setSelections((prev) => {
       if (currentStep.field === "giftPath") {
-        return {
-          ...prev,
-          giftPath: value,
-          deliveryMode: "",
-        }
+        return { ...prev, giftPath: value, deliveryMode: "" }
       }
-
-      return {
-        ...prev,
-        [currentStep.field]: value,
-      }
+      return { ...prev, [currentStep.field]: value }
     })
   }
 
@@ -140,20 +126,15 @@ export default function BuilderShell() {
       setCurrentStepIndex(totalSteps - 1)
       return
     }
-
-    if (currentStepIndex > 0) {
-      setCurrentStepIndex((prev) => prev - 1)
-    }
+    if (currentStepIndex > 0) setCurrentStepIndex((prev) => prev - 1)
   }
 
   function handleNext() {
     if (!currentStep || !currentValue) return
-
     if (!isLastStep) {
       setCurrentStepIndex((prev) => prev + 1)
       return
     }
-
     const result = runRecommendationEngine({
       ...selections,
       controlMode: resolveControlMode(selections.giftPath),
@@ -176,11 +157,8 @@ export default function BuilderShell() {
   }
 
   function handlePrimaryCtaClick() {
-    if (selections.deliveryMode === "directDelivery") {
-      setDirectDeliveryStep("form")
-    } else if (selections.deliveryMode === "recipientChoice") {
-      setRecipientChoiceStep("contact")
-    }
+    if (selections.deliveryMode === "directDelivery") setDirectDeliveryStep("form")
+    else if (selections.deliveryMode === "recipientChoice") setRecipientChoiceStep("contact")
   }
 
   function handleRecipientContactSubmit(data) {
@@ -190,9 +168,7 @@ export default function BuilderShell() {
 
   function handleGenerateLink() {
     if (!recommendation || !recipientData) return
-
     const code = Math.random().toString(36).slice(2, 9).toUpperCase()
-
     const session = createGiftSession({
       code,
       selections: {
@@ -206,15 +182,8 @@ export default function BuilderShell() {
       recipientData,
       recommendation,
     })
-
     const nextGiftLink = buildGiftLink("https://ai-guru11.github.io/Atheer-v2/", session)
-    const sessionWithLink = {
-      ...session,
-      shareLink: nextGiftLink,
-    }
-
-    persistGiftSession(sessionWithLink)
-
+    persistGiftSession({ ...session, shareLink: nextGiftLink })
     setGiftLink(nextGiftLink)
     setLinkSessionCode(session.code)
     setRecipientChoiceStep("link")
@@ -227,7 +196,6 @@ export default function BuilderShell() {
 
   function handleApproveOrder() {
     if (!recommendation || !shippingData) return
-
     const code = Math.random().toString(36).slice(2, 9).toUpperCase()
     const session = createDirectDeliverySession({
       code,
@@ -242,7 +210,6 @@ export default function BuilderShell() {
       shippingData,
       recommendation,
     })
-
     persistGiftSession(session)
     setDirectOrderSessionCode(session.code)
     setDirectDeliveryStep("confirmed")
@@ -251,55 +218,48 @@ export default function BuilderShell() {
   const recommendation = engineResult?.recommendation || null
 
   const primaryCtaLabel = (() => {
-    if (selections.deliveryMode === "directDelivery") {
-      return "أكمل بيانات التوصيل الآن"
-    }
-
-    if (selections.deliveryMode === "recipientChoice" && selections.giftPath === "exactGift") {
-      return "أنشئ رابط كشف الهدية"
-    }
-
-    if (selections.deliveryMode === "recipientChoice" && selections.giftPath === "recipientChoice") {
-      return "أنشئ رابط اختيار الهدية"
-    }
-
+    if (selections.deliveryMode === "directDelivery") return "أكمل بيانات التوصيل الآن"
+    if (selections.deliveryMode === "recipientChoice" && selections.giftPath === "exactGift") return "أنشئ رابط كشف الهدية"
+    if (selections.deliveryMode === "recipientChoice" && selections.giftPath === "recipientChoice") return "أنشئ رابط اختيار الهدية"
     return completion.primaryCta
   })()
 
   return (
-    <section className="section-shell">
-      <div className="container-tight">
-        <div className="space-y-8">
-          <div className="space-y-4 text-right">
-            <span className="text-xs font-semibold tracking-[0.14em] text-cyan-300/70">
+    <section className="section-shell min-h-screen">
+      <div className="container-tight pt-8 pb-20">
+        <div className="space-y-12">
+          {/* Header Section */}
+          <div className="reveal-block space-y-4 text-right">
+            <span className="inline-block text-xs font-bold tracking-[0.2em] uppercase text-brand-2/80">
               {intro.eyebrow}
             </span>
-
-            <h1 className="text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
+            <h1 className="text-4xl font-black leading-tight text-white sm:text-5xl lg:text-6xl tracking-tight">
               {intro.title}
             </h1>
-
-            <p className="max-w-3xl text-base leading-relaxed text-slate-300 sm:text-lg">
+            <p className="max-w-2xl text-lg leading-relaxed text-slate-400">
               {intro.description}
             </p>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
-            <div className="charcoal-card rounded-[32px] p-5 sm:p-7 lg:p-8">
+          <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
+            {/* Main Interactive Card */}
+            <div 
+              key={currentStepIndex} // يضمن إعادة تشغيل الحركة عند تغيير الخطوة
+              className="reveal-block charcoal-card rounded-[40px] p-6 sm:p-10 lg:p-12 border-white/[0.03] shadow-2xl"
+            >
               {!showCompletionState ? (
-                <div className="space-y-7">
+                <div className="space-y-10">
                   <BuilderProgress
                     currentStep={currentStepNumber}
                     totalSteps={totalSteps}
                     currentTitle={currentStep.title}
                   />
 
-                  <div className="space-y-3 text-right">
-                    <h2 className="text-3xl font-bold leading-tight text-white sm:text-4xl">
+                  <div className="space-y-4 text-right">
+                    <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
                       {currentStep.title}
                     </h2>
-
-                    <p className="max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
+                    <p className="max-w-2xl text-base text-slate-400 leading-relaxed">
                       {currentStep.description}
                     </p>
                   </div>
@@ -315,46 +275,47 @@ export default function BuilderShell() {
                     }
                   />
 
-                  <BuilderActions
-                    canGoBack={currentStepIndex > 0}
-                    canGoNext={Boolean(currentValue)}
-                    isLastStep={isLastStep}
-                    onPrevious={handlePrevious}
-                    onNext={handleNext}
-                    onReset={handleReset}
-                    labels={labels}
-                  />
+                  <div className="pt-6 border-t border-white/[0.05]">
+                    <BuilderActions
+                      canGoBack={currentStepIndex > 0}
+                      canGoNext={Boolean(currentValue)}
+                      isLastStep={isLastStep}
+                      onPrevious={handlePrevious}
+                      onNext={handleNext}
+                      onReset={handleReset}
+                      labels={labels}
+                    />
+                  </div>
                 </div>
               ) : (
-                <div>
+                <div className="reveal-block">
                   {directDeliveryStep === null && recipientChoiceStep === null && (
-                    <div className="text-right">
-                      <div className="mb-6">
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/20 bg-emerald-400/[0.08] px-3 py-1.5 text-[12px] font-semibold text-emerald-300">
-                          <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                    <div className="text-right space-y-8">
+                      <div>
+                        <span className="inline-flex items-center gap-2 rounded-full border border-brand-2/20 bg-brand-2/[0.05] px-4 py-1.5 text-xs font-bold text-brand-2">
+                          <span className="h-1.5 w-1.5 rounded-full bg-brand-2 animate-pulse" />
                           {completion.badge}
                         </span>
-
-                        <h2 className="mt-3 text-xl font-bold leading-tight text-white sm:text-2xl">
+                        <h2 className="mt-4 text-3xl font-bold tracking-tight text-white">
                           {completion.title}
                         </h2>
                       </div>
 
-                      {selections.giftPath ? (
-                        <div className="mb-6 rounded-[18px] border border-white/[0.08] bg-white/[0.02] p-4">
-                          <div className="flex items-center justify-between gap-3">
-                            <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-0.5 text-[11px] font-semibold text-white/75">
+                      {selections.giftPath && (
+                        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 space-y-2">
+                          <div className="flex items-center justify-between">
+                             <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                              تم اختيار المسار
+                            </span>
+                            <span className="rounded-lg bg-brand/10 px-3 py-1 text-xs font-bold text-brand">
                               {giftPathMeta.label}
                             </span>
-                            <p className="text-[10px] font-bold tracking-widest text-slate-500/70">
-                              المسار الذي بنيته الآن
-                            </p>
                           </div>
-                          <p className="mt-3 text-[13px] leading-relaxed text-slate-300">
+                          <p className="text-sm leading-relaxed text-slate-400">
                             {giftPathMeta.senderNote}
                           </p>
                         </div>
-                      ) : null}
+                      )}
 
                       <BuilderRecommendationPreview
                         recommendation={recommendation}
@@ -364,19 +325,18 @@ export default function BuilderShell() {
                         giftPathLabel={giftPathMeta.label}
                       />
 
-                      <div className="mt-6 flex flex-col-reverse gap-2.5 sm:flex-row sm:justify-end">
+                      <div className="flex flex-col-reverse gap-4 sm:flex-row sm:justify-end pt-4">
                         <button
                           type="button"
                           onClick={handleReset}
-                          className="rounded-full border border-white/[0.08] bg-white/[0.02] px-5 py-2.5 text-[13px] font-semibold text-slate-400 transition-colors duration-200 hover:border-white/15 hover:text-slate-200"
+                          className="rounded-full border border-white/10 bg-white/[0.02] px-8 py-3 text-sm font-bold text-slate-400 transition-all hover:bg-white/[0.05] hover:text-white"
                         >
                           {labels.reset}
                         </button>
-
                         <button
                           type="button"
                           onClick={handlePrimaryCtaClick}
-                          className="rounded-full bg-[linear-gradient(90deg,#7c5cff,#22d3ee)] px-6 py-3 text-[15px] font-bold text-white shadow-[0_10px_30px_rgba(34,211,238,0.15)] transition-all duration-200 hover:shadow-[0_14px_40px_rgba(34,211,238,0.22)] active:scale-[0.98]"
+                          className="rounded-full bg-gradient-to-r from-brand to-brand-2 px-10 py-3 text-sm font-black text-white shadow-lg shadow-brand/20 transition-all hover:scale-[1.02] hover:shadow-brand/40 active:scale-[0.98]"
                         >
                           {primaryCtaLabel}
                         </button>
@@ -384,6 +344,7 @@ export default function BuilderShell() {
                     </div>
                   )}
 
+                  {/* Flow Steps Rendering */}
                   {directDeliveryStep === "form" && (
                     <DirectDeliveryForm
                       initialData={shippingData}
@@ -391,7 +352,6 @@ export default function BuilderShell() {
                       onBack={() => setDirectDeliveryStep(null)}
                     />
                   )}
-
                   {directDeliveryStep === "review" && (
                     <DirectDeliveryReview
                       recommendation={recommendation}
@@ -401,11 +361,9 @@ export default function BuilderShell() {
                       onBack={() => setDirectDeliveryStep("form")}
                     />
                   )}
-
                   {directDeliveryStep === "confirmed" && (
                     <DirectDeliveryConfirmation sessionCode={directOrderSessionCode} onReset={handleReset} />
                   )}
-
                   {recipientChoiceStep === "contact" && (
                     <RecipientContactForm
                       initialData={recipientData}
@@ -413,7 +371,6 @@ export default function BuilderShell() {
                       onBack={() => setRecipientChoiceStep(null)}
                     />
                   )}
-
                   {recipientChoiceStep === "review" && (
                     <RecipientReview
                       recommendation={recommendation}
@@ -423,7 +380,6 @@ export default function BuilderShell() {
                       onBack={() => setRecipientChoiceStep("contact")}
                     />
                   )}
-
                   {recipientChoiceStep === "link" && (
                     <RecipientLinkReady
                       giftLink={giftLink}
@@ -437,39 +393,38 @@ export default function BuilderShell() {
               )}
             </div>
 
-            <div className="space-y-4">
+            {/* Sidebar Summary Section */}
+            <aside className="reveal-block space-y-6 lg:sticky lg:top-24">
               <BuilderSummary selections={selections} />
 
-              <div className={`rounded-[22px] border px-4 py-3.5 transition-colors duration-300 ${
+              <div className={`rounded-3xl border p-5 transition-all duration-500 shadow-xl ${
                 showCompletionState
-                  ? "border-emerald-400/15 bg-emerald-400/[0.02]"
-                  : "border-white/10 bg-white/[0.03]"
+                  ? "border-emerald-500/20 bg-emerald-500/[0.03]"
+                  : "border-white/5 bg-white/[0.02]"
               }`}>
-                <div className="space-y-2 text-right">
+                <div className="space-y-4 text-right">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] tabular-nums text-slate-500">
-                      {selectedCount}/{totalSteps}
+                    <span className="text-[11px] font-bold tabular-nums text-slate-500 tracking-widest">
+                      {selectedCount} / {totalSteps}
                     </span>
-                    <h3 className="text-[13px] font-bold text-white">
-                      {showCompletionState ? "اكتملت" : "التقدم"}
+                    <h3 className="text-xs font-black uppercase tracking-wider text-white/90">
+                      {showCompletionState ? "اكتمل البناء" : "التقدم الحالي"}
                     </h3>
                   </div>
 
-                  <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+                  <div className="h-2 overflow-hidden rounded-full bg-white/[0.05]">
                     <div
-                      className={`h-full rounded-full transition-all duration-500 ${
+                      className={`h-full rounded-full transition-all duration-1000 ease-out ${
                         showCompletionState
-                          ? "bg-emerald-400"
-                          : "bg-[linear-gradient(90deg,#7c5cff,#22d3ee)]"
+                          ? "bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.4)]"
+                          : "bg-gradient-to-r from-brand to-brand-2"
                       }`}
-                      style={{
-                        width: `${(selectedCount / totalSteps) * 100}%`,
-                      }}
+                      style={{ width: `${(selectedCount / totalSteps) * 100}%` }}
                     />
                   </div>
                 </div>
               </div>
-            </div>
+            </aside>
           </div>
         </div>
       </div>

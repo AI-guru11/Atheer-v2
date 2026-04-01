@@ -2,8 +2,7 @@ import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Section from '../components/layout/Section'
 import Button from '../components/ui/Button'
-import Card from '../components/ui/Card'
-import Input from '../components/ui/Input'
+import { cx } from '../utils/helpers'
 import {
   getAllGiftSessions,
   getGiftPathMeta,
@@ -18,7 +17,12 @@ import {
 function formatDate(value) {
   if (!value) return '—'
   try {
-    return new Intl.DateTimeFormat('ar-SA', { dateStyle: 'medium' }).format(new Date(value))
+    return new Intl.DateTimeFormat('ar-SA', { 
+      day: 'numeric', 
+      month: 'short', 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    }).format(new Date(value))
   } catch {
     return value
   }
@@ -31,13 +35,12 @@ const FILTERS = [
   { key: 'completed', label: 'مكتمل' },
 ]
 
-const CAT_CLASSES = {
-  completed: 'text-emerald-300 border-emerald-300/20 bg-emerald-300/[0.08]',
-  awaiting:  'text-amber-300  border-amber-300/20  bg-amber-300/[0.08]',
-  active:    'text-cyan-300   border-cyan-300/20   bg-cyan-300/[0.08]',
+const CAT_STYLES = {
+  completed: 'text-emerald-400 border-emerald-400/20 bg-emerald-400/[0.08] shadow-[0_0_12px_rgba(52,211,153,0.15)]',
+  awaiting:  'text-amber-400 border-amber-400/20 bg-amber-400/[0.08] shadow-[0_0_12px_rgba(251,191,36,0.15)]',
+  active:    'text-brand-2 border-brand-2/20 bg-brand-2/[0.08] shadow-[0_0_12px_rgba(56,225,245,0.15)]',
 }
 
-// Show next-step hint for these categories only — completed orders already self-explanatory
 const SHOW_NEXT_STEP_FOR = new Set(['awaiting', 'active'])
 
 export default function OrdersPage() {
@@ -45,7 +48,7 @@ export default function OrdersPage() {
 
   const [sessions, setSessions] = useState(() => getAllGiftSessions())
   const [filter, setFilter]           = useState('all')
-  const [sortBy, setSortBy]           = useState('updated')   // 'updated' | 'priority'
+  const [sortBy, setSortBy]           = useState('updated')
   const [archiveMode, setArchiveMode] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [copiedCode, setCopiedCode]   = useState(null)
@@ -58,7 +61,7 @@ export default function OrdersPage() {
   function handleCopyCode(code) {
     if (navigator.clipboard) navigator.clipboard.writeText(code).catch(() => {})
     setCopiedCode(code)
-    setTimeout(() => setCopiedCode(null), 2200)
+    setTimeout(() => setCopiedCode(null), 2000)
   }
 
   function handleToggleArchiveMode() {
@@ -67,34 +70,28 @@ export default function OrdersPage() {
     setSearchQuery('')
   }
 
-  // ── Derived session lists ──────────────────────────────────────────────
   const activeSessions   = useMemo(() => sessions.filter((s) => s.archived !== true), [sessions])
   const archivedSessions = useMemo(() => sessions.filter((s) => s.archived === true),  [sessions])
   const modeSessions     = archiveMode ? archivedSessions : activeSessions
 
-  // Counts always from non-archived
   const counts = useMemo(() => {
     const c = { awaiting: 0, active: 0, completed: 0 }
     activeSessions.forEach((s) => { c[getOrderFilterCategory(s)]++ })
     return c
   }, [activeSessions])
 
-  // Sort
   const sortedSessions = useMemo(() => {
     if (sortBy === 'priority') {
       return [...modeSessions].sort((a, b) => getStatusSortPriority(a) - getStatusSortPriority(b))
     }
-    // 'updated' — getAllGiftSessions already returns updatedAt desc; preserve that order
     return modeSessions
   }, [modeSessions, sortBy])
 
-  // Category filter (suppressed in archive mode)
   const categoryFiltered = useMemo(() => {
     if (archiveMode || filter === 'all') return sortedSessions
     return sortedSessions.filter((s) => getOrderFilterCategory(s) === filter)
   }, [sortedSessions, filter, archiveMode])
 
-  // Search filter
   const visible = useMemo(() => {
     const q = searchQuery.trim().toLowerCase()
     if (!q) return categoryFiltered
@@ -107,173 +104,123 @@ export default function OrdersPage() {
     )
   }, [categoryFiltered, searchQuery])
 
-  // ── Render ─────────────────────────────────────────────────────────────
+  // --- مكون مصغر للعدادات ---
+  const StatCard = ({ label, value, highlight = false, colorClass = "text-white" }) => (
+    <div className={cx(
+      "relative overflow-hidden rounded-[24px] border p-5 text-right transition-all duration-300",
+      highlight ? "border-brand/30 bg-gradient-to-br from-brand/[0.08] to-transparent shadow-[0_8px_24px_rgba(129,101,255,0.12)]" : "border-white/[0.05] bg-white/[0.02]"
+    )}>
+      {highlight && <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-brand/50 to-transparent" />}
+      <p className={cx("text-3xl font-black tabular-nums tracking-tight", colorClass)}>{value}</p>
+      <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.1em] text-slate-500">{label}</p>
+    </div>
+  )
+
   return (
-    <Section>
-      <div className="mx-auto max-w-4xl space-y-6 text-right">
+    <Section className="min-h-screen pt-10 pb-20">
+      <div className="mx-auto max-w-[56rem] space-y-8 text-right">
 
         {/* ── Header ── */}
-        <div className="section-heading mb-0">
-          <p className="eyebrow">Orders</p>
-          <h1>الطلبات المحلية</h1>
-          <p className="section-copy mt-3 max-w-2xl">
-            عرض موحد لجميع الطلبات المحفوظة على هذا الجهاز. يمكنك متابعة أي طلب أو فتح عرضه التشغيلي مباشرة من هنا.
+        <div className="reveal-block space-y-3">
+          <span className="inline-block text-[10px] font-black tracking-[0.2em] uppercase text-brand-2/80">
+            Operations
+          </span>
+          <h1 className="text-4xl font-black leading-tight text-white tracking-tight">
+            سجل الطلبات
+          </h1>
+          <p className="text-sm leading-relaxed text-slate-400 max-w-2xl">
+            نظرة عامة على الطلبات النشطة والمحفوظة. مساحة عمل مصممة للمتابعة السريعة وضمان استمرارية تجربة الإهداء.
           </p>
         </div>
 
-        {/* ── Summary counters (always non-archived) ── */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {[
-            { label: 'إجمالي الطلبات', value: activeSessions.length, color: 'text-white' },
-            { label: 'بانتظار إجراء',  value: counts.awaiting,        color: 'text-amber-300' },
-            { label: 'نشط',             value: counts.active,           color: 'text-cyan-300' },
-            { label: 'مكتمل',           value: counts.completed,        color: 'text-emerald-300' },
-          ].map(({ label, value, color }) => (
-            <div key={label} className="surface-panel rounded-2xl px-4 py-4 text-right">
-              <p className={`text-2xl font-bold tabular-nums ${color}`}>{value}</p>
-              <p className="mt-1 text-[12px] text-slate-400">{label}</p>
-            </div>
-          ))}
+        {/* ── Summary Dashboard ── */}
+        <div className="reveal-block grid grid-cols-2 gap-4 sm:grid-cols-4" style={{ transitionDelay: '100ms' }}>
+          <StatCard label="إجمالي الطلبات" value={activeSessions.length} highlight />
+          <StatCard label="بانتظار إجراء" value={counts.awaiting} colorClass="text-amber-400" />
+          <StatCard label="نشط" value={counts.active} colorClass="text-brand-2" />
+          <StatCard label="مكتمل" value={counts.completed} colorClass="text-emerald-400" />
         </div>
 
-        {/* ── Priority insight callout (only when actionable, not in archive mode) ── */}
-        {!archiveMode && (counts.awaiting > 0 || counts.completed > 0) && (
-          <div className="flex flex-wrap gap-2">
-            {counts.awaiting > 0 && (
-              <button
-                onClick={() => setFilter('awaiting')}
-                className="flex items-center gap-2.5 rounded-2xl border border-amber-300/20 bg-amber-300/[0.05] px-4 py-2.5 text-right transition-colors hover:bg-amber-300/[0.08]"
-              >
-                <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-amber-400" />
-                <span className="text-sm font-semibold text-amber-300">{counts.awaiting}</span>
-                <span className="text-sm text-amber-200/70">بانتظار إجراء منك</span>
-              </button>
-            )}
-            {counts.completed > 0 && (
-              <button
-                onClick={() => setFilter('completed')}
-                className="flex items-center gap-2.5 rounded-2xl border border-emerald-300/20 bg-emerald-300/[0.05] px-4 py-2.5 text-right transition-colors hover:bg-emerald-300/[0.08]"
-              >
-                <span className="inline-block h-2 w-2 shrink-0 rounded-full bg-emerald-400" />
-                <span className="text-sm font-semibold text-emerald-300">{counts.completed}</span>
-                <span className="text-sm text-emerald-200/70">جاهز للتنفيذ</span>
-              </button>
-            )}
-          </div>
-        )}
-
-        {/* ── Toolbar: search / sort / archive toggle ── */}
-        <div className="flex flex-col gap-3">
-          {/* Search */}
-          <div className="relative">
-            <Input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="بحث بالكود أو الاسم أو المناسبة..."
-              dir="rtl"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-lg leading-none text-slate-400 transition-colors hover:text-white"
-                aria-label="مسح البحث"
-              >
-                ×
-              </button>
-            )}
-          </div>
-
-          {/* Sort + archive toggle */}
-          <div className="flex items-center gap-2">
-            {/* Sort pills */}
-            <div className="flex gap-1.5">
-              {[
-                { key: 'updated',  label: 'الأحدث' },
-                { key: 'priority', label: 'الأولوية' },
-              ].map(({ key, label }) => (
+        {/* ── Toolbar & Filters ── */}
+        <div className="reveal-block space-y-5" style={{ transitionDelay: '200ms' }}>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between bg-white/[0.01] border border-white/[0.04] p-2 rounded-[24px]">
+            
+            {/* Tabs */}
+            <div className="flex flex-wrap gap-1 p-1">
+              {!archiveMode ? FILTERS.map(({ key, label }) => (
                 <button
                   key={key}
-                  onClick={() => setSortBy(key)}
-                  className={`rounded-full border px-3 py-1 text-[12px] font-semibold transition-colors ${
-                    sortBy === key
-                      ? 'border-violet-500/50 bg-violet-500/15 text-violet-200'
-                      : 'border-white/10 bg-white/[0.03] text-slate-400 hover:border-white/20 hover:text-white'
-                  }`}
+                  onClick={() => setFilter(key)}
+                  className={cx(
+                    "rounded-full px-5 py-2 text-[12px] font-bold transition-all duration-300",
+                    filter === key
+                      ? "bg-white/[0.08] text-white shadow-sm border border-white/10"
+                      : "text-slate-500 hover:text-slate-300 hover:bg-white/[0.03] border border-transparent"
+                  )}
                 >
                   {label}
+                  {key !== 'all' && counts[key] > 0 && (
+                    <span className="mr-2 inline-flex items-center justify-center rounded-full bg-white/10 px-2 py-0.5 text-[10px]">
+                      {counts[key]}
+                    </span>
+                  )}
                 </button>
-              ))}
+              )) : (
+                <span className="px-5 py-2 text-[12px] font-bold text-slate-400 border border-transparent">
+                  وضع الأرشيف مفعل
+                </span>
+              )}
             </div>
 
-            {/* Spacer */}
-            <div className="flex-1" />
-
-            {/* Archive mode toggle */}
-            <button
-              onClick={handleToggleArchiveMode}
-              className={`whitespace-nowrap rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors ${
-                archiveMode
-                  ? 'border-violet-500/50 bg-violet-500/15 text-violet-200'
-                  : 'border-white/10 bg-white/[0.03] text-slate-400 hover:border-white/20 hover:text-white'
-              }`}
-            >
-              {archiveMode ? 'الرجوع للنشطة' : 'المؤرشفة'}
-              {!archiveMode && archivedSessions.length > 0 && (
-                <span className="mr-2 text-[11px] opacity-70">{archivedSessions.length}</span>
-              )}
-            </button>
+            {/* Controls (Search & Archive Toggle) */}
+            <div className="flex items-center gap-2 px-2 pb-2 sm:pb-0">
+               <div className="relative w-full sm:w-64">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="بحث بالكود أو الاسم..."
+                  dir="rtl"
+                  className="w-full rounded-full border border-white/[0.06] bg-white/[0.02] px-4 py-2 text-[12px] text-white placeholder-slate-500 outline-none transition-all focus:border-brand/40 focus:bg-white/[0.04]"
+                />
+                {searchQuery && (
+                  <button onClick={() => setSearchQuery('')} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">×</button>
+                )}
+              </div>
+              
+              <button
+                onClick={handleToggleArchiveMode}
+                className={cx(
+                  "shrink-0 rounded-full border px-4 py-2 text-[12px] font-bold transition-all",
+                  archiveMode
+                    ? "border-brand/40 bg-brand/10 text-brand shadow-[0_0_15px_rgba(129,101,255,0.2)]"
+                    : "border-white/[0.06] bg-white/[0.02] text-slate-400 hover:border-white/20 hover:text-white"
+                )}
+              >
+                {archiveMode ? 'العودة للنشطة' : 'الأرشيف'}
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* ── Category filter tabs (hidden in archive mode) ── */}
-        {!archiveMode && (
-          <div className="flex flex-wrap gap-2">
-            {FILTERS.map(({ key, label }) => (
-              <button
-                key={key}
-                onClick={() => setFilter(key)}
-                className={`rounded-full border px-4 py-1.5 text-sm font-semibold transition-colors ${
-                  filter === key
-                    ? 'border-violet-500/50 bg-violet-500/15 text-violet-200'
-                    : 'border-white/10 bg-white/[0.03] text-slate-400 hover:border-white/20 hover:text-white'
-                }`}
-              >
-                {label}
-                {key !== 'all' && counts[key] > 0 && (
-                  <span className="mr-2 text-[11px] opacity-70">{counts[key]}</span>
-                )}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* ── Empty state ── */}
-        {visible.length === 0 && (
-          <Card className="placeholder-card space-y-4 py-10 text-center">
-            <p className="text-slate-400">
-              {archiveMode
-                ? 'لا توجد طلبات مؤرشفة على هذا الجهاز.'
-                : searchQuery
-                  ? 'لا توجد نتائج تطابق بحثك.'
-                  : filter === 'all'
-                    ? 'لا توجد طلبات محفوظة على هذا الجهاز بعد.'
-                    : 'لا توجد طلبات ضمن هذا التصنيف.'}
+        {/* ── Order List ── */}
+        {visible.length === 0 ? (
+          <div className="reveal-block charcoal-card rounded-[32px] p-12 text-center border-white/[0.03]" style={{ transitionDelay: '300ms' }}>
+            <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-white/[0.02] flex items-center justify-center border border-white/[0.05]">
+              <span className="text-xl">📭</span>
+            </div>
+            <p className="text-[15px] font-bold text-slate-300">
+              {archiveMode ? 'لا توجد طلبات مؤرشفة' : searchQuery ? 'لا توجد نتائج مطابقة لبحثك' : 'لا توجد طلبات حالية'}
             </p>
             {!archiveMode && !searchQuery && filter === 'all' && (
-              <div className="flex justify-center">
-                <Button variant="primary" onClick={() => navigate('/builder')}>
-                  ابدأ طلبًا جديدًا
-                </Button>
-              </div>
+              <Button variant="primary" className="mt-6 mx-auto" onClick={() => navigate('/builder')}>
+                إنشاء طلب جديد
+              </Button>
             )}
-          </Card>
-        )}
-
-        {/* ── Order rows ── */}
-        {visible.length > 0 && (
-          <div className="space-y-3">
-            {visible.map((session) => {
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {visible.map((session, index) => {
               const pathMeta    = getGiftPathMeta(session.giftPath)
               const statusMeta  = getGiftStatusMeta(session.status, session.giftPath)
               const nextStep    = getGiftNextStepMeta(session)
@@ -281,115 +228,107 @@ export default function OrdersPage() {
               const showNextStep = !session.archived && SHOW_NEXT_STEP_FOR.has(cat)
 
               return (
-                <Card key={session.code} className="section-card p-5">
+                <div 
+                  key={session.code} 
+                  className="reveal-block relative overflow-hidden rounded-[32px] border border-white/[0.04] bg-white/[0.015] p-5 sm:p-6 transition-all hover:bg-white/[0.025] hover:border-white/10 group"
+                  style={{ transitionDelay: `${Math.min((index + 3) * 100, 800)}ms` }}
+                >
+                  {/* Status Indicator Bar */}
+                  <div className={cx("absolute inset-y-0 right-0 w-1", 
+                    cat === 'completed' ? 'bg-emerald-400' : 
+                    cat === 'awaiting' ? 'bg-amber-400' : 'bg-brand-2'
+                  )} />
 
-                  {/* ① Code + copy + status / path type */}
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="flex flex-wrap items-center gap-2" dir="ltr">
-                      <span className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-1 font-mono text-sm font-semibold text-white">
-                        {session.code}
-                      </span>
-                      <button
-                        onClick={() => handleCopyCode(session.code)}
-                        className="rounded-lg border border-white/10 bg-white/[0.03] px-2 py-0.5 text-[11px] font-semibold text-slate-400 transition-colors hover:border-white/20 hover:text-white"
-                      >
-                        {copiedCode === session.code ? 'تم النسخ ✓' : 'نسخ'}
-                      </button>
-                      <span className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${CAT_CLASSES[cat]}`}>
-                        {statusMeta.badge}
-                      </span>
-                      {session.followUpNeeded && (
-                        <span className="rounded-full border border-violet-400/20 bg-violet-400/[0.08] px-2.5 py-0.5 text-[11px] font-semibold text-violet-300">
-                          متابعة
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-5 pl-2">
+                    
+                    {/* Header: Code & Status */}
+                    <div className="flex-1 space-y-4">
+                      <div className="flex flex-wrap items-center gap-3">
+                         <span className={cx("rounded-full border px-3 py-1 text-[11px] font-black tracking-widest uppercase", CAT_STYLES[cat])}>
+                          {statusMeta.badge}
                         </span>
+                        <div className="flex items-center gap-1.5" dir="ltr">
+                          <span className="font-mono text-[13px] font-bold text-white tracking-widest">
+                            {session.code}
+                          </span>
+                          <button
+                            onClick={() => handleCopyCode(session.code)}
+                            className="text-[10px] font-bold text-slate-500 hover:text-white bg-white/[0.04] px-2 py-1 rounded-md transition-colors"
+                          >
+                            {copiedCode === session.code ? '✓' : 'نسخ'}
+                          </button>
+                        </div>
+                        <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1 text-[10px] font-bold text-slate-300">
+                          {pathMeta.label}
+                        </span>
+                        {session.followUpNeeded && (
+                          <span className="rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-[10px] font-black tracking-widest uppercase text-brand animate-pulse">
+                            متابعة مطلوبة
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Info Grid */}
+                      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+                        <div className="space-y-1">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">المستلم</p>
+                          <p className="text-[13px] font-bold text-white truncate">{session.recipientName || '—'}</p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">المرسل</p>
+                          <p className="text-[13px] font-bold text-white truncate">{session.senderName || '—'}</p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">المناسبة</p>
+                          <p className="text-[13px] font-bold text-slate-300 truncate">{session.occasionLabel || '—'}</p>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">التحديث</p>
+                          <p className="text-[11px] font-medium text-slate-400 tabular-nums">{formatDate(session.updatedAt || session.createdAt)}</p>
+                        </div>
+                      </div>
+
+                      {/* Next Step Banner */}
+                      {showNextStep && (
+                        <div className="inline-flex items-center gap-2.5 rounded-xl border border-white/[0.04] bg-white/[0.02] px-4 py-2 mt-2">
+                          <span className="h-1.5 w-1.5 rounded-full bg-brand-2/70" />
+                          <p className="text-[12px] font-semibold text-slate-300">{nextStep.title}</p>
+                        </div>
                       )}
                     </div>
-                    <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-0.5 text-[12px] font-semibold text-white/80">
-                      {pathMeta.label}
-                    </span>
-                  </div>
 
-                  {/* ② Meta grid: recipient / sender / occasion / date */}
-                  <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 text-sm sm:grid-cols-4">
-                    <div>
-                      <p className="text-[10px] font-bold tracking-widest text-slate-500">المستلم</p>
-                      <p className="mt-0.5 text-white">{session.recipientName || '—'}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold tracking-widest text-slate-500">المرسل</p>
-                      <p className="mt-0.5 text-white">{session.senderName || '—'}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold tracking-widest text-slate-500">المناسبة</p>
-                      <p className="mt-0.5 text-white">{session.occasionLabel || '—'}</p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold tracking-widest text-slate-500">آخر تحديث</p>
-                      <p className="mt-0.5 text-white">{formatDate(session.updatedAt || session.createdAt)}</p>
-                    </div>
-                  </div>
-
-                  {/* ③ Next-step hint — shown only for awaiting / active orders */}
-                  {showNextStep && (
-                    <div className="mt-3 flex items-start gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2.5">
-                      <span className="mt-0.5 inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-slate-500" />
-                      <p className="text-[12px] leading-relaxed text-slate-400">{nextStep.title}</p>
-                    </div>
-                  )}
-
-                  {/* ④ Actions */}
-                  <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-white/[0.06] pt-4">
-                    {!session.archived ? (
-                      <>
-                        <Button
-                          variant="primary"
-                          onClick={() => navigate(`/checkout?code=${session.code}`)}
-                        >
-                          فتح الطلب
-                        </Button>
-                        <Button
-                          variant="secondary"
-                          onClick={() => navigate(`/checkout?code=${session.code}&ops=1`)}
-                        >
-                          عرض تشغيلي
-                        </Button>
-                        {session.shareLink ? (
-                          <Button
-                            variant="ghost"
-                            onClick={() => navigate(`/gift/open?code=${session.code}`)}
-                          >
-                            رابط المستلم
+                    {/* Actions */}
+                    <div className="flex flex-wrap sm:flex-col gap-2 shrink-0 border-t border-white/[0.05] pt-4 sm:border-t-0 sm:pt-0 sm:border-r sm:pr-4">
+                      {!session.archived ? (
+                        <>
+                          <Button variant="primary" className="py-2 text-[12px] px-6" onClick={() => navigate(`/checkout?code=${session.code}`)}>
+                            إدارة الطلب
                           </Button>
-                        ) : null}
-                        <button
-                          onClick={() => handleArchive(session.code)}
-                          className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[12px] font-semibold text-slate-400 transition-colors hover:border-white/20 hover:text-white"
-                        >
-                          أرشفة
-                        </button>
-                      </>
-                    ) : (
-                      <Button variant="secondary" onClick={() => handleUnarchive(session.code)}>
-                        إلغاء الأرشفة
-                      </Button>
-                    )}
-                  </div>
+                          <Button variant="secondary" className="py-2 text-[12px] px-6 bg-white/[0.02]" onClick={() => navigate(`/checkout?code=${session.code}&ops=1`)}>
+                            التشغيل
+                          </Button>
+                          {session.shareLink && (
+                            <button onClick={() => navigate(`/gift/open?code=${session.code}`)} className="text-[11px] font-bold text-brand-2 hover:text-white transition-colors text-right py-1">
+                              رابط المستلم ↗
+                            </button>
+                          )}
+                          <button onClick={() => handleArchive(session.code)} className="text-[11px] font-bold text-slate-500 hover:text-danger transition-colors text-right py-1">
+                            أرشفة الطلب
+                          </button>
+                        </>
+                      ) : (
+                        <Button variant="secondary" className="py-2 text-[12px] px-6" onClick={() => handleUnarchive(session.code)}>
+                          استعادة الطلب
+                        </Button>
+                      )}
+                    </div>
 
-                </Card>
+                  </div>
+                </div>
               )
             })}
           </div>
         )}
-
-        {/* ── Bottom nav ── */}
-        <div className="flex flex-wrap gap-2.5">
-          <Button variant="primary" onClick={() => navigate('/builder')}>
-            ابدأ طلبًا جديدًا
-          </Button>
-          <Button variant="secondary" onClick={() => navigate('/')}>
-            العودة للرئيسية
-          </Button>
-        </div>
 
       </div>
     </Section>
