@@ -1,7 +1,7 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import Section from '../components/layout/Section'
-import { getGiftPathMeta, getGiftStatusMeta, resolveGiftSession, updateGiftSession } from '../lib/giftSession'
+import { buildGiftFlowUrl, getGiftPathMeta, getGiftStatusMeta, resolveGiftSession, updateGiftSession } from '../lib/giftSession'
 
 export default function RecipientChoicePage() {
   const navigate = useNavigate()
@@ -20,7 +20,7 @@ export default function RecipientChoicePage() {
       status: 'gift_selected',
     })
 
-    navigate(`/gift/address?code=${code}`)
+    navigate(buildGiftFlowUrl('/gift/address', session, searchParams))
   }
 
   if (!session) {
@@ -41,9 +41,14 @@ export default function RecipientChoicePage() {
   }
 
   const giftOptions = Array.isArray(session.giftOptions) ? session.giftOptions : []
+  const shouldRedirectToAddress = session.giftPath !== 'recipientChoice' && Boolean(code)
 
-  if (session.giftPath !== 'recipientChoice') {
-    navigate(`/gift/address?code=${code}`)
+  useEffect(() => {
+    if (!shouldRedirectToAddress) return
+    navigate(buildGiftFlowUrl('/gift/address', session, searchParams), { replace: true })
+  }, [code, navigate, shouldRedirectToAddress])
+
+  if (shouldRedirectToAddress) {
     return null
   }
 

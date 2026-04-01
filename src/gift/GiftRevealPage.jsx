@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import Section from '../components/layout/Section'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
-import { getGiftPathMeta, getGiftStatusMeta, resolveGiftSession, updateGiftSession } from '../lib/giftSession'
+import { buildGiftFlowUrl, getGiftPathMeta, getGiftStatusMeta, resolveGiftSession, updateGiftSession } from '../lib/giftSession'
 
 export default function GiftRevealPage() {
   const navigate = useNavigate()
@@ -18,12 +18,12 @@ export default function GiftRevealPage() {
 
     if (session.giftPath === 'exactGift') {
       updateGiftSession(code, { status: 'revealed' })
-      navigate(`/gift/address?code=${code}`)
+      navigate(buildGiftFlowUrl('/gift/address', session, searchParams))
       return
     }
 
     updateGiftSession(code, { status: 'choice_pending' })
-    navigate(`/gift/choose?code=${code}`)
+    navigate(buildGiftFlowUrl('/gift/choose', session, searchParams))
   }
 
   // حالة الخطأ (جلسة غير صالحة)
@@ -192,7 +192,7 @@ export default function GiftRevealPage() {
           <Button
             variant="secondary"
             className="w-full justify-center py-4 text-[14px] font-bold sm:w-auto bg-white/[0.03] border-white/10 hover:bg-white/[0.06] hover:text-white text-slate-300 rounded-full transition-all"
-            onClick={() => navigate(isExactGift ? `/gift/unlock?code=${code}` : `/gift/open?code=${code}`)}
+            onClick={() => navigate(isExactGift ? buildGiftFlowUrl('/gift/unlock', session, searchParams) : buildGiftFlowUrl('/gift/open', session, searchParams))}
           >
             رجوع
           </Button>

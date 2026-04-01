@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import Section from '../components/layout/Section'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
-import { getGiftPathMeta, getGiftStatusMeta, resolveGiftSession, updateGiftSession } from '../lib/giftSession'
+import { buildGiftFlowUrl, getGiftPathMeta, getGiftStatusMeta, resolveGiftSession, updateGiftSession } from '../lib/giftSession'
 
 export default function GiftUnlockPage() {
   const navigate = useNavigate()
@@ -21,7 +21,7 @@ export default function GiftUnlockPage() {
       status: 'unlocked',
     })
 
-    navigate(`/gift/reveal?code=${code}`)
+    navigate(buildGiftFlowUrl('/gift/reveal', session, searchParams))
   }
 
   if (!session) {
@@ -124,7 +124,7 @@ export default function GiftUnlockPage() {
             <Button
               variant="secondary"
               className="w-full justify-center py-3.5 text-[15px] sm:w-auto"
-              onClick={() => navigate(`/gift/open?code=${code}`)}
+              onClick={() => navigate(buildGiftFlowUrl('/gift/open', session, searchParams))}
             >
               رجوع
             </Button>

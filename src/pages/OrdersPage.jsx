@@ -70,6 +70,11 @@ export default function OrdersPage() {
     setSearchQuery('')
   }
 
+  function handleOpenRecipientLink(shareLink) {
+    if (!shareLink || typeof window === 'undefined') return
+    window.open(shareLink, '_blank', 'noopener,noreferrer')
+  }
+
   const activeSessions   = useMemo(() => sessions.filter((s) => s.archived !== true), [sessions])
   const archivedSessions = useMemo(() => sessions.filter((s) => s.archived === true),  [sessions])
   const modeSessions     = archiveMode ? archivedSessions : activeSessions
@@ -308,8 +313,8 @@ export default function OrdersPage() {
                             التشغيل
                           </Button>
                           {session.shareLink && (
-                            <button onClick={() => navigate(`/gift/open?code=${session.code}`)} className="text-[11px] font-bold text-brand-2 hover:text-white transition-colors text-right py-1">
-                              رابط المستلم ↗
+                            <button onClick={() => handleOpenRecipientLink(session.shareLink)} className="text-[11px] font-bold text-brand-2 hover:text-white transition-colors text-right py-1">
+                              فتح رابط المستلم ↗
                             </button>
                           )}
                           <button onClick={() => handleArchive(session.code)} className="text-[11px] font-bold text-slate-500 hover:text-danger transition-colors text-right py-1">

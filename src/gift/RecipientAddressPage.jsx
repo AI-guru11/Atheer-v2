@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import Section from '../components/layout/Section'
 import { cx } from '../utils/helpers'
-import { getGiftPathMeta, resolveGiftSession, updateGiftSession } from '../lib/giftSession'
+import { buildGiftFlowUrl, getGiftPathMeta, resolveGiftSession, updateGiftSession } from '../lib/giftSession'
 
 const FIELDS = [
   {
@@ -90,7 +90,7 @@ export default function RecipientAddressPage() {
       status: 'address_submitted',
     })
 
-    navigate(`/gift/confirmed?code=${code}`)
+    navigate(buildGiftFlowUrl('/gift/confirmed', session, searchParams))
   }
 
   if (!session || !selectedGift) {
@@ -179,7 +179,7 @@ export default function RecipientAddressPage() {
           <div className="mt-7 flex flex-col-reverse gap-2.5">
             <button
               type="button"
-              onClick={() => navigate(session.giftPath === 'recipientChoice' ? `/gift/choose?code=${code}` : `/gift/reveal?code=${code}`)}
+              onClick={() => navigate(session.giftPath === 'recipientChoice' ? buildGiftFlowUrl('/gift/choose', session, searchParams) : buildGiftFlowUrl('/gift/reveal', session, searchParams))}
               className="rounded-full border border-white/[0.08] bg-white/[0.02] px-5 py-2.5 text-[13px] font-semibold text-slate-400 transition-colors duration-200 hover:border-white/15 hover:text-slate-200"
             >
               الرجوع {session.giftPath === 'recipientChoice' ? 'لاختيار هدية أخرى' : 'لتفاصيل الهدية'}

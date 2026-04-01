@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import Section from '../components/layout/Section'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
-import { getGiftPathMeta, getGiftStatusMeta, resolveGiftSession, updateGiftSession } from '../lib/giftSession'
+import { buildGiftFlowUrl, getGiftPathMeta, getGiftStatusMeta, resolveGiftSession, updateGiftSession } from '../lib/giftSession'
 
 export default function RecipientLandingPage() {
   const navigate = useNavigate()
@@ -20,11 +20,11 @@ export default function RecipientLandingPage() {
     updateGiftSession(code, { status: 'opened' })
 
     if (session.giftPath === 'exactGift') {
-      navigate(`/gift/unlock?code=${code}`)
+      navigate(buildGiftFlowUrl('/gift/unlock', session, searchParams))
       return
     }
 
-    navigate(`/gift/reveal?code=${code}`)
+    navigate(buildGiftFlowUrl('/gift/reveal', session, searchParams))
   }
 
   if (!session) {

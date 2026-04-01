@@ -100,6 +100,74 @@ function buildBaseSession({
   }
 }
 
+const LEGACY_GIFT_STATUS_ALIASES = {
+  direct_review_ready: "direct_order_confirmed",
+}
+
+function normalizeGiftStatus(status, deliveryMode) {
+  if (!status) return ""
+
+  if (LEGACY_GIFT_STATUS_ALIASES[status]) {
+    return LEGACY_GIFT_STATUS_ALIASES[status]
+  }
+
+  if (status === "link_ready" && deliveryMode === "directDelivery") {
+    return "direct_order_confirmed"
+  }
+
+  return status
+}
+
+function normalizeStatusTimeline(statusTimeline, deliveryMode, fallbackStatus) {
+  const normalizedEntries = Array.isArray(statusTimeline) ? statusTimeline : []
+  const deduped = []
+
+  normalizedEntries.forEach((entry) => {
+    const nextStatus = normalizeGiftStatus(entry?.status, deliveryMode)
+    if (!nextStatus) return
+
+    const previous = deduped[deduped.length - 1]
+    if (previous?.status === nextStatus) return
+
+    deduped.push({
+      status: nextStatus,
+      at: entry?.at || new Date().toISOString(),
+    })
+  })
+
+  if (deduped.length > 0) return deduped
+
+  const normalizedFallback = normalizeGiftStatus(fallbackStatus, deliveryMode)
+  return normalizedFallback ? [createStatusEntry(normalizedFallback)] : []
+}
+
+function migrateLegacyGiftSession(session) {
+  if (!session) return null
+
+  const normalizedStatus = normalizeGiftStatus(session.status, session.deliveryMode)
+  const normalizedTimeline = normalizeStatusTimeline(
+    session.statusTimeline,
+    session.deliveryMode,
+    normalizedStatus,
+  )
+
+  const currentTimeline = Array.isArray(session.statusTimeline) ? session.statusTimeline : []
+  const hasStatusChanged = normalizedStatus !== session.status
+  const hasTimelineChanged = JSON.stringify(normalizedTimeline) != JSON.stringify(currentTimeline)
+
+  if (!hasStatusChanged && !hasTimelineChanged) return session
+
+  return {
+    ...session,
+    status: normalizedStatus,
+    statusTimeline: normalizedTimeline,
+  }
+}
+
+function getSessionStatus(session) {
+  return normalizeGiftStatus(session?.status, session?.deliveryMode)
+}
+
 export function getGiftPathMeta(giftPath) {
   if (giftPath === "exactGift") {
     return {
@@ -142,8 +210,9 @@ export function getGiftPathMeta(giftPath) {
   }
 }
 
-export function getGiftStatusMeta(status, giftPath) {
+export function getGiftStatusMeta(status, giftPath, deliveryMode = "") {
   const isExactGift = giftPath === "exactGift"
+  const normalizedStatus = normalizeGiftStatus(status, deliveryMode)
 
   const fallback = isExactGift
     ? {
@@ -199,17 +268,13 @@ export function getGiftStatusMeta(status, giftPath) {
       badge: "تم استلام بيانات التوصيل",
       note: "تم حفظ بيانات الهدية والتوصيل داخل الطلب، وأصبح الطلب جاهزًا للمراجعة النهائية.",
     },
-    direct_review_ready: {
-      badge: "الطلب جاهز للمراجعة",
-      note: "تم تثبيت الهدية داخل الطلب، والخطوة الحالية هي مراجعة البيانات قبل تأكيد الطلب.",
-    },
     direct_order_confirmed: {
       badge: "تم تأكيد الطلب",
       note: "تم حفظ الهدية وبيانات التوصيل داخل طلب واحد، وأصبح الطلب جاهزًا للمتابعة.",
     },
   }
 
-  return statusMap[status] || fallback
+  return statusMap[normalizedStatus] || fallback
 }
 
 export function getGiftNextStepMeta(session) {
@@ -220,16 +285,13 @@ export function getGiftNextStepMeta(session) {
     }
   }
 
+  const normalizedStatus = getSessionStatus(session)
+
   const statusMap = {
-    link_ready: session.deliveryMode === "directDelivery"
-      ? {
-          title: "راجع الطلب قبل التأكيد",
-          note: "أكمل مراجعة الطلب ثم ثبّته ليتحول إلى طلب محفوظ يمكن متابعته لاحقًا.",
-        }
-      : {
-          title: "شارك الرابط مع المستلم",
-          note: "الخطوة التالية هي مشاركة رابط الهدية حتى يبدأ المستلم التجربة من طرفه.",
-        },
+    link_ready: {
+      title: "شارك الرابط مع المستلم",
+      note: "تم تجهيز الرابط داخل الطلب، والخطوة التالية هي أن يفتحه المستلم ليبدأ التجربة من جهته.",
+    },
     opened: {
       title: "ينتظر استكمال تجربة المستلم",
       note: "المستلم بدأ التجربة، والخطوة التالية ستظهر تلقائيًا عند انتقاله لمرحلة الكشف أو العرض.",
@@ -259,17 +321,13 @@ export function getGiftNextStepMeta(session) {
       title: "الطلب جاهز للمراجعة النهائية",
       note: "جميع التفاصيل الأساسية أصبحت محفوظة، ويمكن الآن متابعة الطلب من نفس المرجع.",
     },
-    direct_review_ready: {
-      title: "راجع الطلب ثم أكّده",
-      note: "هذه هي آخر خطوة قبل تثبيت الطلب المباشر داخل مرجع موحّد.",
-    },
     direct_order_confirmed: {
       title: "الطلب محفوظ وجاهز للمتابعة",
-      note: "يمكنك الآن الاعتماد على صفحة الملخص كمرجع ثابت للطلب والتفاصيل المحفوظة داخله.",
+      note: "تم تثبيت الطلب المباشر بالكامل داخل الجلسة، ويمكن استخدام صفحة الملخص كمرجع ثابت للمتابعة.",
     },
   }
 
-  return statusMap[session.status] || {
+  return statusMap[normalizedStatus] || {
     title: "راجع ملخص الطلب",
     note: "هذا الملخص هو المرجع الحالي لحالة الطلب والتفاصيل المحفوظة داخله.",
   }
@@ -278,8 +336,8 @@ export function getGiftNextStepMeta(session) {
 export function getGiftTimelineEntries(session) {
   if (!session?.statusTimeline?.length) return []
 
-  return session.statusTimeline.map((entry) => {
-    const meta = getGiftStatusMeta(entry.status, session.giftPath)
+  return normalizeStatusTimeline(session.statusTimeline, session.deliveryMode, session.status).map((entry) => {
+    const meta = getGiftStatusMeta(entry.status, session.giftPath, session.deliveryMode)
     return {
       ...entry,
       label: meta.badge,
@@ -337,20 +395,15 @@ export function getGiftOpsMeta(session) {
     }
   }
 
+  const normalizedStatus = getSessionStatus(session)
+
   const statusMap = {
-    link_ready: session.deliveryMode === "directDelivery"
-      ? {
-          badge: "جاهز لمراجعة التنفيذ",
-          note: "كل العناصر الأساسية موجودة والطلب ينتظر تثبيتًا نهائيًا قبل إدخاله في متابعة التنفيذ.",
-          lane: "مراجعة داخلية",
-          readiness: "شبه جاهز",
-        }
-      : {
-          badge: "بانتظار تفاعل المستلم",
-          note: "تم حفظ الرابط داخل الجلسة، لكن handoff الداخلي يظل ناقصًا حتى يبدأ المستلم التجربة أو يكمل اختياره.",
-          lane: "انتظار تفاعل",
-          readiness: "معلّق",
-        },
+    link_ready: {
+      badge: "بانتظار تفاعل المستلم",
+      note: "تم حفظ الرابط داخل الجلسة، لكن handoff الداخلي يظل ناقصًا حتى يبدأ المستلم التجربة أو يكمل اختياره.",
+      lane: "انتظار تفاعل",
+      readiness: "معلّق",
+    },
     opened: {
       badge: "المستلم داخل التجربة",
       note: "الطلب نشط حاليًا من جهة المستلم. لا يلزم إجراء داخلي الآن سوى المتابعة من نفس المرجع.",
@@ -394,12 +447,6 @@ export function getGiftOpsMeta(session) {
       lane: "handoff جاهز",
       readiness: "جاهز",
     },
-    direct_review_ready: {
-      badge: "جاهز للمراجعة النهائية",
-      note: "الطلب المباشر أصبح قريبًا من handoff الكامل، والخطوة المتبقية هي تثبيت الطلب من جهة المرسل.",
-      lane: "مراجعة داخلية",
-      readiness: "شبه جاهز",
-    },
     direct_order_confirmed: {
       badge: "handoff مباشر جاهز",
       note: "الطلب المباشر محفوظ بالكامل داخل الجلسة ويمكن استخدام مرجع الطلب كحزمة تنفيذ داخلية دون الرجوع للـ Builder.",
@@ -408,7 +455,7 @@ export function getGiftOpsMeta(session) {
     },
   }
 
-  return statusMap[session.status] || {
+  return statusMap[normalizedStatus] || {
     badge: "يتطلب مراجعة",
     note: "الجلسة تحتوي على بيانات مفيدة، لكن الحالة الحالية لا تزال تحتاج مراجعة داخلية قبل اعتماد handoff الكامل.",
     lane: "مراجعة داخلية",
@@ -477,7 +524,7 @@ export function buildGiftOpsHandoff(session) {
     `Phone: ${session.recipientPhone || session.addressData?.phone || "—"}`,
     `Gift: ${selectedGiftTitle}`,
     `Address: ${session.addressData ? `${session.addressData.city || "—"} — ${session.addressData.address || "—"}` : "—"}`,
-    `Customer Status: ${getGiftStatusMeta(session.status, session.giftPath).badge}`,
+    `Customer Status: ${getGiftStatusMeta(session.status, session.giftPath, session.deliveryMode).badge}`,
     `Ops Note: ${opsMeta.note}`,
   ]
 
@@ -547,7 +594,14 @@ export function getGiftSessionByCode(code) {
   if (!raw) return null
 
   try {
-    return JSON.parse(raw)
+    const parsed = JSON.parse(raw)
+    const migrated = migrateLegacyGiftSession(parsed)
+
+    if (migrated && JSON.stringify(migrated) !== JSON.stringify(parsed)) {
+      window.localStorage.setItem(getStorageKey(code), JSON.stringify(migrated))
+    }
+
+    return migrated
   } catch {
     return null
   }
@@ -559,25 +613,61 @@ export function updateGiftSession(code, patch) {
   const existing = getGiftSessionByCode(code)
   if (!existing) return null
 
-  const nextStatus = patch?.status
-  const shouldAppendStatus = nextStatus && nextStatus !== existing.status
+  const nextStatus = normalizeGiftStatus(patch?.status, existing.deliveryMode)
+  const currentStatus = getSessionStatus(existing)
+  const shouldAppendStatus = nextStatus && nextStatus !== currentStatus
 
-  const nextSession = {
+  const nextSession = migrateLegacyGiftSession({
     ...existing,
     ...patch,
+    status: nextStatus || currentStatus,
     updatedAt: new Date().toISOString(),
     statusTimeline: shouldAppendStatus
-      ? [...(existing.statusTimeline || []), createStatusEntry(nextStatus)]
-      : (existing.statusTimeline || []),
-  }
+      ? [...normalizeStatusTimeline(existing.statusTimeline, existing.deliveryMode, currentStatus), createStatusEntry(nextStatus)]
+      : normalizeStatusTimeline(existing.statusTimeline, existing.deliveryMode, currentStatus),
+  })
 
   persistGiftSession(nextSession)
   return nextSession
 }
 
-export function buildGiftLink(baseUrl, session) {
+function normalizeBaseUrl(baseUrl) {
+  if (!baseUrl) return ""
+  const sanitized = baseUrl.replace(/#.*$/, "").replace(/\/index\.html$/, "")
+  return sanitized.endsWith("/") ? sanitized : `${sanitized}/`
+}
+
+export function resolveGiftLinkBaseUrl() {
+  if (!isBrowser()) return ""
+
+  return normalizeBaseUrl(`${window.location.origin}${window.location.pathname}`)
+}
+
+export function buildGiftLink(baseUrlOrSession, maybeSession) {
+  const session = maybeSession ?? baseUrlOrSession
+  const explicitBaseUrl = maybeSession ? baseUrlOrSession : ""
+
+  if (!session?.code) return ""
+
   const payload = encodeUtf8ToBase64Url(session)
+  const baseUrl = normalizeBaseUrl(explicitBaseUrl || resolveGiftLinkBaseUrl())
+
   return `${baseUrl}#/gift/open?code=${session.code}&gift=${payload}`
+}
+
+export function buildGiftFlowUrl(path, session, searchParams) {
+  if (!path) return ""
+
+  const params = new URLSearchParams()
+  const code = session?.code || searchParams?.get?.("code") || ""
+  if (code) params.set("code", code)
+
+  const existingPayload = searchParams?.get?.("gift") || ""
+  const nextPayload = existingPayload || (session?.code ? encodeUtf8ToBase64Url(session) : "")
+  if (nextPayload) params.set("gift", nextPayload)
+
+  const query = params.toString()
+  return query ? `${path}?${query}` : path
 }
 
 export function getAllGiftSessions() {
@@ -589,7 +679,15 @@ export function getAllGiftSessions() {
     if (!key?.startsWith(STORAGE_PREFIX)) continue
     try {
       const raw = window.localStorage.getItem(key)
-      if (raw) sessions.push(JSON.parse(raw))
+      if (!raw) continue
+
+      const parsed = JSON.parse(raw)
+      const migrated = migrateLegacyGiftSession(parsed)
+      if (migrated && JSON.stringify(migrated) !== JSON.stringify(parsed)) {
+        window.localStorage.setItem(key, JSON.stringify(migrated))
+      }
+
+      if (migrated) sessions.push(migrated)
     } catch {
       // skip malformed entries
     }
@@ -603,13 +701,13 @@ export function getAllGiftSessions() {
 }
 
 export function getOrderFilterCategory(session) {
-  if (!session?.status) return 'active'
-  const s = session.status
-  if (s === 'address_submitted' || s === 'direct_order_confirmed') return 'completed'
-  if (
-    s === 'direct_review_ready' ||
-    (s === 'link_ready' && session.deliveryMode === 'directDelivery')
-  ) return 'awaiting'
+  const status = getSessionStatus(session)
+  if (!status) return 'active'
+
+  if (status === 'address_submitted' || status === 'direct_order_confirmed') return 'completed'
+  if (status === 'link_ready' || status === 'gift_selected') return 'awaiting'
+  if (status === 'revealed' && session?.giftPath === 'exactGift') return 'awaiting'
+
   return 'active'
 }
 
@@ -633,7 +731,7 @@ export function setFollowUpFlag(code, value) {
 // Internal notes and sourcing details are intentionally excluded.
 export function buildSenderFollowUpSnippet(session) {
   if (!session) return ''
-  const statusMeta = getGiftStatusMeta(session.status, session.giftPath)
+  const statusMeta = getGiftStatusMeta(session.status, session.giftPath, session.deliveryMode)
   const nextStep = getGiftNextStepMeta(session)
   const recipient = session.recipientName ? ` لـ ${session.recipientName}` : ''
   const occasion = session.occasionLabel ? ` بمناسبة ${session.occasionLabel}` : ''
@@ -674,7 +772,7 @@ export function buildRecipientCoordinationSnippet(session) {
 export function buildOrderPresets(session) {
   if (!session) return { sender: [], recipient: [], ops: [] }
 
-  const statusMeta = getGiftStatusMeta(session.status, session.giftPath)
+  const statusMeta = getGiftStatusMeta(session.status, session.giftPath, session.deliveryMode)
   const nextStep   = getGiftNextStepMeta(session)
   const sender     = session.senderName    || 'العميل'
   const recipient  = session.recipientName || ''
@@ -772,18 +870,19 @@ export function buildOrderPresets(session) {
 // Returns a numeric sort priority — lower = more operationally urgent.
 // Used by the "الأولوية" sort in OrdersPage.
 export function getStatusSortPriority(session) {
-  const s = session?.status
-  if (!s) return 10
-  if (s === 'direct_review_ready') return 1
-  if (s === 'link_ready' && session.deliveryMode === 'directDelivery') return 2
-  if (s === 'gift_selected') return 3
-  if (s === 'choice_pending') return 4
-  if (s === 'revealed') return 5
-  if (s === 'opened') return 6
-  if (s === 'unlocked') return 7
-  if (s === 'link_ready') return 8           // recipientChoice — waiting on recipient
-  if (s === 'address_submitted') return 9
-  if (s === 'direct_order_confirmed') return 10
+  const status = getSessionStatus(session)
+  if (!status) return 10
+
+  if (status === 'gift_selected') return 1
+  if (status === 'revealed' && session?.giftPath === 'exactGift') return 2
+  if (status === 'choice_pending') return 3
+  if (status === 'opened') return 4
+  if (status === 'unlocked') return 5
+  if (status === 'revealed') return 6
+  if (status === 'link_ready') return 7
+  if (status === 'address_submitted') return 8
+  if (status === 'direct_order_confirmed') return 9
+
   return 11
 }
 
@@ -801,15 +900,17 @@ export function resolveGiftSession(searchParams) {
 
   if (payload) {
     try {
-      const payloadSession = decodeBase64UrlToUtf8(payload)
+      const payloadSession = migrateLegacyGiftSession(decodeBase64UrlToUtf8(payload))
       if (payloadSession?.code) {
         const cachedSession = getGiftSessionByCode(payloadSession.code)
-        const resolvedSession = cachedSession?.updatedAt
-          ? {
-              ...payloadSession,
-              ...cachedSession,
-            }
-          : payloadSession
+        const resolvedSession = migrateLegacyGiftSession(
+          cachedSession?.updatedAt
+            ? {
+                ...payloadSession,
+                ...cachedSession,
+              }
+            : payloadSession,
+        )
 
         persistGiftSession(resolvedSession)
         return resolvedSession

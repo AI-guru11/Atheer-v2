@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import Section from '../components/layout/Section'
 import Badge from '../components/ui/Badge'
 import Button from '../components/ui/Button'
-import { resolveGiftSession } from '../lib/giftSession'
+import { buildGiftFlowUrl, resolveGiftSession } from '../lib/giftSession'
 
 export default function GiftLandingPage() {
   const navigate = useNavigate()
@@ -47,7 +47,7 @@ export default function GiftLandingPage() {
             <Button
               variant="primary"
               className="w-full justify-center py-3.5 text-[15px]"
-              onClick={() => navigate(`/gift/open?code=${session.code}`)}
+              onClick={() => navigate(buildGiftFlowUrl('/gift/open', session, searchParams))}
             >
               متابعة تجربة الهدية
             </Button>

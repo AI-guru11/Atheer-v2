@@ -182,7 +182,7 @@ export default function BuilderShell() {
       recipientData,
       recommendation,
     })
-    const nextGiftLink = buildGiftLink("https://ai-guru11.github.io/Atheer-v2/", session)
+    const nextGiftLink = buildGiftLink(session)
     persistGiftSession({ ...session, shareLink: nextGiftLink })
     setGiftLink(nextGiftLink)
     setLinkSessionCode(session.code)
@@ -218,9 +218,20 @@ export default function BuilderShell() {
   const recommendation = engineResult?.recommendation || null
 
   const primaryCtaLabel = (() => {
-    if (selections.deliveryMode === "directDelivery") return "أكمل بيانات التوصيل الآن"
-    if (selections.deliveryMode === "recipientChoice" && selections.giftPath === "exactGift") return "أنشئ رابط كشف الهدية"
-    if (selections.deliveryMode === "recipientChoice" && selections.giftPath === "recipientChoice") return "أنشئ رابط اختيار الهدية"
+    if (selections.deliveryMode === "directDelivery") {
+      return completion.ctaByDelivery?.directDelivery || completion.primaryCta
+    }
+
+    if (selections.deliveryMode === "recipientChoice") {
+      if (selections.giftPath === "exactGift") {
+        return completion.ctaByDelivery?.recipientChoice?.exactGift || completion.primaryCta
+      }
+
+      if (selections.giftPath === "recipientChoice") {
+        return completion.ctaByDelivery?.recipientChoice?.recipientChoice || completion.primaryCta
+      }
+    }
+
     return completion.primaryCta
   })()
 

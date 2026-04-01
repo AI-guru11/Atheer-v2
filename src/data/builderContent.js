@@ -149,8 +149,11 @@ export const builderContent = {
       "راجع التوصية وحدد المسار المناسب لإكمال تجربة الهدية.",
     primaryCta: "احجز هديتك مع أثير",
     ctaByDelivery: {
-      directDelivery: "أكمل بيانات التوصيل",
-      recipientChoice: "أرسل رابط الهدية للمستلم",
+      directDelivery: "أكمل بيانات التوصيل الآن",
+      recipientChoice: {
+        exactGift: "أنشئ رابط كشف الهدية",
+        recipientChoice: "أنشئ رابط اختيار الهدية",
+      },
     },
   },
 }

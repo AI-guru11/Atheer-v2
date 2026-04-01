@@ -57,6 +57,11 @@ export default function CheckoutPage() {
   )
 
   const showOpsView = searchParams.get('ops') === '1'
+  function handleOpenRecipientLink() {
+    if (!session?.shareLink || typeof window === 'undefined') return
+    window.open(session.shareLink, '_blank', 'noopener,noreferrer')
+  }
+
 
   function handleCopyShareLink() {
     if (!session?.shareLink) return
@@ -575,8 +580,8 @@ export default function CheckoutPage() {
                   <Button variant="secondary" onClick={handleCopyShareLink}>
                     {copied ? 'تم النسخ ✓' : 'نسخ الرابط'}
                   </Button>
-                  <Button variant="primary" onClick={() => navigate(`/gift/open?code=${session.code}`)}>
-                    فتح تجربة المستلم
+                  <Button variant="primary" onClick={handleOpenRecipientLink}>
+                    فتح الرابط الفعلي للمستلم
                   </Button>
                 </div>
               </Card>
