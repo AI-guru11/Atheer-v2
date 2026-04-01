@@ -23,7 +23,7 @@ Its product model is:
 - track the order as a lightweight operational workflow
 
 Core positioning:
-- premium dark experience
+- premium experience
 - curated gifting, not marketplace sprawl
 - experience-led gifting, not product-grid-first shopping
 - local-session-driven MVP, not backend-heavy architecture
@@ -53,17 +53,10 @@ Any AI working on this repo should treat **giftPath** as the primary product pat
 
 ---
 
-## 3) Non-Negotiable Decisions
+## 3) Stable Product Decisions
 
-These decisions are already made and should not be reopened casually:
+These decisions are in place and should not be changed without clear intent:
 
-- Homepage baseline is approved.
-- Homepage is the visual reference system for the rest of the product.
-- Light mode is deferred.
-- Theme toggle is deferred.
-- Current priority is not rebranding colors.
-- Current priority is not homepage redesign.
-- This repo should avoid broad refactors.
 - This repo should avoid speculative architecture expansion.
 - This repo should preserve the current routing model unless a change is strictly required.
 - Customer-facing statuses must remain clean and must **not** expose internal sourcing, purchasing, inventory, supplier, or procurement language.
@@ -81,13 +74,20 @@ Preferred public-facing language:
 - delivery is being coordinated
 - order completed
 
+### What is open to evolution
+Visual design, homepage structure, section layout, surface treatments, and color refinements are all open to intentional improvement. These are product decisions, not frozen constraints. When making visual or structural changes:
+- understand what currently exists before proposing changes
+- changes should serve product clarity, premium positioning, or UX improvement
+- avoid reckless wholesale rewrites of things that are already working
+- prefer incremental evolution over speculative redesigns
+
 ---
 
-## 4) Approved Visual Baseline
+## 4) Visual Direction
 
-The visual system is already approved and should be preserved.
+The current visual system is a premium dark experience and should be treated with care.
 
-### Core visual direction
+### Current visual foundation
 - premium dark interface
 - charcoal / deep-dark atmospheric background (`#0d0d12` base)
 - restrained ambient glow (AuroraBackground effect layer)
@@ -96,19 +96,19 @@ The visual system is already approved and should be preserved.
 - strong readability
 - mobile-first polish
 
-### Do not do these casually
-- do not redesign the homepage broadly
-- do not introduce bright/light glass surfaces
-- do not add a theme toggle
-- do not add light mode
-- do not turn the interface into a generic admin dashboard look
-
-The design language should remain:
+### Design language to preserve
 - premium
 - editorial
 - calm
 - intentional
 - not noisy
+
+### Guidance for visual changes
+Visual evolution is allowed and sometimes necessary. When making visual changes:
+- understand what the current implementation looks like before proposing anything
+- changes should improve clarity, UX, or premium feel — not introduce visual noise
+- do not casually turn any customer-facing surface into a generic admin dashboard look
+- light mode and theme toggle remain deferred — they are not current priorities
 
 ---
 
@@ -177,6 +177,18 @@ Do not switch this app to `createBrowserRouter` unless there is an explicit deli
 - `src/app/App.jsx` — layout shell, scroll-to-top, smart reveal system (IntersectionObserver)
 - `src/components/layout/` — Header, Footer, Section, Container
 
+### Homepage sections
+- `src/pages/HomePage.jsx` — top-level page, composes all homepage sections
+- `src/components/sections/HeroSection.jsx`
+- `src/components/sections/ServicesSection.jsx`
+- `src/components/sections/WizardTeaserSection.jsx`
+- `src/components/sections/DifferenceSection.jsx`
+- `src/components/sections/CollectionsTeaserSection.jsx`
+- `src/components/sections/FeaturedSection.jsx`
+- `src/components/sections/SocialProofSection.jsx`
+- `src/components/sections/FeatureStripSection.jsx`
+- `src/components/sections/CTASection.jsx`
+
 ### Builder flow
 - `src/pages/GiftBuilderPage.jsx`
 - `src/components/builder/` — BuilderShell, BuilderChoiceGrid, BuilderChoiceCard, BuilderProgress, BuilderActions, BuilderSummary, BuilderRecommendationPreview, DirectDeliveryForm, DirectDeliveryReview, DirectDeliveryConfirmation, RecipientContactForm, RecipientReview, RecipientLinkReady
@@ -206,6 +218,7 @@ Do not switch this app to `createBrowserRouter` unless there is an explicit deli
 
 ### Utilities / helpers
 - `src/utils/helpers.js`
+- `src/utils/formValidation.js` — Saudi mobile number normalization (Arabic digit support), email validation, required field error helpers; used in builder forms and RecipientAddressPage
 - `src/data/recipientMockData.js`
 
 ### Styles
@@ -242,6 +255,8 @@ The current high-level builder sequence is:
 The builder should reflect the actual product model:
 - **giftPath** is the real strategic fork
 - **deliveryMode** is the operational delivery choice that follows from that
+
+When `giftPath === "recipientChoice"`, the `deliveryMode` step is auto-resolved to `"recipientChoice"` without a user selection.
 
 ### Gift paths
 - `exactGift`
@@ -300,6 +315,7 @@ Gift sessions store the working order state across:
 - status timeline (timestamped entries)
 - gift path metadata (`getGiftPathMeta`)
 - status metadata (`getGiftStatusMeta`)
+- legacy status migration (normalizes old status keys on read)
 
 ### Core expectation
 Any new module touching order continuity should extend the existing gift session model **minimally** instead of introducing another storage layer.
@@ -521,16 +537,17 @@ Do not switch to `createBrowserRouter` without a deliberate deployment-strategy 
 Any AI model working in this repository should behave like this:
 
 ### Do
-- preserve the product model
-- preserve approved UI baseline
+- read the actual code before proposing any change
+- preserve the product model and its two core gift paths
 - extend existing helpers when possible
 - treat gift sessions as the continuity spine
 - keep customer-facing language safe and polished
 - keep the operational layer lightweight
 - favor boring correctness over speculative expansion
+- allow visual and structural changes when they are intentional and improve the product
+- treat implementation truth as authoritative over any prior documented assumptions
 
 ### Do not
-- redesign the homepage broadly
 - invent new product paths casually
 - introduce backend architecture casually
 - create duplicate storage models
@@ -538,6 +555,7 @@ Any AI model working in this repository should behave like this:
 - rewrite recommendation engine logic without need
 - expand scope into unrelated modules
 - treat placeholder pages as implemented features
+- treat any section of CLAUDE.md as permanently frozen if the real code has moved on
 
 ---
 
@@ -568,3 +586,5 @@ When two solutions exist:
 - choose the one that preserves current continuity
 
 This repo should grow through **controlled modules**, not chaotic expansion.
+
+Changes to the visual layer, homepage, or product flow are welcome when they are repo-aware, intentional, and grounded in actual product improvement — not when they are speculative or untethered from the current implementation reality.
