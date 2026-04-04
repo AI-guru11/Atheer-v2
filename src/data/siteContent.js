@@ -6,8 +6,8 @@ export const siteContent = {
   },
 
   hero: {
-    titleTop: "هدية مقصودة،",
-    titleHighlight: "تجربة تُذكر",
+    titleTop: "إهداء موجّه بذكاء،",
+    titleHighlight: "تجربة كشف تليق باللحظة",
     description:
       "أثير يساعدك تختار الهدية الصح — أو تخلّي المهدى له يختار من مجموعة منسّقة — مع رحلة كشف تليق باللحظة.",
     primaryCta: {
