@@ -178,16 +178,21 @@ Do not switch this app to `createBrowserRouter` unless there is an explicit deli
 - `src/components/layout/` — Header, Footer, Section, Container
 
 ### Homepage sections
-- `src/pages/HomePage.jsx` — top-level page, composes all homepage sections
-- `src/components/sections/HeroSection.jsx`
+- `src/pages/HomePage.jsx` — top-level page, composes actively rendered homepage sections
+- `src/data/siteContent.js` — real homepage content driver (brand copy, hero, section text, CTAs)
+
+**Currently rendered (in order):**
+1. `src/components/sections/HeroSection.jsx`
+2. `src/components/sections/WizardTeaserSection.jsx`
+3. `src/components/sections/DifferenceSection.jsx`
+4. `src/components/sections/SocialProofSection.jsx`
+5. `src/components/sections/CTASection.jsx`
+
+**Section files that exist but are not currently rendered in HomePage:**
 - `src/components/sections/ServicesSection.jsx`
-- `src/components/sections/WizardTeaserSection.jsx`
-- `src/components/sections/DifferenceSection.jsx`
 - `src/components/sections/CollectionsTeaserSection.jsx`
 - `src/components/sections/FeaturedSection.jsx`
-- `src/components/sections/SocialProofSection.jsx`
 - `src/components/sections/FeatureStripSection.jsx`
-- `src/components/sections/CTASection.jsx`
 
 ### Builder flow
 - `src/pages/GiftBuilderPage.jsx`
@@ -204,7 +209,7 @@ Do not switch this app to `createBrowserRouter` unless there is an explicit deli
 ### Order / status / ops-lite layer
 - `src/pages/CheckoutPage.jsx`
 - `src/pages/OrdersPage.jsx`
-- `src/lib/giftSession.js`
+- `src/lib/giftSession.js` — substantial module with 24+ named exports covering session CRUD, status transitions, path/status metadata, timeline entries, and legacy status migration
 
 ### Recommendation engine
 - `src/lib/recommendation/index.js`
@@ -234,7 +239,11 @@ Do not switch this app to `createBrowserRouter` unless there is an explicit deli
 
 ### Placeholder pages (route exists, content not yet built)
 - `src/pages/CorporatePage.jsx` — placeholder card
+- `src/pages/SuccessPage.jsx` — placeholder card; not yet connected to the real order flow
 - `src/admin/AdminDashboardPage.jsx` — placeholder card, explicitly deferred
+
+### Other notable pages
+- `src/pages/NotFoundPage.jsx` — fallback route (`*`)
 
 ---
 
@@ -290,6 +299,7 @@ Do not break the recommendation engine to satisfy a UI-only change.
 - keep inputs stable
 - keep output structure stable unless a module explicitly requires extending it
 - prefer narrow additive changes over scoring refactors
+- `scoreCandidates.js` is the live scoring source of truth; do not treat any external notes about score weights as authoritative — read the file directly
 
 ---
 
@@ -422,7 +432,7 @@ It should **not** become a dense enterprise admin table unless explicitly reques
 - **P** — Order Detail Notes + Activity Timeline Lite
 - **Q** — Follow-up Toolkit + Communication Snippets Lite
 - **R** — Lightweight Templates + Reusable Gift Operations Presets
-- **S** — Signature Collections Lite *(basic implementation: `/collections` route, `CollectionsPage.jsx`, `signatureCollections.js` data with 6+ collections; CTAs currently route to `/builder`, not collection-specific flows)*
+- **S** — Signature Collections Lite *(basic implementation: `/collections` route, `CollectionsPage.jsx`, `signatureCollections.js` data with 4 collections; CTAs currently route to `/builder`, not collection-specific flows)*
 
 ### Placeholder routes (route registered, page not yet built)
 - `/admin` → `AdminDashboardPage` — explicitly deferred; the file contains a placeholder card only
