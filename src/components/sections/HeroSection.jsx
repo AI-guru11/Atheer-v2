@@ -47,7 +47,6 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Gift path preview */}
       <div className="relative mt-10 lg:mt-14">
         <div className="mx-auto grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2">
           {hero.giftPaths.map((path) => (
